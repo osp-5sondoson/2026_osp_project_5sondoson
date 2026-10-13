@@ -1,0 +1,21 @@
+{% extends "index.html" %}
+{% block section %}
+<h1>Registration Result</h1>
+<p>Product {{data.name}} is registered.</p>
+<table class="result">
+ <tr><th>Product name</th><td>{{data.name}}</td></tr>
+ <tr><th>Seller ID</th><td>{{data.seller}}</td></tr>
+ <tr><th>Price</th><td>{{data.price}}</td></tr>
+ <tr><th>Address</th><td>{{data.addr}}</td></tr>
+ <tr>
+  <th>Status</th>
+  <td>
+   {% if data['status'] == "new" %} New {% endif %}
+   {% if data['status'] == "lnew" %} Likely New {% endif %}
+   {% if data['status'] == "used" %} Used {% endif %}
+  </td>
+ </tr>
+ <tr><th>Email</th><td>{{data.email}}</td></tr>
+ <tr><th>Picture</th><td><img src="/{{img_path}}" alt="{{data.name}}"></td></tr>
+</table>
+{% endblock section %}

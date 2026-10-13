@@ -1,0 +1,40 @@
+{% extends "index.html" %}
+{% block section %}
+<h1>Register Items</h1>
+<form class="form" action="/submit_item_post" method="post" enctype="multipart/form-data">
+ <div>
+  <label for="name">Product name: </label>
+  <input type="text" name="name" id="name" required>
+ </div>
+ <div>
+  <label for="seller">Seller ID: </label>
+  <input type="text" name="seller" id="seller" required>
+ </div>
+ <div>
+  <label for="price">Price: </label>
+  <input type="number" name="price" id="price" min="0" required>
+ </div>
+ <div>
+  <label for="addr">Address: </label>
+  <input type="text" name="addr" id="addr" required>
+ </div>
+ <div>
+  <label for="status">Status: </label>
+  <select id="status" name="status">
+   <option value="new" selected>New</option>
+   <option value="lnew">Likely New</option>
+   <option value="used">Used</option>
+  </select>
+ </div>
+ <div>
+  <label for="email">Email: </label>
+  <input type="email" name="email" id="email" required>
+ </div>
+ <div>
+  <label for="file_input">Picture: </label>
+  <input type="file" name="file_input" id="file_input" accept="image/*" required>
+ </div>
+ <img id="preview" class="preview" alt="">
+ <input type="submit" value="Submit!">
+</form>
+{% endblock section %}
