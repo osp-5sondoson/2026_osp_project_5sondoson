@@ -1,40 +1,41 @@
 {% extends "index.html" %}
 {% block section %}
-<h1>Register Items</h1>
+<h1>상품 등록</h1>
+<p class="desc">판매할 상품의 정보를 입력해 주세요.</p>
 <form class="form" action="/submit_item_post" method="post" enctype="multipart/form-data">
  <div>
-  <label for="name">Product name: </label>
+  <label for="name">상품명</label>
   <input type="text" name="name" id="name" required>
  </div>
  <div>
-  <label for="seller">Seller ID: </label>
+  <label for="seller">판매자 ID</label>
   <input type="text" name="seller" id="seller" required>
  </div>
  <div>
-  <label for="price">Price: </label>
+  <label for="price">가격</label>
   <input type="number" name="price" id="price" min="0" required>
  </div>
  <div>
-  <label for="addr">Address: </label>
+  <label for="addr">주소</label>
   <input type="text" name="addr" id="addr" required>
  </div>
  <div>
-  <label for="status">Status: </label>
+  <label for="status">상태</label>
   <select id="status" name="status">
-   <option value="new" selected>New</option>
-   <option value="lnew">Likely New</option>
-   <option value="used">Used</option>
+   <option value="new" selected>새 상품</option>
+   <option value="lnew">거의 새 것</option>
+   <option value="used">중고</option>
   </select>
  </div>
  <div>
-  <label for="email">Email: </label>
+  <label for="email">이메일</label>
   <input type="email" name="email" id="email" required>
  </div>
  <div>
-  <label for="file_input">Picture: </label>
+  <label for="file_input">사진</label>
   <input type="file" name="file_input" id="file_input" accept="image/*" required>
+  <img id="preview" class="preview" alt="">
  </div>
- <img id="preview" class="preview" alt="">
- <input type="submit" value="Submit!">
+ <input type="submit" value="등록하기">
 </form>
 {% endblock section %}

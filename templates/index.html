@@ -1,28 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>EwhaMarket</title>
+ <title>기쁘띠콘</title>
+ <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
  <script src="{{ url_for('static', filename='main.js') }}" defer></script>
 </head>
 <body>
  <nav class="navbar">
   <div class="navbar__logo">
-   <a href="/">EwhaMarket</a>
+   <a href="/">🎁 기쁘띠콘</a>
   </div>
   <ul class="navbar__menu">
-   <li><a href="/list">List</a></li>
-   <li><a href="/review">Review</a></li>
-   <li><a href="/reg_items">Register Items</a></li>
-   <li><a href="/reg_reviews">Register Reviews</a></li>
+   <li><a href="/list">상품 목록</a></li>
+   <li><a href="/review">리뷰 목록</a></li>
+   <li><a href="/reg_items">상품 등록</a></li>
+   <li><a href="/reg_reviews">리뷰 등록</a></li>
   </ul>
  </nav>
  <section>
  {% block section %}
- <h1>Welcome to EwhaMarket</h1>
- <p>Buy and sell anything you want with Ewha students.</p>
+ <h1>기쁘띠콘</h1>
+ <p class="desc">안 쓰는 기프티콘을 사고파는 이화인의 마켓입니다.</p>
  {% endblock section %}
  </section>
 </body>
