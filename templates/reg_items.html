@@ -1,41 +1,58 @@
 {% extends "index.html" %}
 {% block section %}
-<h1>상품 등록</h1>
-<p class="desc">판매할 상품의 정보를 입력해 주세요.</p>
+<h1>기프티콘 판매하기</h1>
+<p class="desc">공개용 사진은 바코드를 가리고 올려 주세요.</p>
 <form class="form" action="/submit_item_post" method="post" enctype="multipart/form-data">
- <div>
-  <label for="name">상품명</label>
-  <input type="text" name="name" id="name" required>
+ <div class="form__field">
+  <label for="file_input">사진 *</label>
+  <div class="pictures">
+   <div class="picture-add">
+    <span class="picture-add__plus">+</span>
+    <span>사진 추가</span>
+    <input type="file" name="file_input" id="file_input" accept="image/*" required>
+   </div>
+   <img id="preview" class="preview" alt="">
+  </div>
+  <p class="form__help form__help--warn">목록·상세에 보여요. 바코드·번호가 보이면 등록이 거절돼요</p>
  </div>
- <div>
-  <label for="seller">판매자 ID</label>
-  <input type="text" name="seller" id="seller" required>
+ <div class="form__field">
+  <label for="name">상품명 *</label>
+  <input type="text" name="name" id="name" placeholder="예) 스타벅스 아이스 카페 아메리카노 T" required>
  </div>
- <div>
-  <label for="price">가격</label>
-  <input type="number" name="price" id="price" min="0" required>
+ <div class="form__row">
+  <div class="form__field">
+   <label for="seller">판매자 ID *</label>
+   <input type="text" name="seller" id="seller" placeholder="5sondoson" required>
+  </div>
+  <div class="form__field">
+   <label for="email">이메일 *</label>
+   <input type="email" name="email" id="email" placeholder="example@ewha.ac.kr" required>
+  </div>
  </div>
- <div>
-  <label for="addr">주소</label>
-  <input type="text" name="addr" id="addr" required>
+ <div class="form__row">
+  <div class="form__field">
+   <label for="price">판매가 *</label>
+   <input type="number" name="price" id="price" min="0" placeholder="3500" required>
+  </div>
+  <div class="form__field">
+   <label for="addr">사용 가능 지역 / 매장 *</label>
+   <input type="text" name="addr" id="addr" placeholder="예) 전국 매장 (일부 특수매장 제외)" required>
+  </div>
  </div>
- <div>
-  <label for="status">상태</label>
-  <select id="status" name="status">
-   <option value="selling" selected>판매중</option>
-   <option value="reserved">예약중</option>
-   <option value="sold">판매완료</option>
-  </select>
+ <div class="form__field">
+  <label>상태 *</label>
+  <div class="status">
+   <input type="radio" name="status" id="selling" value="selling" checked>
+   <label class="badge badge--selling" for="selling">판매중</label>
+   <input type="radio" name="status" id="reserved" value="reserved">
+   <label class="badge badge--reserved" for="reserved">예약중</label>
+   <input type="radio" name="status" id="sold" value="sold">
+   <label class="badge badge--sold" for="sold">판매완료</label>
+  </div>
  </div>
- <div>
-  <label for="email">이메일</label>
-  <input type="email" name="email" id="email" required>
+ <div class="form__actions">
+  <a class="button button--outline" href="/list">취소</a>
+  <input class="button" type="submit" value="등록하기">
  </div>
- <div>
-  <label for="file_input">사진</label>
-  <input type="file" name="file_input" id="file_input" accept="image/*" required>
-  <img id="preview" class="preview" alt="">
- </div>
- <input type="submit" value="등록하기">
 </form>
 {% endblock section %}

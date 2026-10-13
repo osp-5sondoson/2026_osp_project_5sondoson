@@ -3,10 +3,12 @@
 <h1>등록 결과</h1>
 <p class="desc">{{data.name}} 상품이 등록되었습니다.</p>
 <table class="result">
+ <tr><th>사진</th><td><img src="/{{img_path}}" alt="{{data.name}}"></td></tr>
  <tr><th>상품명</th><td>{{data.name}}</td></tr>
  <tr><th>판매자 ID</th><td>{{data.seller}}</td></tr>
- <tr><th>가격</th><td>{{data.price}}원</td></tr>
- <tr><th>주소</th><td>{{data.addr}}</td></tr>
+ <tr><th>이메일</th><td>{{data.email}}</td></tr>
+ <tr><th>판매가</th><td>{{data.price}}원</td></tr>
+ <tr><th>사용 가능 지역 / 매장</th><td>{{data.addr}}</td></tr>
  <tr>
   <th>상태</th>
   <td>
@@ -15,7 +17,5 @@
    {% if data['status'] == "sold" %} <span class="badge badge--sold">판매완료</span> {% endif %}
   </td>
  </tr>
- <tr><th>이메일</th><td>{{data.email}}</td></tr>
- <tr><th>사진</th><td><img src="/{{img_path}}" alt="{{data.name}}"></td></tr>
 </table>
 {% endblock section %}
