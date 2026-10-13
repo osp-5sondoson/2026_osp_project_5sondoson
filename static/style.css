@@ -165,6 +165,26 @@ h1 {
   background-color: var(--background);
 }
 
+.badge {
+  padding: 4px 12px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--white);
+  border-radius: 999px;
+}
+
+.badge--selling {
+  background-color: var(--primary);
+}
+
+.badge--reserved {
+  background-color: #ffb74d;
+}
+
+.badge--sold {
+  background-color: #bdbdbd;
+}
+
 .result img {
   max-width: 320px;
   border-radius: 8px;

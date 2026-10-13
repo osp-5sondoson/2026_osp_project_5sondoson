@@ -10,9 +10,9 @@
  <tr>
   <th>상태</th>
   <td>
-   {% if data['status'] == "new" %} 새 상품 {% endif %}
-   {% if data['status'] == "lnew" %} 거의 새 것 {% endif %}
-   {% if data['status'] == "used" %} 중고 {% endif %}
+   {% if data['status'] == "selling" %} <span class="badge badge--selling">판매중</span> {% endif %}
+   {% if data['status'] == "reserved" %} <span class="badge badge--reserved">예약중</span> {% endif %}
+   {% if data['status'] == "sold" %} <span class="badge badge--sold">판매완료</span> {% endif %}
   </td>
  </tr>
  <tr><th>이메일</th><td>{{data.email}}</td></tr>
