@@ -19,5 +19,5 @@ class DBhandler:
         }
 
         self.db.child("item").child(name).set(item_info)
-        print(data, img_path)
         return True
+        
