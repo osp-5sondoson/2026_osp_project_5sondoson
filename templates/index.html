@@ -22,6 +22,9 @@
   </ul>
  </nav>
  <section>
+ {% with messages = get_flashed_messages() %}
+ {% if messages %}<script>alert({{ messages|join("\n")|tojson }})</script>{% endif %}
+ {% endwith %}
  {% block section %}
  <h1>기쁘띠콘</h1>
  <p class="desc">안 쓰는 기프티콘을 사고파는 이화인의 마켓입니다.</p>
