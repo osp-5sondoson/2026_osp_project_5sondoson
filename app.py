@@ -1,9 +1,17 @@
 from flask import Flask, render_template, request
 from database import DBhandler
 import hashlib
+import os
+import uuid
 
 app = Flask(__name__)
 DB = DBhandler()
+
+UPLOAD_DIR = os.path.join(app.root_path, "static", "images")
+ALLOWED_IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
+ITEM_FIELDS = ["name", "seller", "email", "price", "addr", "status"]
+ITEM_STATUSES = {"selling", "reserved", "sold"}
+FORBIDDEN_KEY_CHARS = ".#$[]/"
 
 
 @app.route("/")
@@ -54,22 +62,37 @@ def register_user():
 
 @app.route("/submit_item_post", methods=["POST"])
 def reg_item_submit_post():
-    name = request.form["name"].strip()
+    data = {field: request.form.get(field, "").strip() for field in ITEM_FIELDS}
+    image_file = request.files.get("file_input")
+    ext = os.path.splitext(image_file.filename)[1].lower() if image_file else ""
 
-    if not name or any(c in name for c in ".#$[]/"):
-        return render_template(
-            "reg_items.html",
-            error="상품명은 비워 둘 수 없고 . # $ [ ] / 는 쓸 수 없어요."
-        )
+    error = None
+    if not all(data.values()):
+        error = "모든 항목을 입력해 주세요."
+    elif any(c in data["name"] for c in FORBIDDEN_KEY_CHARS):
+        error = "상품명에는 . # $ [ ] / 를 쓸 수 없어요."
+    elif not data["price"].isdigit():
+        error = "판매가는 0 이상의 숫자로 입력해 주세요."
+    elif data["status"] not in ITEM_STATUSES:
+        error = "상태를 다시 선택해 주세요."
+    elif not image_file or not image_file.filename:
+        error = "사진을 올려 주세요."
+    elif ext not in ALLOWED_IMAGE_EXTS:
+        error = "사진은 png, jpg, jpeg, gif, webp 파일만 올릴 수 있어요."
+    elif DB.item_exists(data["name"]):
+        error = "이미 등록된 상품명이에요. 다른 이름으로 등록해 주세요."
+    if error:
+        return render_template("reg_items.html", error=error, form=data)
 
-    image_file = request.files["file_input"]
-    image_file.save("static/images/{}".format(image_file.filename))
-    
-    data = request.form
-    DB.insert_item(name, data, image_file.filename)
+    # Save under a random name so uploads never overwrite each other or escape the folder
+    filename = uuid.uuid4().hex + ext
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    image_file.save(os.path.join(UPLOAD_DIR, filename))
+
+    DB.insert_item(data["name"], data, filename)
 
     return render_template("result.html", data=data,
-                           img_path="static/images/{}".format(image_file.filename))
+                           img_path="static/images/{}".format(filename))
 
 
 if __name__ == "__main__":
