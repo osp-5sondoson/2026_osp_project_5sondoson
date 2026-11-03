@@ -1,5 +1,8 @@
 {% extends "index.html" %}
 {% block section %}
+{% if error %}
+<script>alert("{{ error }}")</script>
+{% endif %}
 <h1>회원가입</h1>
 <p class="desc">기쁘띠콘에서 기프티콘을 사고팔려면 가입해 주세요.</p>
 <form class="form form--narrow" action="/signup_post" method="post">

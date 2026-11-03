@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from database import DBhandler
+import hashlib
 
 app = Flask(__name__)
 DB = DBhandler()
@@ -38,6 +39,17 @@ def login():
 @app.route("/signup")
 def signup():
     return render_template("signup.html")
+
+
+@app.route("/signup_post", methods=["POST"])
+def register_user():
+    data = request.form
+    pw = request.form["pw"]
+    pw_hash = hashlib.sha256(pw.encode("utf-8")).hexdigest()
+    if DB.insert_user(data, pw_hash):
+        return render_template("login.html")
+    else:
+        return render_template("signup.html", error="이미 존재하는 아이디입니다.")
 
 
 @app.route("/submit_item_post", methods=["POST"])
