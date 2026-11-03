@@ -42,11 +42,19 @@ def signup():
 
 @app.route("/submit_item_post", methods=["POST"])
 def reg_item_submit_post():
+    name = request.form["name"].strip()
+
+    if not name or any(c in name for c in ".#$[]/"):
+        return render_template(
+            "reg_items.html",
+            error="상품명은 비워 둘 수 없고 . # $ [ ] / 는 쓸 수 없어요."
+        )
+
     image_file = request.files["file_input"]
     image_file.save("static/images/{}".format(image_file.filename))
+    
     data = request.form
-
-    DB.insert_item(data["name"].strip(), data, image_file.filename)
+    DB.insert_item(name, data, image_file.filename)
 
     return render_template("result.html", data=data,
                            img_path="static/images/{}".format(image_file.filename))

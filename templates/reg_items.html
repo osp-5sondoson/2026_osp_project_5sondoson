@@ -1,5 +1,8 @@
 {% extends "index.html" %}
 {% block section %}
+
+{% if error %}<script>alert("{{ error }}")</script>{% endif %}
+
 <h1>기프티콘 판매하기</h1>
 <p class="desc">공개용 사진은 바코드를 가리고 올려 주세요.</p>
 <form class="form" action="/submit_item_post" method="post" enctype="multipart/form-data">
