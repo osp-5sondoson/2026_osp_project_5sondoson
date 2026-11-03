@@ -1,14 +1,16 @@
 # 🎁 기쁘띠콘
 
-> 2026 오픈SW플랫폼 팀 프로젝트 · **5sondoson**
+> 2026 오픈SW플랫폼 팀 프로젝트 · **오손도손**
 
 안 쓰는 기프티콘을 이화인끼리 사고파는 중고 거래 마켓입니다.
 사진과 정보를 올려 기프티콘을 판매하고, 회원가입 후 거래에 참여할 수 있습니다.
 
-![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-3.x-000000?logo=flask&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-Realtime%20Database-FFCA28?logo=firebase&logoColor=black)
-![Pyrebase4](https://img.shields.io/badge/Pyrebase4-4.x-4A90E2)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
 ## 목차
 
@@ -19,8 +21,7 @@
 - [입력 규칙](#입력-규칙)
 - [데이터 구조](#데이터-구조)
 - [프로젝트 구조](#프로젝트-구조)
-- [팀원 및 역할](#팀원-및-역할)
-- [협업 규칙](#협업-규칙)
+- [팀원](#팀원)
 
 ## 주요 기능
 
@@ -168,19 +169,21 @@ user/
 └── authentication/       Firebase 설정 파일 (GitHub에 올리지 않음)
 ```
 
-## 팀원 및 역할
+## 팀원
 
-| GitHub | 역할 |
-|---|---|
-| [subin21cc](https://github.com/subin21cc) | 팀장 · Firebase 설정 · 기본 화면 · 코드 리뷰 · 품질 보완 |
-| [minjinini](https://github.com/minjinini) | Firebase 연결 (`DBhandler`, `insert_item`) |
-| [raeyoon](https://github.com/raeyoon) | 상품 등록 Firebase 연동 |
-| [seoyeon0516](https://github.com/seoyeon0516) | 로그인 · 회원가입 화면 |
-| [aseo0544-crypto](https://github.com/aseo0544-crypto) | 회원가입 기능 (중복 검사 · 해시 저장) |
-
-## 협업 규칙
-
-1. `main` 에 직접 push하지 않고 기능별 브랜치에서 작업합니다.
-2. 작업이 끝나면 Pull Request를 올리고, 확인을 받은 뒤 작성자가 머지합니다.
-3. 커밋 메시지와 PR 제목은 `type(scope): 설명` 형식을 따릅니다. 예) `feat(db): DBhandler 구현`
-4. `authentication/` 와 `venv/` 는 절대 커밋하지 않습니다.
+<table>
+  <tr>
+    <td align="center" width="160"><a href="https://github.com/subin21cc"><img src="https://github.com/subin21cc.png" width="100" height="100" alt="subin21cc"></a></td>
+    <td align="center" width="160"><a href="https://github.com/minjinini"><img src="https://github.com/minjinini.png" width="100" height="100" alt="minjinini"></a></td>
+    <td align="center" width="160"><a href="https://github.com/raeyoon"><img src="https://github.com/raeyoon.png" width="100" height="100" alt="raeyoon"></a></td>
+    <td align="center" width="160"><a href="https://github.com/seoyeon0516"><img src="https://github.com/seoyeon0516.png" width="100" height="100" alt="seoyeon0516"></a></td>
+    <td align="center" width="160"><a href="https://github.com/aseo0544-crypto"><img src="https://github.com/aseo0544-crypto.png" width="100" height="100" alt="aseo0544-crypto"></a></td>
+  </tr>
+  <tr>
+    <td align="center" width="160"><a href="https://github.com/subin21cc">@subin21cc</a></td>
+    <td align="center" width="160"><a href="https://github.com/minjinini">@minjinini</a></td>
+    <td align="center" width="160"><a href="https://github.com/raeyoon">@raeyoon</a></td>
+    <td align="center" width="160"><a href="https://github.com/seoyeon0516">@seoyeon0516</a></td>
+    <td align="center" width="160"><a href="https://github.com/aseo0544-crypto">@aseo0544-crypto</a></td>
+  </tr>
+</table>
