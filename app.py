@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
+from database import DBhandler
 
 app = Flask(__name__)
+DB = DBhandler()
 
 
 @app.route("/")
