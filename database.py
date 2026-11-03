@@ -1,9 +1,14 @@
-import pyrebase
+import os
 import json
+import pyrebase
+
+AUTH_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         "authentication", "firebase_auth.json")
+
 
 class DBhandler:
     def __init__(self):
-        with open('./authentication/firebase_auth.json') as f:
+        with open(AUTH_PATH) as f:
             config = json.load(f)
         firebase = pyrebase.initialize_app(config)
         self.db = firebase.database()
@@ -21,6 +26,9 @@ class DBhandler:
         self.db.child("item").child(name).set(item_info)
         return True
 
+    def item_exists(self, name):
+        return self.db.child("item").child(name).get().val() is not None
+
     def insert_user(self, data, pw):
         user_info = {
             "id": data['id'],
@@ -35,11 +43,10 @@ class DBhandler:
 
     def user_duplicate_check(self, id_string):
         users = self.db.child("user").get()
-        if str(users.val()) == "None":
+        if users.val() is None:
             return True
-        else:
-            for res in users.each():
-                value = res.val()
-                if value['id'] == id_string:
-                    return False
-            return True
+        for res in users.each():
+            value = res.val()
+            if isinstance(value, dict) and value.get('id') == id_string:
+                return False
+        return True

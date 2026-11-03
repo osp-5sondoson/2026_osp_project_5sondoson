@@ -1,8 +1,7 @@
 {% extends "index.html" %}
 {% block section %}
-
-{% if error %}<script>alert("{{ error }}")</script>{% endif %}
-
+{% set f = form or {} %}
+{% if error %}<script>alert({{ error|tojson }})</script>{% endif %}
 <h1>기프티콘 판매하기</h1>
 <p class="desc">공개용 사진은 바코드를 가리고 올려 주세요.</p>
 <form class="form" action="/submit_item_post" method="post" enctype="multipart/form-data">
@@ -12,7 +11,7 @@
    <div class="picture-add">
     <span class="picture-add__plus">+</span>
     <span>사진 추가</span>
-    <input type="file" name="file_input" id="file_input" accept="image/*" required>
+    <input type="file" name="file_input" id="file_input" accept=".png,.jpg,.jpeg,.gif,.webp" required>
    </div>
    <img id="preview" class="preview" alt="">
   </div>
@@ -20,36 +19,36 @@
  </div>
  <div class="form__field">
   <label for="name">상품명 *</label>
-  <input type="text" name="name" id="name" placeholder="예) 스타벅스 아이스 카페 아메리카노 T" required>
+  <input type="text" name="name" id="name" value="{{ f.get('name', '') }}" placeholder="예) 스타벅스 아이스 카페 아메리카노 T" required>
  </div>
  <div class="form__row">
   <div class="form__field">
    <label for="seller">판매자 ID *</label>
-   <input type="text" name="seller" id="seller" placeholder="5sondoson" required>
+   <input type="text" name="seller" id="seller" value="{{ f.get('seller', '') }}" placeholder="5sondoson" required>
   </div>
   <div class="form__field">
    <label for="email">이메일 *</label>
-   <input type="email" name="email" id="email" placeholder="example@ewha.ac.kr" required>
+   <input type="email" name="email" id="email" value="{{ f.get('email', '') }}" placeholder="example@ewha.ac.kr" required>
   </div>
  </div>
  <div class="form__row">
   <div class="form__field">
    <label for="price">판매가 *</label>
-   <input type="number" name="price" id="price" min="0" placeholder="3500" required>
+   <input type="number" name="price" id="price" min="0" step="1" value="{{ f.get('price', '') }}" placeholder="3500" required>
   </div>
   <div class="form__field">
    <label for="addr">사용 가능 지역 / 매장 *</label>
-   <input type="text" name="addr" id="addr" placeholder="예) 전국 매장 (일부 특수매장 제외)" required>
+   <input type="text" name="addr" id="addr" value="{{ f.get('addr', '') }}" placeholder="예) 전국 매장 (일부 특수매장 제외)" required>
   </div>
  </div>
  <div class="form__field">
   <label>상태 *</label>
   <div class="status">
-   <input type="radio" name="status" id="selling" value="selling" checked>
+   <input type="radio" name="status" id="selling" value="selling"{% if f.get('status', 'selling') == 'selling' %} checked{% endif %}>
    <label class="badge badge--selling" for="selling">판매중</label>
-   <input type="radio" name="status" id="reserved" value="reserved">
+   <input type="radio" name="status" id="reserved" value="reserved"{% if f.get('status') == 'reserved' %} checked{% endif %}>
    <label class="badge badge--reserved" for="reserved">예약중</label>
-   <input type="radio" name="status" id="sold" value="sold">
+   <input type="radio" name="status" id="sold" value="sold"{% if f.get('status') == 'sold' %} checked{% endif %}>
    <label class="badge badge--sold" for="sold">판매완료</label>
   </div>
  </div>
