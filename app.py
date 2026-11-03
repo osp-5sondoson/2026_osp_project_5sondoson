@@ -45,6 +45,9 @@ def reg_item_submit_post():
     image_file = request.files["file_input"]
     image_file.save("static/images/{}".format(image_file.filename))
     data = request.form
+
+    DB.insert_item(data["name"].strip(), data, image_file.filename)
+
     return render_template("result.html", data=data,
                            img_path="static/images/{}".format(image_file.filename))
 
