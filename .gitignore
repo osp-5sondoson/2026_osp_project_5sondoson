@@ -221,3 +221,11 @@ __marimo__/
 
 # Firebase credentials (do not commit)
 authentication/
+
+# macOS
+.DS_Store
+
+# Images uploaded while running the app (keep only the bundled sample)
+static/images/*
+!static/images/.gitkeep
+!static/images/americano_gifticon.png
