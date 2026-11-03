@@ -28,6 +28,16 @@ def reg_review():
     return render_template("reg_reviews.html")
 
 
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
+
+
 @app.route("/submit_item_post", methods=["POST"])
 def reg_item_submit_post():
     image_file = request.files["file_input"]
