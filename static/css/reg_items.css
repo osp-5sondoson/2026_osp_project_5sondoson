@@ -1,0 +1,125 @@
+/* 상품 등록 (reg_items.html) 전용 스타일 — 피그마 "1. 상품 등록" 기준
+   공통 토큰·클래스는 style.css, 여기는 등록 화면 배치만 */
+
+/* 폼 폭 656 · 가운데 정렬 */
+.reg {
+  max-width: 656px;
+  margin: 0 auto;
+}
+
+.reg__form {
+  max-width: none;
+}
+
+.reg__name input {
+  max-width: 404px;
+}
+
+/* 원본 사진 미리보기 + "비공개" 태그 */
+.reg__private {
+  position: relative;
+  display: none;
+}
+
+.reg__private-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 8px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--white);
+  background-color: var(--text);
+  border-radius: 4px;
+}
+
+.reg__help--info {
+  color: var(--primary);
+}
+
+/* 카테고리 (라디오를 둥근 칩으로) */
+.reg__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reg__categories input {
+  position: absolute;
+  opacity: 0;
+}
+
+.reg__category {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 18px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--text);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.reg__category:hover {
+  border-color: var(--primary);
+}
+
+.reg__categories input:checked + .reg__category {
+  color: var(--white);
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.reg__categories input:focus-visible + .reg__category {
+  outline: 2px solid var(--primary-dark);
+  outline-offset: 2px;
+}
+
+.reg textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+/* 사진 칸: 피그마대로 120×120, 추가 박스와 미리보기를 한 줄에 */
+.reg .pictures {
+  flex-wrap: nowrap;
+}
+
+.reg .picture-add,
+.reg .preview {
+  width: 120px;
+  height: 120px;
+}
+
+.reg .picture-add {
+  border-style: dashed;
+  color: var(--text-secondary);
+}
+
+/* 미리보기는 잘리지 않게 전체를 보여 주고, 빈 곳은 연한 파랑 */
+.reg .preview {
+  object-fit: contain;
+  background-color: var(--primary-light);
+}
+
+/* 할인 가격 미리보기 (판매가 아래) */
+.reg__discount {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reg__discount-rate {
+  font-weight: 700;
+  color: var(--amber);
+}
+
+.reg__discount-price {
+  font-weight: 700;
+  color: var(--text);
+}

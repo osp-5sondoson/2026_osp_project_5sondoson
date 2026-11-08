@@ -1,0 +1,82 @@
+{% extends "index.html" %}
+{% block title %}{{ name }} · 기쁘띠콘{% endblock title %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/item_detail.css') }}">
+{% endblock head %}
+{% block section %}
+{% set status_label = {"selling": "판매중", "reserved": "예약중", "sold": "판매완료"} %}
+{% set discount = ((1 - data.price / data.original_price) * 100) | round | int if data.original_price else 0 %}
+
+<nav class="breadcrumb" aria-label="현재 위치">
+ <a href="/list">상품 목록</a> <span aria-hidden="true">›</span>
+ <span>{{ data.category }}</span> <span aria-hidden="true">›</span>
+ <span>{{ data.brand }}</span>
+</nav>
+
+<section class="detail">
+ <div class="detail__media">
+  <span class="dday{% if data.dday > 7 %} dday--far{% endif %} detail__dday">유효기간 D-{{ data.dday }}</span>
+  <img class="detail__image" src="{{ url_for('static', filename='images/' ~ data.img_path) }}" alt="{{ name }} 기프티콘 이미지 (바코드 가림)">
+ </div>
+
+ <div class="detail__info">
+  <p class="detail__brand">
+   {{ data.brand }}
+   <span class="badge badge--{{ data.status }}">{{ status_label[data.status] }}</span>
+  </p>
+  <h1 class="detail__name">{{ name }}</h1>
+  <p class="detail__price">
+   {% if discount > 0 %}<span class="detail__discount">{{ discount }}%</span>{% endif %}
+   <span class="detail__current">{{ "{:,}".format(data.price) }}원</span>
+   {% if data.original_price %}<span class="text-strike">{{ "{:,}".format(data.original_price) }}원</span>{% endif %}
+  </p>
+
+  <hr class="divider">
+  <dl class="detail__meta">
+   <dt>판매자</dt>
+   <dd>{{ data.seller }} <span class="detail__rating">★ {{ data.seller_rating }}</span> (거래 {{ data.seller_deals }}회)</dd>
+   <dt>유효기간</dt>
+   <dd>{{ data.expire }}까지</dd>
+   <dt>사용 가능 지역</dt>
+   <dd>{{ data.addr }}</dd>
+   <dt>상태</dt>
+   <dd>{{ status_label[data.status] }}</dd>
+  </dl>
+  <hr class="divider">
+
+  <p class="detail__desc">{{ data.desc }}</p>
+  <button class="button button--block detail__buy" type="button"{% if data.status != "selling" %} disabled{% endif %}>구매하기</button>
+  <p class="notice notice--info">구매하면 바로 "내 기프티콘함"에서 바코드를 확인할 수 있어요 (가상 거래 · 실제 결제 없음)</p>
+ </div>
+</section>
+
+<section class="seller-reviews">
+ <div class="seller-reviews__head">
+  <div>
+   <h2 class="seller-reviews__title">
+    판매자 {{ data.seller }}님이 받은 거래 리뷰 {{ data.seller_deals }}
+    <span class="stars">★★★★★</span> <span class="seller-reviews__score">{{ data.seller_rating }}</span>
+   </h2>
+   <p class="section-head__sub">기프티콘은 한 번 팔리면 끝이라, 리뷰는 상품이 아닌 판매자에게 쌓여요. 이 판매자의 지난 거래 후기를 확인해 보세요.</p>
+  </div>
+  <a class="button button--outline" href="/review">리뷰 전체 보기 ›</a>
+ </div>
+
+ <div class="grid grid--2">
+  {% for r in reviews %}
+  <article class="card detail-review">
+   <div class="detail-review__thumb" aria-hidden="true"></div>
+   <div class="detail-review__body">
+    <p class="detail-review__rating">
+     <span class="stars">{% for i in range(5) %}{% if i < r.rating|int %}★{% else %}☆{% endif %}{% endfor %}</span>
+     <span class="text-secondary">{{ "%.1f"|format(r.rating) }}</span>
+    </p>
+    <h3 class="detail-review__title">{{ r.title }}</h3>
+    <p class="detail-review__text">{{ r.body }}</p>
+    <p class="detail-review__meta">{{ r.author }} · {{ r.item }} · {{ r.date }}</p>
+   </div>
+  </article>
+  {% endfor %}
+ </div>
+</section>
+{% endblock section %}

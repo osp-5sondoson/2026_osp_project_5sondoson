@@ -1,23 +1,58 @@
 {% extends "index.html" %}
+{% block title %}기프티콘 판매하기 · 기쁘띠콘{% endblock title %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/reg_items.css') }}">
+{% endblock head %}
 {% block section %}
 {% set f = form or {} %}
 {% if error %}<script>alert({{ error|tojson }})</script>{% endif %}
+<div class="reg">
 <h1>기프티콘 판매하기</h1>
-<p class="desc">공개용 사진은 바코드를 가리고 올려 주세요.</p>
-<form class="form" action="/submit_item_post" method="post" enctype="multipart/form-data">
- <div class="form__field">
-  <label for="file_input">사진 *</label>
-  <div class="pictures">
-   <div class="picture-add">
-    <span class="picture-add__plus">+</span>
-    <span>사진 추가</span>
-    <input type="file" name="file_input" id="file_input" accept=".png,.jpg,.jpeg,.gif,.webp" required>
+<p class="desc">공개용 사진은 바코드를 가리고, 원본은 비공개로 올려 주세요. 구매가 완료되면 구매자에게만 원본이 공개돼요.</p>
+<form class="form reg__form" action="/submit_item_post" method="post" enctype="multipart/form-data">
+ <div class="form__row">
+  <div class="form__field">
+   <label for="file_input">공개용 사진 * (바코드 가림)</label>
+   <div class="pictures">
+    <div class="picture-add">
+     <span class="picture-add__plus">+</span>
+     <span>사진 추가</span>
+     <input type="file" name="file_input" id="file_input" accept=".png,.jpg,.jpeg,.gif,.webp" required>
+    </div>
+    <img id="preview" class="preview" alt="공개용 사진 미리보기">
    </div>
-   <img id="preview" class="preview" alt="">
+   <p class="form__help form__help--warn">목록·상세에 보여요. 바코드·번호가 보이면 등록이 거절돼요</p>
   </div>
-  <p class="form__help form__help--warn">목록·상세에 보여요. 바코드·번호가 보이면 등록이 거절돼요</p>
+  <div class="form__field">
+   <label for="file_original">원본 사진 * (비공개)</label>
+   <div class="pictures">
+    <div class="picture-add">
+     <span class="picture-add__plus">+</span>
+     <span>사진 추가</span>
+     <input type="file" name="file_original" id="file_original" accept=".png,.jpg,.jpeg,.gif,.webp" required>
+    </div>
+    <div class="reg__private">
+     <span class="reg__private-tag">비공개</span>
+     <img id="preview_original" class="preview" alt="원본 사진 미리보기">
+    </div>
+   </div>
+   <p class="form__help reg__help--info">구매자에게만 구매 직후 바로 공개돼요</p>
+  </div>
  </div>
+
  <div class="form__field">
+  <label>카테고리 *</label>
+  {% set categories = [("cafe", "카페·베이커리"), ("chicken", "치킨·피자·버거"), ("dining", "외식"), ("store", "편의점"), ("culture", "영화·문화"), ("voucher", "상품권"), ("etc", "기타")] %}
+  <div class="reg__categories">
+   {% for value, label in categories %}
+   <input type="radio" name="category" id="cat_{{ value }}" value="{{ value }}"{% if f.get('category', 'cafe') == value %} checked{% endif %}>
+   <label class="reg__category" for="cat_{{ value }}">{{ label }}</label>
+   {% endfor %}
+  </div>
+  <p class="form__help">사용하는 매장 기준으로 골라 주세요 (예: 커피+조각케이크 세트 → 카페·베이커리)</p>
+ </div>
+
+ <div class="form__field reg__name">
   <label for="name">상품명 *</label>
   <input type="text" name="name" id="name" value="{{ f.get('name', '') }}" placeholder="예) 스타벅스 아이스 카페 아메리카노 T" required>
  </div>
@@ -35,10 +70,21 @@
   <div class="form__field">
    <label for="price">판매가 *</label>
    <input type="number" name="price" id="price" min="0" step="1" value="{{ f.get('price', '') }}" placeholder="3500" required>
+   <p class="form__help reg__discount" id="discount_preview" aria-live="polite">원가 대비 할인율이 자동 계산돼요</p>
   </div>
   <div class="form__field">
+   <label for="original_price">원가 *</label>
+   <input type="number" name="original_price" id="original_price" min="0" step="1" value="{{ f.get('original_price', '') }}" placeholder="4500" required>
+  </div>
+ </div>
+ <div class="form__row">
+  <div class="form__field">
    <label for="addr">사용 가능 지역 / 매장 *</label>
-   <input type="text" name="addr" id="addr" value="{{ f.get('addr', '') }}" placeholder="예) 전국 매장 (일부 특수매장 제외)" required>
+   <input type="text" name="addr" id="addr" value="{{ f.get('addr', '') }}" placeholder="예) 전국 스타벅스 매장" required>
+  </div>
+  <div class="form__field">
+   <label for="expire">유효기간 *</label>
+   <input type="date" name="expire" id="expire" value="{{ f.get('expire', '') }}" required>
   </div>
  </div>
  <div class="form__field">
@@ -52,9 +98,70 @@
    <label class="badge badge--sold" for="sold">판매완료</label>
   </div>
  </div>
+ <div class="form__field">
+  <label for="desc">상세 설명</label>
+  <textarea name="desc" id="desc" rows="4" placeholder="예) 시험 기간에 받았는데 커피를 안 마셔서 팔아요.">{{ f.get('desc', '') }}</textarea>
+ </div>
  <div class="form__actions">
   <a class="button button--outline" href="/list">취소</a>
   <input class="button" type="submit" value="등록하기">
  </div>
 </form>
+</div>
+<script>
+// 원본 사진 미리보기 (공개용 사진 미리보기는 static/main.js에서 처리)
+(function () {
+  var input = document.getElementById("file_original");
+  var img = document.getElementById("preview_original");
+  var box = img.parentElement;
+  input.addEventListener("change", function () {
+    var file = input.files[0];
+    if (!file) { box.style.display = "none"; return; }
+    img.src = URL.createObjectURL(file);
+    img.style.display = "block";
+    box.style.display = "block";
+  });
+})();
+
+// 할인 가격 미리보기: 판매가·원가를 넣으면 "22% 할인 3,500원 4,500원"으로 바로 보여 줌
+(function () {
+  var price = document.getElementById("price");
+  var original = document.getElementById("original_price");
+  var out = document.getElementById("discount_preview");
+  var hint = out.textContent;
+
+  function won(n) { return n.toLocaleString("ko-KR") + "원"; }
+  function span(cls, text) {
+    var el = document.createElement("span");
+    el.className = cls;
+    el.textContent = text;
+    return el;
+  }
+
+  function update() {
+    var p = Number(price.value), o = Number(original.value);
+    out.classList.remove("form__help--warn");
+    out.textContent = "";
+    if (!price.value || !original.value || o <= 0) {
+      out.textContent = hint;
+      return;
+    }
+    if (p > o) {
+      out.classList.add("form__help--warn");
+      out.textContent = "판매가가 원가보다 높아요. 다시 확인해 주세요";
+      return;
+    }
+    var rate = Math.round((1 - p / o) * 100);
+    out.append(
+      span("reg__discount-rate", rate + "% 할인"), " ",
+      span("reg__discount-price", won(p)), " ",
+      span("text-strike", won(o))
+    );
+  }
+
+  price.addEventListener("input", update);
+  original.addEventListener("input", update);
+  update();
+})();
+</script>
 {% endblock section %}
