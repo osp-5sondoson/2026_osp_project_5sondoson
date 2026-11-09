@@ -1,0 +1,105 @@
+{% extends "index.html" %}
+{% block title %}오늘 뭐 먹지? · 기쁘띠콘{% endblock title %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/special.css') }}">
+{% endblock head %}
+
+{# 특별페이지(오늘 뭐 먹지?) · 룰렛 돌리기 전 화면.
+   돌린 후 화면(special_result.html)이 이 파일을 확장해 룰렛과 추천 칸만 바꾼다. #}
+{% macro gift_icon(size) -%}
+<svg width="{{ size }}" height="{{ size }}" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+ <rect x="5" y="14" width="26" height="17" rx="2.5" stroke="currentColor" stroke-width="2"/>
+ <rect x="3" y="9" width="30" height="5" rx="1.5" stroke="currentColor" stroke-width="2"/>
+ <path d="M18 9v22" stroke="currentColor" stroke-width="2"/>
+ <path d="M18 9c-2-5-7-6-8-3.5C9 8 13 9 18 9Zm0 0c2-5 7-6 8-3.5C27 8 23 9 18 9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+</svg>
+{%- endmacro %}
+
+{% block section %}
+{# ---------- 1. 제목 배너 ---------- #}
+<section class="special-hero">
+ <div>
+  <h1 class="special-hero__title">오늘 뭐 먹지?</h1>
+  <p class="special-hero__desc">예산과 카테고리를 고르고, 룰렛으로 오늘의 기프티콘을 만나 보세요.</p>
+ </div>
+ <img class="special-hero__image" src="{{ url_for('static', filename='images/sample_campus_banner.png') }}" alt="이화여대 캠퍼스 그림">
+</section>
+
+{# ---------- 2. 조건 고르기 ---------- #}
+<section class="card card--lg special-filter" aria-label="추천 조건">
+ <div class="special-filter__row">
+  <span class="special-filter__label">예산</span>
+  <div class="special-filter__chips">
+   {% for key, label, low, high in budgets %}
+   <a class="chip{% if key == budget[0] %} is-active{% endif %}" href="{{ url_for('view_special', budget=key, category=category or None) }}">{{ label }}</a>
+   {% endfor %}
+  </div>
+ </div>
+ <div class="special-filter__row">
+  <span class="special-filter__label">카테고리</span>
+  <div class="special-filter__chips">
+   <a class="chip{% if not category %} is-active{% endif %}" href="{{ url_for('view_special', budget=budget[0]) }}">전체</a>
+   {% for name in categories %}
+   <a class="chip{% if name == category %} is-active{% endif %}" href="{{ url_for('view_special', budget=budget[0], category=name) }}">{{ name }}</a>
+   {% endfor %}
+  </div>
+ </div>
+ <p class="special-filter__help">선택한 조건에 맞는 판매 중 상품만 추천해 드려요.</p>
+</section>
+
+<div class="special-main">
+ {# ---------- 3. 룰렛 ---------- #}
+ <section class="card card--lg special-box">
+  <h2 class="special-box__title">오늘의 기프티콘 룰렛</h2>
+  <p class="special-box__desc">조건에 맞는 상품 {{ candidates|length }}개 중 오늘의 메뉴를 골라 드려요.</p>
+
+  <form class="wheel" action="{{ url_for('view_special_result') }}" method="get">
+   <input type="hidden" name="budget" value="{{ budget[0] }}">
+   {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+   <span class="wheel__pointer" aria-hidden="true"></span>
+   <div class="wheel__disc{% block wheel_class %}{% endblock %}">
+    {# 맨 위 칸(포인터 자리): 돌리기 전에는 "?", 돌린 후에는 뽑힌 상품 사진 #}
+    <span class="wheel__slot wheel__slot--0">{% block wheel_top %}?{% endblock %}</span>
+    {# 포인터 다음 칸부터 시계방향으로 오→늘→의→추→천 #}
+    {% for letter in "오늘의추천" %}
+    <span class="wheel__slot wheel__slot--{{ loop.index }}">{{ letter }}</span>
+    {% endfor %}
+   </div>
+   <button class="wheel__button" type="submit"{% if not candidates %} disabled{% endif %}>
+    {{ gift_icon(28) }}
+    <span>{% block wheel_label %}룰렛 돌리기{% endblock %}</span>
+   </button>
+  </form>
+
+  <p class="special-box__note">마음에 드는 메뉴가 나올 때까지 다시 돌릴 수 있어요.</p>
+ </section>
+
+ {# ---------- 4. 오늘의 추천 기프티콘 ---------- #}
+ <section class="card card--lg special-box">
+  <h2 class="special-box__title special-box__title--icon">{{ gift_icon(28) }} 오늘의 추천 기프티콘</h2>
+  {% block result %}
+  <div class="special-empty">
+   <span class="special-empty__icon">{{ gift_icon(72) }}</span>
+   {% if candidates %}
+   <p class="special-empty__title">룰렛을 돌리면 오늘의 추천 기프티콘이<br>여기에 나타나요</p>
+   <ol class="special-empty__steps">
+    <li>예산과 카테고리를 골라요</li>
+    <li>가운데 "룰렛 돌리기"를 눌러요</li>
+    <li>추천 상품을 확인하고 상세로 이동해요</li>
+   </ol>
+   {% else %}
+   <p class="special-empty__title">조건에 맞는 판매 중 상품이 아직 없어요</p>
+   <p class="special-empty__desc">예산이나 카테고리를 바꿔서 다시 골라 보세요.</p>
+   {% endif %}
+  </div>
+  {% endblock result %}
+ </section>
+</div>
+
+{# ---------- 5. 이럴 때 추천해요 ---------- #}
+<section class="special-tips">
+ <h3 class="special-tips__title">이럴 때 추천해요</h3>
+ <span>✓ 오늘의 랜덤 선택이 필요할 때</span>
+ <span>✓ 가성비 좋은 기프티콘 찾을 때</span>
+</section>
+{% endblock section %}
