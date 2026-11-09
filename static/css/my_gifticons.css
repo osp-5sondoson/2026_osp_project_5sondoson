@@ -374,6 +374,122 @@
   color: var(--text-secondary);
 }
 
+/* ---------- 구매 내역 표 ---------- */
+.wallet-section-title {
+  font-size: 22px;
+  line-height: 32px;
+}
+
+.wallet-table-wrap {
+  overflow-x: auto;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.wallet-table {
+  width: 100%;
+  min-width: 760px;
+  font-size: 14px;
+  line-height: 20px;
+  border-collapse: collapse;
+}
+
+.wallet-table th,
+.wallet-table td {
+  padding: 16px 20px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.wallet-table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--background);
+}
+
+.wallet-table tbody tr + tr td {
+  border-top: 1px solid var(--border);
+}
+
+.wallet-table__item {
+  width: 100%;
+  font-weight: 500;
+  white-space: normal;
+}
+
+.wallet-table__link {
+  color: var(--primary);
+}
+
+/* ---------- 안전 전달 안내 ---------- */
+.wallet-guide {
+  margin-top: 24px;
+  padding: 32px;
+  background-color: var(--primary-light);
+  border-radius: var(--radius-card-lg);
+}
+
+.wallet-guide__title {
+  margin: 0 0 20px;
+  font-size: 20px;
+  line-height: 30px;
+  color: var(--primary);
+}
+
+.wallet-guide__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wallet-guide__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  background-color: var(--surface);
+  border-radius: var(--radius-card);
+}
+
+.wallet-guide__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+  background-color: var(--primary);
+  border-radius: 50%;
+}
+
+.wallet-guide__step strong {
+  display: block;
+  line-height: 24px;
+}
+
+.wallet-guide__step p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+.wallet-footnote {
+  margin: 24px 0 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
 /* ---------- 반응형 ---------- */
 @media screen and (max-width: 1280px) {
   .wallet-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -121,4 +121,49 @@
 {% else %}
 <p class="wallet-empty">이 탭에 해당하는 기프티콘이 아직 없어요.</p>
 {% endif %}
+
+{# ---------- 6. 구매 내역 ---------- #}
+<div class="section-head">
+ <h2 class="wallet-section-title">구매 내역</h2>
+ <span class="section-head__sub">총 {{ history|length }}건</span>
+</div>
+<div class="wallet-table-wrap">
+ <table class="wallet-table">
+  <thead>
+   <tr><th>구매일</th><th>상품</th><th>판매자</th><th>결제 금액</th><th>상태</th><th>리뷰</th></tr>
+  </thead>
+  <tbody>
+   {% for gift in history %}
+   <tr>
+    <td>{{ gift.bought }}</td>
+    <td class="wallet-table__item">{{ gift.brand }} {{ gift.name }}</td>
+    <td>{{ gift.seller }}</td>
+    <td>{{ "{:,}".format(gift.paid) }}원</td>
+    <td>{% if gift.used %}<span class="badge wallet-badge--used">사용 완료</span>{% else %}<span class="badge">사용 가능</span>{% endif %}</td>
+    <td>{% if gift.used %}<a class="wallet-table__link" href="{{ url_for('view_review') }}">리뷰 보기 ›</a>{% else %}<a class="wallet-table__link" href="{{ url_for('reg_review') }}">리뷰 쓰기 ›</a>{% endif %}</td>
+   </tr>
+   {% endfor %}
+  </tbody>
+ </table>
+</div>
+
+{# ---------- 7. 안전 전달 안내 ---------- #}
+<section class="wallet-guide">
+ <h2 class="wallet-guide__title">원본은 이렇게 안전하게 전달돼요</h2>
+ <ol class="wallet-guide__steps">
+  <li class="wallet-guide__step">
+   <span class="wallet-guide__num">1</span>
+   <div><strong>판매자가 원본을 비공개로 등록</strong><p>목록·상세에는 바코드를 가린 사진만 보여요.</p></div>
+  </li>
+  <li class="wallet-guide__step">
+   <span class="wallet-guide__num">2</span>
+   <div><strong>구매하기를 누르면 판매완료 처리</strong><p>상태가 판매완료로 바뀌고 구매자 ID가 기록돼요.</p></div>
+  </li>
+  <li class="wallet-guide__step">
+   <span class="wallet-guide__num">3</span>
+   <div><strong>구매자 본인만 이 화면에서 원본 확인</strong><p>로그인 ID가 구매자 ID와 같을 때만 원본 바코드가 보여요.</p></div>
+  </li>
+ </ol>
+</section>
+<p class="wallet-footnote">이 화면은 로그인한 구매자 본인에게만 보여요 · 가상 거래이며 실제 결제는 없어요</p>
 {% endblock section %}
