@@ -284,6 +284,7 @@
   margin-left: 8px;
   font-size: 12px;
   font-weight: 400;
+  color: var(--text-secondary);
 }
 
 .gift__actions {
@@ -389,7 +390,8 @@
 
 .wallet-table {
   width: 100%;
-  min-width: 760px;
+  min-width: 920px;
+  table-layout: fixed;
   font-size: 14px;
   line-height: 20px;
   border-collapse: collapse;
@@ -414,10 +416,17 @@
   border-top: 1px solid var(--border);
 }
 
+/* 열 너비는 피그마 표와 같게: 상품 열만 남는 폭을 차지한다 */
+.wallet-table th:nth-child(1) { width: 170px; }
+.wallet-table th:nth-child(3) { width: 212px; }
+.wallet-table th:nth-child(4) { width: 172px; }
+.wallet-table th:nth-child(5) { width: 152px; }
+.wallet-table th:nth-child(6) { width: 176px; }
+
 .wallet-table__item {
-  width: 100%;
+  overflow: hidden;
   font-weight: 500;
-  white-space: normal;
+  text-overflow: ellipsis;
 }
 
 .wallet-table__link {

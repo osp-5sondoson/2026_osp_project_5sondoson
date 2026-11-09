@@ -57,7 +57,7 @@
  {% for key, label in tabs.items() %}
  <a class="chip{% if key == tab %} is-active{% endif %}" href="{{ url_for('view_my_gifticons', tab=key if key != 'all' else None) }}">{{ label }} {{ counts[key] }}</a>
  {% endfor %}
- <span class="wallet-tools__sort">유효기간 임박순</span>
+ <span class="wallet-tools__sort">유효기간 임박순 ⌄</span>
 </div>
 
 {# ---------- 5. 기프티콘 카드 ---------- #}
@@ -94,7 +94,7 @@
     <div><dt>판매자</dt><dd>{{ gift.seller }}</dd></div>
     <div><dt>구매일</dt><dd>{{ gift.bought }}</dd></div>
     <div><dt>결제 금액</dt>
-     <dd><strong>{{ "{:,}".format(gift.paid) }}원</strong> <span class="text-strike gift__original">정가 {{ "{:,}".format(gift.original_price) }}원</span></dd>
+     <dd><strong>{{ "{:,}".format(gift.paid) }}원</strong> <span class="gift__original">정가 {{ "{:,}".format(gift.original_price) }}원</span></dd>
     </div>
    </dl>
 
@@ -126,6 +126,7 @@
 <div class="section-head">
  <h2 class="wallet-section-title">구매 내역</h2>
  <span class="section-head__sub">총 {{ history|length }}건</span>
+ <a class="section-head__more" href="{{ url_for('view_my_gifticons') }}">전체 보기 ›</a>
 </div>
 <div class="wallet-table-wrap">
  <table class="wallet-table">
