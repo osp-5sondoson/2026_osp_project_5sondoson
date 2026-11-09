@@ -46,7 +46,7 @@
   <h2 class="detail__subtitle">상품 설명</h2>
   <p class="card detail__desc">{{ data.desc }}</p>
   <button class="button button--block detail__buy" type="button"{% if data.status != "selling" %} disabled{% endif %}>구매하기</button>
-  <p class="notice notice--info">구매하면 바로 "내 기프티콘함"에서 바코드를 확인할 수 있어요 (가상 거래 · 실제 결제 없음)</p>
+  <p class="notice notice--info detail__notice">구매하면 바로 바코드를 확인할 수 있어요 <span aria-hidden="true">|</span> 가상 거래 · 실제 결제 없음</p>
  </div>
 </section>
 

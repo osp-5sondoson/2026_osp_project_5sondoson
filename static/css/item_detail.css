@@ -14,11 +14,11 @@
   color: inherit;
 }
 
-/* 왼쪽 이미지 560 · 오른쪽 정보 584 · 간격 56 */
+/* 피그마 03: 왼쪽 이미지 480 · 오른쪽 정보 나머지 · 간격 40 */
 .detail {
   display: grid;
-  grid-template-columns: minmax(0, 560fr) minmax(0, 584fr);
-  gap: 56px;
+  grid-template-columns: 480px minmax(0, 1fr);
+  gap: 40px;
   align-items: start;
 }
 
@@ -27,10 +27,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 560 / 420;
+  aspect-ratio: 480 / 522;
   max-width: 100%;
   padding: 48px;
-  background-color: var(--primary-light);
+  background-color: #f5f5f5;
+  border: 1px solid var(--border);
   border-radius: var(--radius-card-lg);
   overflow: hidden;
 }
@@ -72,21 +73,28 @@
 
 .detail__price {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 14px;
   margin: 0;
 }
 
 .detail__discount {
-  font-size: 26px;
+  font-size: 36px;
+  line-height: 48px;
   font-weight: 700;
   color: var(--red);
 }
 
 .detail__current {
-  font-size: 32px;
-  line-height: 44px;
+  font-size: 36px;
+  line-height: 48px;
   font-weight: 700;
+}
+
+.detail__price .text-strike {
+  font-size: 18px;
+  line-height: 26px;
+  color: var(--text-secondary);
 }
 
 /* 판매자·유효기간·지역·상태: 공통 연파랑 .panel 안에 */
@@ -106,6 +114,7 @@
 
 .detail__meta dd {
   margin: 0;
+  font-weight: 500;
 }
 
 .detail__rating {
@@ -145,9 +154,16 @@
   line-height: 24px;
 }
 
-/* 판매자 리뷰 */
+.detail__notice {
+  justify-content: center;
+  text-align: center;
+}
+
+/* 판매자 리뷰: 위에 구분선 */
 .seller-reviews {
-  margin-top: 40px;
+  margin-top: 24px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
 }
 
 .seller-reviews__head {
@@ -232,6 +248,7 @@
 }
 
 @media screen and (max-width: 768px) {
+  .detail__discount, .detail__current { font-size: 28px; line-height: 38px; }
   .seller-reviews__head { flex-direction: column; }
   .detail__name, .detail__current { font-size: 26px; line-height: 36px; }
   .detail-review__thumb { width: 72px; height: 72px; }
