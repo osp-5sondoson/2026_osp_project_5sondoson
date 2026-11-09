@@ -42,6 +42,7 @@ def reg_item():
 def view_item_detail(name):
     # TODO: 백엔드 단계에서 DB.get_item_byname(name)으로 교체
     data = {
+        "name": "아이스 카페 아메리카노 T",
         "brand": "스타벅스",
         "category": "카페·베이커리",
         "seller": "ewha_kim",

@@ -11,31 +11,33 @@
 
 <div class="reg">
 <form class="form reg__form" action="/submit_item_post" method="post" enctype="multipart/form-data">
- <div class="form__field">
-  <label for="file_input">공개용 사진 * (바코드 가림)</label>
-  <div class="reg__photo">
-   <div class="picture-add">
-    <span class="picture-add__plus">+</span>
-    <span>사진 추가</span>
-    <input type="file" name="file_input" id="file_input" accept=".png,.jpg,.jpeg,.gif,.webp" required>
+ <div class="form__row">
+  <div class="form__field">
+   <label for="file_input">공개용 사진 * (바코드 가림)</label>
+   <div class="reg__photo">
+    <div class="picture-add">
+     <span class="picture-add__plus">+</span>
+     <span>사진 추가</span>
+     <input type="file" name="file_input" id="file_input" accept=".png,.jpg,.jpeg,.gif,.webp" required>
+    </div>
+    <div class="reg__thumb"><img id="preview" class="preview" alt="공개용 사진 미리보기"></div>
+    <p class="reg__photo-help form__help--warn">목록·상세에 보여요.<br>바코드·번호가 보이면<br>등록이 거절돼요</p>
    </div>
-   <img id="preview" class="preview" alt="공개용 사진 미리보기">
-   <p class="form__help form__help--warn reg__photo-help">목록·상세에 보여요. 바코드·번호가 보이면 등록이 거절돼요</p>
   </div>
- </div>
- <div class="form__field">
-  <label for="file_original">원본 사진 * (비공개)</label>
-  <div class="reg__photo">
-   <div class="picture-add">
-    <span class="picture-add__plus">+</span>
-    <span>사진 추가</span>
-    <input type="file" name="file_original" id="file_original" accept=".png,.jpg,.jpeg,.gif,.webp" required>
+  <div class="form__field">
+   <label for="file_original">원본 사진 * (비공개)</label>
+   <div class="reg__photo">
+    <div class="picture-add">
+     <span class="picture-add__plus">+</span>
+     <span>사진 추가</span>
+     <input type="file" name="file_original" id="file_original" accept=".png,.jpg,.jpeg,.gif,.webp" required>
+    </div>
+    <div class="reg__thumb">
+     <span class="reg__private-tag" hidden id="private_tag">비공개</span>
+     <img id="preview_original" class="preview" alt="원본 사진 미리보기">
+    </div>
+    <p class="reg__photo-help reg__help--info">구매자에게만<br>구매 직후 바로 공개돼요</p>
    </div>
-   <div class="reg__private">
-    <span class="reg__private-tag">비공개</span>
-    <img id="preview_original" class="preview" alt="원본 사진 미리보기">
-   </div>
-   <p class="form__help reg__help--info reg__photo-help">구매자에게만 구매 직후 바로 공개돼요</p>
   </div>
  </div>
 
@@ -48,7 +50,6 @@
    <label class="chip" for="cat_{{ value }}">{{ label }}</label>
    {% endfor %}
   </div>
-  <p class="form__help">사용하는 매장 기준으로 골라 주세요 (예: 커피+조각케이크 세트 → 카페·베이커리)</p>
  </div>
 
  <div class="form__field">
@@ -69,11 +70,11 @@
   <div class="form__field">
    <label for="price">판매가 *</label>
    <input type="number" name="price" id="price" min="0" step="1" value="{{ f.get('price', '') }}" placeholder="3500" required>
-   <p class="form__help">원가 대비 할인율이 자동 계산돼요</p>
   </div>
   <div class="form__field">
    <label for="original_price">원가 *</label>
    <input type="number" name="original_price" id="original_price" min="0" step="1" value="{{ f.get('original_price', '') }}" placeholder="4500" required>
+   <p class="reg__discount" id="discount_preview" aria-live="polite"></p>
   </div>
  </div>
  <div class="form__row">
@@ -86,63 +87,65 @@
    <input type="date" name="expire" id="expire" value="{{ f.get('expire', '') }}" required>
   </div>
  </div>
- <div class="form__field">
-  <label>상태 *</label>
-  <div class="reg__status-row">
-   <div class="reg__status">
-    {% for value, label in [("selling", "판매중"), ("reserved", "예약중"), ("sold", "판매완료")] %}
-    <label class="reg__radio" for="{{ value }}">
-     <input type="radio" name="status" id="{{ value }}" value="{{ value }}"{% if f.get('status', 'selling') == value %} checked{% endif %}>
-     {{ label }}
-    </label>
-    {% endfor %}
-   </div>
-   <p class="reg__discount" id="discount_preview" aria-live="polite"></p>
+ <div class="form__field reg__status-row">
+  <span class="reg__status-label">상태 *</span>
+  <div class="reg__status">
+   {% for value, label in [("selling", "판매중"), ("reserved", "예약중"), ("sold", "판매완료")] %}
+   <input type="radio" name="status" id="{{ value }}" value="{{ value }}"{% if f.get('status', 'selling') == value %} checked{% endif %}>
+   <label class="reg__radio" for="{{ value }}">{{ label }}</label>
+   {% endfor %}
   </div>
  </div>
  <div class="form__field">
   <label for="desc">상품 설명</label>
-  <textarea name="desc" id="desc" rows="4" placeholder="예) 시험 기간에 받았는데 커피를 안 마셔서 팔아요.">{{ f.get('desc', '') }}</textarea>
+  <textarea name="desc" id="desc" rows="2" placeholder="예) 시험 기간에 받았는데 커피를 안 마셔서 팔아요.">{{ f.get('desc', '') }}</textarea>
  </div>
  <div class="form__actions">
-  <a class="button button--outline" href="/list">취소</a>
-  <input class="button" type="submit" value="등록하기">
+  <a class="button button--outline reg__cancel" href="/list">취소</a>
+  <input class="button reg__submit" type="submit" value="등록하기">
  </div>
 </form>
 
 <aside class="reg__aside">
- <section class="panel">
-  <h2 class="reg__panel-title">등록 가이드</h2>
+ <section class="panel reg__guide-panel">
+  <h2 class="reg__guide-title">등록 가이드</h2>
   <ul class="reg__guide">
-   <li><strong>바코드·핀번호 가리기</strong><span>공개용 사진에는 바코드와 쿠폰 번호가 보이지 않게 가려 주세요.</span></li>
-   <li><strong>실제 사용 가능한 상품만</strong><span>이미 쓴 기프티콘이나 환불된 기프티콘은 올릴 수 없어요.</span></li>
-   <li><strong>유효기간 확인</strong><span>사진 속 유효기간과 입력한 날짜가 같은지 한 번 더 확인해 주세요.</span></li>
+   <li>바코드·핀번호를 가려 주세요</li>
+   <li>실제로 사용할 수 있는 상품만 등록해요</li>
+   <li>유효기간을 정확히 확인해 주세요</li>
   </ul>
  </section>
- <section class="panel">
-  <span class="badge badge--solid reg__panel-badge">이화인 전용 기프티콘 마켓</span>
-  <p class="panel__desc">@ewha.ac.kr · @ewhain.net 메일로 인증한 이화인끼리만 사고팔아요.</p>
-  <div class="reg__campus reg__campus--empty" role="img" aria-label="캠퍼스 사진 자리">캠퍼스 사진</div>
+ <section class="panel reg__ewha">
+  <h2 class="panel__title">이화인 전용<br>기프티콘 마켓</h2>
+  <p class="panel__desc">학교 이메일로 가입한 이화인끼리 거래해요.</p>
+  <ul class="reg__mails">
+   <li>@ewha.ac.kr</li>
+   <li>@ewhain.net</li>
+  </ul>
+  <p class="reg__ewha-note">가입은 학교 이메일로, 로그인은 아이디로</p>
+  <div class="reg__campus">
+   <img src="{{ url_for('static', filename='images/ewha_campus_2.jpg') }}" alt="이화여대 대강당">
+  </div>
  </section>
 </aside>
 </div>
 
 <script>
-// 원본 사진 미리보기 (공개용 사진 미리보기는 static/main.js에서 처리)
+// 원본 사진 미리보기 + "비공개" 태그 (공개용 사진 미리보기는 static/main.js)
 (function () {
   var input = document.getElementById("file_original");
   var img = document.getElementById("preview_original");
-  var box = img.parentElement;
+  var tag = document.getElementById("private_tag");
   input.addEventListener("change", function () {
     var file = input.files[0];
-    if (!file) { box.style.display = "none"; return; }
+    if (!file) { img.style.display = "none"; tag.hidden = true; return; }
     img.src = URL.createObjectURL(file);
     img.style.display = "block";
-    box.style.display = "block";
+    tag.hidden = false;
   });
 })();
 
-// 할인 미리보기: 상태 줄 오른쪽에 "원가 대비 1,000원 할인 (22%)"
+// 할인 미리보기: 원가 칸 아래에 "원가 대비 1,000원 할인 (22%)"
 (function () {
   var price = document.getElementById("price");
   var original = document.getElementById("original_price");
@@ -150,16 +153,8 @@
 
   function update() {
     var p = Number(price.value), o = Number(original.value);
-    out.classList.remove("reg__discount--warn");
-    if (!price.value || !original.value || o <= 0) {
-      out.textContent = "";
-      return;
-    }
-    if (p > o) {
-      out.classList.add("reg__discount--warn");
-      out.textContent = "판매가가 원가보다 높아요";
-      return;
-    }
+    if (!price.value || !original.value || o <= 0) { out.textContent = ""; return; }
+    if (p > o) { out.textContent = "판매가가 원가보다 높아요"; return; }
     var rate = Math.round((1 - p / o) * 100);
     out.textContent = "원가 대비 " + (o - p).toLocaleString("ko-KR") + "원 할인 (" + rate + "%)";
   }
