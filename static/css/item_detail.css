@@ -1,0 +1,256 @@
+/* 상품 상세 (item_detail.html) 전용 스타일 — 피그마 "3. 상품 상세" 기준
+   공통 토큰·클래스는 style.css, 여기는 상세 화면 배치만 */
+
+.breadcrumb {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 32px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+.breadcrumb a {
+  color: inherit;
+}
+
+/* 피그마 03: 왼쪽 이미지 480 · 오른쪽 정보 나머지 · 간격 40 */
+.detail {
+  display: grid;
+  grid-template-columns: 480px minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.detail__media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 480 / 522;
+  max-width: 100%;
+  padding: 48px;
+  background-color: #f5f5f5;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card-lg);
+  overflow: hidden;
+}
+
+.detail__dday {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.detail__image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.detail__info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.detail__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+.detail__name {
+  margin: 0;
+  font-size: 32px;
+  line-height: 44px;
+}
+
+.detail__price {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 0;
+}
+
+.detail__discount {
+  font-size: 36px;
+  line-height: 48px;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.detail__current {
+  font-size: 36px;
+  line-height: 48px;
+  font-weight: 700;
+}
+
+.detail__price .text-strike {
+  font-size: 18px;
+  line-height: 26px;
+  color: var(--text-secondary);
+}
+
+/* 판매자·유효기간·지역·상태: 공통 연파랑 .panel 안에 */
+.detail__meta {
+  display: grid;
+  grid-template-columns: 124px minmax(0, 1fr);
+  gap: 12px 0;
+  margin: 0;
+  padding: 24px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.detail__meta dt {
+  color: var(--text-secondary);
+}
+
+.detail__meta dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.detail__rating {
+  font-weight: 500;
+}
+
+/* 상태 뱃지·글자: 판매중은 초록(--green) */
+.detail-status--selling {
+  color: var(--white);
+  background-color: var(--green);
+}
+
+.detail-status--reserved {
+  color: var(--white);
+  background-color: var(--amber);
+}
+
+.detail-status--sold {
+  color: var(--white);
+  background-color: var(--gray);
+}
+
+.detail__status-text--selling { color: var(--green); font-weight: 500; }
+.detail__status-text--reserved { color: var(--amber); font-weight: 500; }
+.detail__status-text--sold { color: var(--text-secondary); }
+
+.detail__subtitle {
+  margin: 0 0 -8px;
+  font-size: 18px;
+  line-height: 26px;
+}
+
+.detail__desc {
+  margin: 0;
+  padding: 20px;
+  font-size: 16px;
+  line-height: 24px;
+  white-space: pre-line;
+}
+
+.detail__notice {
+  justify-content: center;
+  text-align: center;
+}
+
+/* 판매자 리뷰: 위에 구분선 */
+.seller-reviews {
+  margin-top: 24px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.seller-reviews__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.seller-reviews__title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 0 0 8px;
+  font-size: 24px;
+  line-height: 34px;
+}
+
+.seller-reviews__score {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.detail-review {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.detail-review__thumb {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background-color: var(--primary-light);
+  border-radius: var(--radius-control);
+}
+
+.detail-review__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.detail-review__rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.detail-review__title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 26px;
+}
+
+.detail-review__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+.detail-review__meta {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+@media screen and (max-width: 1024px) {
+  .detail {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .detail__discount, .detail__current { font-size: 28px; line-height: 38px; }
+  .seller-reviews__head { flex-direction: column; }
+  .detail__name, .detail__current { font-size: 26px; line-height: 36px; }
+  .detail-review__thumb { width: 72px; height: 72px; }
+}

@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / DLL files
+﻿# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
@@ -229,3 +229,4 @@ authentication/
 static/images/*
 !static/images/.gitkeep
 !static/images/americano_gifticon.png
+!static/images/ewha_campus_2.jpg
