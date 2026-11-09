@@ -74,7 +74,6 @@
   <div class="form__field">
    <label for="original_price">원가 *</label>
    <input type="number" name="original_price" id="original_price" min="0" step="1" value="{{ f.get('original_price', '') }}" placeholder="4500" required>
-   <p class="reg__discount" id="discount_preview" aria-live="polite"></p>
   </div>
  </div>
  <div class="form__row">
@@ -95,6 +94,7 @@
    <label class="reg__radio" for="{{ value }}">{{ label }}</label>
    {% endfor %}
   </div>
+  <p class="reg__discount" id="discount_preview" aria-live="polite"></p>
  </div>
  <div class="form__field">
   <label for="desc">상품 설명</label>
@@ -145,7 +145,7 @@
   });
 })();
 
-// 할인 미리보기: 원가 칸 아래에 "원가 대비 1,000원 할인 (22%)"
+// 할인 미리보기: 상태 줄 오른쪽에 "원가 대비 1,000원 할인 (22%)"
 (function () {
   var price = document.getElementById("price");
   var original = document.getElementById("original_price");

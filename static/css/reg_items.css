@@ -190,13 +190,11 @@
   border-color: var(--white);
 }
 
-/* 할인 안내: 원가 칸 바로 아래 빨간 글씨 */
+/* 할인 안내: 상태 줄 오른쪽 끝 빨간 글씨 (피그마 01) */
 .reg__discount {
-  min-height: 20px;
-  margin: 6px 0 0;
+  margin: 0 0 0 auto;
   font-size: 13px;
   line-height: 20px;
-  font-weight: 500;
   color: var(--red);
 }
 
@@ -332,4 +330,5 @@
   .reg__photo { flex-wrap: wrap; }
   .reg__photo-help { flex-basis: 100%; }
   .reg__status-row { flex-wrap: wrap; }
+  .reg__discount { flex-basis: 100%; margin-left: 0; }
 }
