@@ -1,0 +1,72 @@
+{% extends "index.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
+{% endblock head %}
+{% block section %}
+{# 샘플 데이터 (서버 연동 전 하드코딩) — 번호는 리뷰 목록·판매자별 리뷰의 링크 번호와 같음 #}
+{% set samples = {
+ 1: {"title": "치킨 반값에 먹었어요", "content": ["유효기간 임박이라 싸게 샀는데 매장에서 바로 사용 완료! 치킨 한 마리를 반값에 먹어서 너무 만족스러워요."], "rating": 5, "ok": true, "writer": "ewha_min", "date": "2026.10.08", "item": "BBQ 황금올리브", "item_img": "review_chicken.jpg", "img": "review_chicken.jpg", "seller": "pear_blossom", "score": "5.0", "count": 1},
+ 2: {"title": "생일 케이크로 잘 썼어요", "content": ["친구 생일에 맞춰 잘 받았어요. 판매자분도 친절하셨고 매장에서 바로 교환했어요."], "rating": 5, "ok": true, "writer": "sw_platform", "date": "2026.10.07", "item": "투썸 생딸기 생크림 케이크 피스", "item_img": "review_cake.jpg", "img": "review_cake.jpg", "seller": "sweet_ewha", "score": "5.0", "count": 1},
+ 3: {"title": "바코드가 인식되지 않았어요", "content": ["매장에서 바코드가 읽히지 않아 쓰지 못했어요. 판매자분께 문의했는데 아직 답이 없어요."], "rating": 2, "ok": false, "writer": "ewha_song", "date": "2026.10.06", "item": "이마트24 금액권", "item_img": "review_emart24.jpg", "img": "review_emart24.jpg", "card": true, "seller": "cu_holic", "score": "2.0", "count": 1},
+ 4: {"title": "구매하자마자 바로 쓸 수 있었어요", "content": ["구매하기 버튼을 누르자마자 원본이 바로 공개돼서 기다릴 필요가 없었어요. 매장에서 바코드도 한 번에 인식됐고 유효기간도 설명대로 넉넉했습니다.", "처음에는 중고 기프티콘이라 이미 사용된 건 아닐까 걱정했는데, 판매자분이 사용 여부를 미리 확인해 주셔서 안심하고 살 수 있었어요. 가격도 정가보다 20% 정도 저렴해서 학교 끝나고 친구랑 카페 갈 때 잘 썼습니다.", "다만 상품 페이지에 사이즈 변경이 가능한지 적혀 있었으면 더 좋았을 것 같아요. 저는 매장에서 직접 물어보고 차액을 결제했는데, 이 부분만 미리 알았다면 더 편했을 거예요. 그래도 전체적으로 만족스러운 거래였고, 이 판매자분 상품은 다음에도 믿고 살 것 같아요!"], "rating": 5, "ok": true, "writer": "ewha_lee", "date": "2026.10.03", "item": "스타벅스 카페라떼 T", "item_img": "product_starbucks_latte.jpg", "img": "review_latte.jpg", "seller": "ewha_kim", "score": "4.8", "count": 6},
+ 5: {"title": "도넛 맛있게 먹었어요", "content": ["D-1이었지만 무사히 사용했어요. 도넛 여러 개로 바꿔서 친구들이랑 나눠 먹었어요."], "rating": 4, "ok": true, "writer": "ewha_choi", "date": "2026.10.01", "item": "던킨 모바일 금액권", "item_img": "review_donut.jpg", "img": "review_donut.jpg", "seller": "donut_lover", "score": "4.0", "count": 1},
+ 6: {"title": "바코드도 잘 찍히고 바로 사용했어요!", "content": ["유효기간도 설명대로 넉넉했어요. 학교 앞 매장에서 바로 사용했습니다."], "rating": 4, "ok": true, "writer": "ewha_park", "date": "2026.09.28", "item": "메가커피 아메리카노", "item_img": "review_americano.jpg", "img": "review_americano.jpg", "seller": "ewha_kim", "score": "4.8", "count": 6},
+ 7: {"title": "설명 그대로였어요", "content": ["바코드 잘 찍히고 유효기간도 넉넉했어요. 설명에 적힌 그대로라 믿고 샀어요."], "rating": 5, "ok": true, "writer": "ewha_jung", "date": "2026.10.07", "item": "스타벅스 아메리카노 T", "item_img": "product_starbucks_americano.jpg", "img": "review_sb_americano.jpg", "seller": "ewha_kim", "score": "4.8", "count": 6},
+ 8: {"title": "두 번째 구매해요", "content": ["항상 빠르게 사용할 수 있어서 좋아요. 다음에도 이 판매자분께 살게요."], "rating": 5, "ok": true, "writer": "sw_platform", "date": "2026.10.01", "item": "스타벅스 아메리카노 T", "item_img": "product_starbucks_americano.jpg", "img": "review_sb_americano2.jpg", "seller": "ewha_kim", "score": "4.8", "count": 6},
+ 9: {"title": "가격이 착해요", "content": ["학교 가는 길에 저렴하게 커피 한 잔 했어요. 정가보다 훨씬 싸게 샀어요."], "rating": 5, "ok": true, "writer": "ewha_yoon", "date": "2026.09.24", "item": "스타벅스 카페라떼 T", "item_img": "product_starbucks_latte.jpg", "img": "review_latte2.jpg", "seller": "ewha_kim", "score": "4.8", "count": 6},
+ 10: {"title": "유효기간이 넉넉했어요", "content": ["날짜가 넉넉해서 여유 있게 사용했어요. 라떼 맛도 좋았어요."], "rating": 5, "ok": true, "writer": "ewha_choi", "date": "2026.09.20", "item": "이디야 시그니처 라떼", "item_img": "review_ediya.jpg", "img": "review_ediya.jpg", "seller": "ewha_kim", "score": "4.8", "count": 6}
+} %}
+{% set review = samples.get(review_id) %}
+<div class="review-page">
+ <p class="breadcrumb"><a href="/review">거래 리뷰</a> › 리뷰 상세</p>
+
+ {% if review %}
+ <article class="review-detail">
+  <div class="review-item__meta">
+   <span class="review-stars">{% for i in range(5) %}{% if i < review.rating %}★{% else %}<span class="review-stars__off">★</span>{% endif %}{% endfor %}</span>
+   <span class="review-stars__score">{{ review.rating }}.0</span>
+   {% if review.ok %}<span class="tag tag--ok">정상 사용 확인</span>{% else %}<span class="tag tag--problem">문제 있었어요</span>{% endif %}
+  </div>
+  <h1 class="review-detail__title">{{ review.title }}</h1>
+  <p class="review-detail__by">작성자 {{ review.writer }} · {{ review.date }} 작성</p>
+
+  <div class="review-detail__body">
+   <img class="review-detail__photo{% if review.card %} review-detail__photo--card{% endif %}" src="{{ url_for('static', filename='images/' ~ review.img) }}" alt="리뷰 사진">
+   <div class="trade-box">
+     <h2 class="trade-box__title">거래 정보</h2>
+     <div class="trade-box__row">
+      <img class="trade-box__img" src="{{ url_for('static', filename='images/' ~ review.item_img) }}" alt="">
+      <div class="trade-box__info">
+       <span class="trade-box__label">거래한 상품</span>
+       <strong>{{ review.item }}</strong>
+      </div>
+      <a class="button button--outline button--small" href="/list">상품 보기 ›</a>
+     </div>
+     <div class="trade-box__row">
+      {% if review.seller == "ewha_kim" %}
+      <img class="avatar" src="{{ url_for('static', filename='images/seller_ewha_kim.jpg') }}" alt="ewha_kim 프로필">
+      {% else %}
+      <div class="avatar">{{ review.seller[0]|upper }}</div>
+      {% endif %}
+      <div class="trade-box__info">
+       <span class="trade-box__label">판매자</span>
+       <strong>{{ review.seller }}</strong>
+      </div>
+      <span class="trade-box__rating">★{{ review.score }} · 거래 리뷰 {{ review.count }}개</span>
+      <a class="button button--outline button--small" href="/seller_reviews/{{ review.seller }}">리뷰 모아보기 ›</a>
+     </div>
+    </div>
+  </div>
+
+  {# 긴 후기도 읽기 쉽게 본문은 사진·거래 정보 아래에 문단으로 표시 (피그마 수정안 07) #}
+  <div class="review-detail__text">
+   {% for para in review.content %}<p>{{ para }}</p>{% endfor %}
+  </div>
+ </article>
+ {% else %}
+ <div class="review-empty">리뷰를 찾을 수 없어요.</div>
+ {% endif %}
+
+ <a class="button button--outline button--small" href="/review">‹ 목록으로</a>
+</div>
+{% endblock section %}

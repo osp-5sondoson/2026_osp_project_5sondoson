@@ -1,5 +1,109 @@
 {% extends "index.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
+{% endblock head %}
 {% block section %}
-<h1>리뷰 등록</h1>
-<p class="desc">구매한 상품의 리뷰를 작성하는 페이지입니다.</p>
+<div class="review-page">
+ <h1>거래 리뷰 쓰기</h1>
+ <p class="desc">구매한 기프티콘의 실제 사용 경험을 공유해 주세요.</p>
+
+ <div class="write-layout">
+  {# 서버 저장 로직은 다음 단계: 지금은 등록 시 리뷰 목록으로 이동만 함 #}
+  <form class="form" action="/review" method="get">
+   <div class="form__field">
+    <label for="writer">작성자 ID *</label>
+    <input type="text" name="writer" id="writer" value="5sondoson" readonly class="input--readonly">
+   </div>
+   <div class="form__field">
+    <label for="item">상품명 *</label>
+    <input type="text" name="item" id="item" value="스타벅스 아이스 카페 아메리카노 T" required>
+    <p class="form__help">판매자 ewha_kim과 거래한 상품이에요.</p>
+   </div>
+   <div class="form__field">
+    <label>정상 사용 여부 *</label>
+    <div class="choice">
+     <input type="radio" name="used" id="used_ok" value="ok" checked>
+     <label for="used_ok">정상적으로 사용했어요</label>
+     <input type="radio" name="used" id="used_problem" value="problem">
+     <label for="used_problem">사용에 문제가 있었어요</label>
+    </div>
+   </div>
+   <div class="form__field">
+    <label>별점 *</label>
+    <div class="rating-input">
+     <div class="rating-input__stars">
+      {% for n in range(5, 0, -1) %}
+      <input type="radio" name="rating" id="star{{ n }}" value="{{ n }}" {% if n == 4 %}checked{% endif %}>
+      <label for="star{{ n }}" aria-label="{{ n }}점">★</label>
+      {% endfor %}
+     </div>
+     <span class="rating-input__score" id="rating_score">4.0</span>
+    </div>
+   </div>
+   <div class="form__field">
+    <label for="title">리뷰 제목 *</label>
+    <input type="text" name="title" id="title" placeholder="바코드도 잘 찍히고 바로 사용했어요!" maxlength="40" required>
+   </div>
+   <div class="form__field">
+    <label for="file_input">리뷰 사진 (선택)</label>
+    <div class="pictures">
+     <img id="preview" class="preview" src="{{ url_for('static', filename='images/review_americano.jpg') }}" alt="" style="display:block">
+     <div class="picture-add">
+      <span class="picture-add__plus">+</span>
+      <span>사진 추가</span>
+      <input type="file" name="photo" id="file_input" accept="image/*">
+     </div>
+    </div>
+    <p class="form__help">사진에 바코드나 개인정보가 보이지 않도록 확인해 주세요.</p>
+   </div>
+   <div class="form__field">
+    <label for="content">리뷰 내용 *</label>
+    <textarea name="content" id="content" rows="5" maxlength="1000" placeholder="바코드가 바로 인식돼서 매장에서 문제없이 사용했어요." required></textarea>
+    <p class="form__help"><span id="content_count">0</span> / 1000</p>
+   </div>
+   <div class="form__actions">
+    <a class="button button--outline" href="/review">취소</a>
+    <input class="button" type="submit" value="리뷰 등록">
+   </div>
+  </form>
+
+  <aside class="write-side">
+   <div class="side-card">
+    <h2 class="side-card__title">거래한 상품</h2>
+    <div class="side-product">
+     <img src="{{ url_for('static', filename='images/product_starbucks_americano.jpg') }}" alt="">
+     <div>
+      <span class="tag tag--ok">카페·베이커리</span>
+      <strong class="side-product__name">스타벅스 아이스 카페 아메리카노 T</strong>
+      <span class="side-product__price"><em>26%</em> 3,500원</span>
+      <span class="side-product__seller">판매자 ewha_kim · ★4.8</span>
+     </div>
+    </div>
+   </div>
+   <div class="side-card side-card--tint">
+    <h2 class="side-card__title side-card__title--primary">리뷰 작성 가이드</h2>
+    <ul class="guide">
+     <li>직접 사용해본 상품만 작성할 수 있어요</li>
+     <li>정상 사용 여부를 정확히 선택해 주세요</li>
+     <li>개인정보와 사진의 바코드는 가려 주세요</li>
+    </ul>
+   </div>
+   <div class="side-card side-card--tint side-card--promo">
+    <p><span>이화인의 후기</span>가<br>다음 거래에 도움이 돼요.</p>
+   </div>
+  </aside>
+ </div>
+</div>
+<script>
+ // 별점 숫자 표시와 글자 수 세기
+ document.querySelectorAll('input[name="rating"]').forEach((el) => {
+  el.addEventListener("change", () => {
+   document.getElementById("rating_score").textContent = Number(el.value).toFixed(1);
+  });
+ });
+ const content = document.getElementById("content");
+ content.addEventListener("input", () => {
+  document.getElementById("content_count").textContent = content.value.length;
+ });
+</script>
 {% endblock section %}

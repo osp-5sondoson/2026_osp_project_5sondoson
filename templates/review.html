@@ -1,5 +1,105 @@
 {% extends "index.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
+{% endblock head %}
 {% block section %}
-<h1>리뷰 목록</h1>
-<p class="desc">작성된 리뷰를 모아 보여 주는 페이지입니다.</p>
+{# 샘플 데이터 (서버 연동 전 하드코딩) #}
+{% set all_reviews = [
+ {"id": 1, "title": "치킨 반값에 먹었어요", "content": "유효기간 임박이라 싸게 샀는데 매장에서 바로 사용 완료!", "rating": 5, "ok": true, "writer": "ewha_min", "date": "2026.10.08", "item": "BBQ 황금올리브", "seller": "pear_blossom", "score": "5.0", "img": "review_chicken.jpg"},
+ {"id": 2, "title": "생일 케이크로 잘 썼어요", "content": "친구 생일에 맞춰 잘 받았어요. 판매자분도 친절하셨어요.", "rating": 5, "ok": true, "writer": "sw_platform", "date": "2026.10.07", "item": "투썸 생딸기 생크림 케이크 피스", "seller": "sweet_ewha", "score": "5.0", "img": "review_cake.jpg"},
+ {"id": 3, "title": "바코드가 인식되지 않았어요", "content": "매장에서 바코드가 읽히지 않아 쓰지 못했어요.", "rating": 2, "ok": false, "writer": "ewha_song", "date": "2026.10.06", "item": "이마트24 금액권", "seller": "cu_holic", "score": "2.0", "img": "review_emart24.jpg", "card": true},
+ {"id": 4, "title": "구매하자마자 바로 쓸 수 있었어요", "content": "구매하기 버튼을 누르자마자 원본이 바로 공개돼서 기다릴 필요가 없었어요.", "rating": 5, "ok": true, "writer": "ewha_lee", "date": "2026.10.03", "item": "스타벅스 카페라떼 T", "seller": "ewha_kim", "score": "4.8", "img": "review_latte.jpg"},
+ {"id": 5, "title": "도넛 맛있게 먹었어요", "content": "D-1이었지만 무사히 사용했어요.", "rating": 4, "ok": true, "writer": "ewha_choi", "date": "2026.10.01", "item": "던킨 모바일 금액권", "seller": "donut_lover", "score": "4.0", "img": "review_donut.jpg"},
+ {"id": 6, "title": "바코드도 잘 찍히고 바로 사용했어요!", "content": "유효기간도 설명대로 넉넉했어요.", "rating": 4, "ok": true, "writer": "ewha_park", "date": "2026.09.28", "item": "메가커피 아메리카노", "seller": "ewha_kim", "score": "4.8", "img": "review_americano.jpg"},
+ {"id": 7, "title": "설명 그대로였어요", "content": "바코드 잘 찍히고 유효기간도 넉넉했어요.", "rating": 5, "ok": true, "writer": "ewha_jung", "date": "2026.10.07", "item": "스타벅스 아메리카노 T", "seller": "ewha_kim", "score": "4.8", "img": "review_sb_americano.jpg"},
+ {"id": 8, "title": "두 번째 구매해요", "content": "항상 빠르게 사용할 수 있어서 좋아요.", "rating": 5, "ok": true, "writer": "sw_platform", "date": "2026.10.01", "item": "스타벅스 아메리카노 T", "seller": "ewha_kim", "score": "4.8", "img": "review_sb_americano2.jpg"},
+ {"id": 9, "title": "가격이 착해요", "content": "학교 가는 길에 저렴하게 커피 한 잔 했어요.", "rating": 5, "ok": true, "writer": "ewha_yoon", "date": "2026.09.24", "item": "스타벅스 카페라떼 T", "seller": "ewha_kim", "score": "4.8", "img": "review_latte2.jpg"},
+ {"id": 10, "title": "유효기간이 넉넉했어요", "content": "날짜가 넉넉해서 여유 있게 사용했어요.", "rating": 5, "ok": true, "writer": "ewha_choi", "date": "2026.09.20", "item": "이디야 시그니처 라떼", "seller": "ewha_kim", "score": "4.8", "img": "review_ediya.jpg"}
+] %}
+{# 필터·정렬·페이지는 주소 값으로 처리 (?filter=photo&sort=high&page=2) #}
+{% set filters = [("all", "전체"), ("photo", "사진 리뷰"), ("ok", "정상 사용"), ("problem", "문제 있었어요")] %}
+{% set sorts = [("latest", "최신순"), ("high", "별점 높은순"), ("low", "별점 낮은순")] %}
+{% set f = request.args.get("filter", "all") %}
+{% if f not in filters|map("first") %}{% set f = "all" %}{% endif %}
+{% set s = request.args.get("sort", "latest") %}
+{% if s not in sorts|map("first") %}{% set s = "latest" %}{% endif %}
+{% set shown = all_reviews|sort(attribute="date", reverse=true) %}
+{% if f == "photo" %}{% set shown = shown|rejectattr("card")|list %}
+{% elif f == "ok" %}{% set shown = shown|selectattr("ok")|list %}
+{% elif f == "problem" %}{% set shown = shown|rejectattr("ok")|list %}{% endif %}
+{% if s == "high" %}{% set shown = shown|sort(attribute="rating", reverse=true) %}
+{% elif s == "low" %}{% set shown = shown|sort(attribute="rating") %}{% endif %}
+{% set per_page = 6 %}
+{% set pages = [(shown|length + per_page - 1) // per_page, 1]|max %}
+{% set page = [[request.args.get("page", 1)|int, 1]|max, pages]|min %}
+<div class="review-page">
+ <div class="review-head">
+  <div>
+   <h1>거래 리뷰</h1>
+   <p class="desc">이화인들이 남긴 실제 거래 후기예요. 리뷰는 판매자 평점에 반영돼요.</p>
+  </div>
+  <a class="button" href="/reg_reviews">리뷰 쓰기</a>
+ </div>
+
+ {# 통계는 위 샘플 리뷰에서 계산 #}
+ {% set ok_count = all_reviews|selectattr("ok")|list|length %}
+ <div class="review-stat-band">
+  <div class="review-stat"><span class="review-stat__label">전체 리뷰</span><strong class="review-stat__value">{{ all_reviews|length }}개</strong></div>
+  <div class="review-stat"><span class="review-stat__label">정상 사용 확인</span><strong class="review-stat__value">{{ (100 * ok_count / all_reviews|length)|round|int }}%</strong></div>
+  <div class="review-stat"><span class="review-stat__label">이번 주 새 리뷰</span><strong class="review-stat__value">0개</strong></div>
+  <div class="review-stat"><span class="review-stat__label">참여 판매자</span><strong class="review-stat__value">{{ all_reviews|map(attribute="seller")|unique|list|length }}명</strong></div>
+ </div>
+
+ <div class="review-toolbar">
+  <div class="review-chips">
+   {% for key, label in filters %}
+   <a class="review-chip {% if key == f %}review-chip--active{% endif %}" href="?filter={{ key }}&sort={{ s }}">{{ label }}</a>
+   {% endfor %}
+  </div>
+  <form method="get">
+   <input type="hidden" name="filter" value="{{ f }}">
+   <select class="sort" name="sort" aria-label="정렬" onchange="this.form.submit()">
+    {% for key, label in sorts %}
+    <option value="{{ key }}" {% if key == s %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+   </select>
+  </form>
+ </div>
+
+ <ul class="review-list">
+  {% for r in shown[(page - 1) * per_page:page * per_page] %}
+  <li class="review-item">
+   <a class="review-item__link" href="/review_detail/{{ r.id }}">
+    <img class="review-item__thumb" src="{{ url_for('static', filename='images/' ~ r.img) }}" alt="">
+    <div class="review-item__main">
+     <div class="review-item__meta">
+      <span class="review-stars">{% for i in range(5) %}{% if i < r.rating %}★{% else %}<span class="review-stars__off">★</span>{% endif %}{% endfor %}</span>
+      <span class="review-stars__score">{{ r.rating }}.0</span>
+      {% if r.ok %}<span class="tag tag--ok">정상 사용 확인</span>{% else %}<span class="tag tag--problem">문제 있었어요</span>{% endif %}
+     </div>
+     <strong class="review-item__title">{{ r.title }}</strong>
+     <p class="review-item__content">{{ r.content }}</p>
+    </div>
+    <div class="review-item__info">
+     <span>{{ r.writer }} · {{ r.date }}</span>
+     <span class="review-item__item">{{ r.item }}</span>
+    </div>
+   </a>
+   <div class="review-item__right">
+    <a class="seller-link" href="/seller_reviews/{{ r.seller }}">판매자 {{ r.seller }} <span class="seller-link__star">★{{ r.score }}</span></a>
+   </div>
+  </li>
+  {% else %}
+  <li class="review-empty">조건에 맞는 리뷰가 없어요.</li>
+  {% endfor %}
+ </ul>
+
+ <nav class="review-pagination" aria-label="페이지">
+  <a class="review-pagination__item {% if page <= 1 %}review-pagination__item--disabled{% endif %}" href="?filter={{ f }}&sort={{ s }}&page={{ page - 1 }}" aria-label="이전">‹</a>
+  {% for p in range(1, pages + 1) %}
+  <a class="review-pagination__item {% if p == page %}review-pagination__item--active{% endif %}" href="?filter={{ f }}&sort={{ s }}&page={{ p }}">{{ p }}</a>
+  {% endfor %}
+  <a class="review-pagination__item {% if page >= pages %}review-pagination__item--disabled{% endif %}" href="?filter={{ f }}&sort={{ s }}&page={{ page + 1 }}" aria-label="다음">›</a>
+ </nav>
+</div>
 {% endblock section %}
