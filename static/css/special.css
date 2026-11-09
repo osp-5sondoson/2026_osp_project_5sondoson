@@ -232,6 +232,46 @@
   cursor: not-allowed;
 }
 
+/* 돌리기 전 빈 상태 안내 */
+.special-empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.special-empty__icon {
+  color: var(--gray);
+}
+
+.special-empty__title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 500;
+}
+
+.special-empty__desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+.special-empty__steps {
+  margin: 8px 0 0;
+  padding: 16px 24px 16px 40px;
+  font-size: 14px;
+  line-height: 26px;
+  text-align: left;
+  color: var(--text-secondary);
+  background-color: var(--background);
+  border-radius: var(--radius-card);
+}
+
 /* ---------- 이럴 때 추천해요 ---------- */
 .special-tips {
   display: flex;
@@ -248,4 +288,24 @@
 
 .special-tips__title {
   color: var(--text);
+}
+
+/* ---------- 반응형 ---------- */
+@media screen and (max-width: 1024px) {
+  .special-hero__image { width: 320px; }
+  .special-main { grid-template-columns: minmax(0, 1fr); }
+  .special-box { min-height: 0; }
+  .special-box__note { margin-top: 24px; }
+}
+
+@media screen and (max-width: 768px) {
+  .special-hero { flex-direction: column; align-items: flex-start; padding: 24px; }
+  .special-hero__image { width: 100%; }
+  .special-hero__title { font-size: 28px; line-height: 40px; }
+  .special-filter__row { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .special-filter__label { width: auto; }
+  .wheel__slot { font-size: 28px; }
+  .wheel__slot--0 { width: 96px; margin-left: -48px; }
+  .wheel__slot img { width: 80px; height: 64px; }
+  .wheel__button { width: 96px; height: 96px; margin: -48px 0 0 -48px; font-size: 12px; }
 }
