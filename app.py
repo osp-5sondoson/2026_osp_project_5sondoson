@@ -55,7 +55,7 @@ def view_item_detail(name):
         "dday": 3,
         "addr": "전국 스타벅스 매장 (일부 특수매장 제외)",
         "status": "selling",
-        "desc": "시험 기간에 받았는데 커피를 안 마셔서 팔아요. 사이즈 업이나 샷 추가는 차액 내고 가능해요.",
+        "desc": "시험 기간에 받았는데 커피를 안 마셔서 팔아요.\n사이즈 업이나 샷 추가는 차액 내고 가능해요!",
         "img_path": "product_starbucks_americano.jpg",
     }
     reviews = [
