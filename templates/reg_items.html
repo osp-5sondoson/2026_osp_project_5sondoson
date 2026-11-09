@@ -20,7 +20,7 @@
      <span>사진 추가</span>
      <input type="file" name="file_input" id="file_input" accept=".png,.jpg,.jpeg,.gif,.webp" required>
     </div>
-    <div class="reg__thumb"><img id="preview" class="preview" alt="공개용 사진 미리보기"></div>
+    <div class="reg__thumb"><img id="preview" class="preview" src="{{ url_for('static', filename='images/americano_gifticon.png') }}" alt="공개용 사진 미리보기 (예시)"></div>
     <p class="reg__photo-help form__help--warn">목록·상세에 보여요.<br>바코드·번호가 보이면<br>등록이 거절돼요</p>
    </div>
   </div>
@@ -33,8 +33,8 @@
      <input type="file" name="file_original" id="file_original" accept=".png,.jpg,.jpeg,.gif,.webp" required>
     </div>
     <div class="reg__thumb">
-     <span class="reg__private-tag" hidden id="private_tag">비공개</span>
-     <img id="preview_original" class="preview" alt="원본 사진 미리보기">
+     <span class="reg__private-tag" id="private_tag">비공개</span>
+     <img id="preview_original" class="preview" src="{{ url_for('static', filename='images/americano_gifticon.png') }}" alt="원본 사진 미리보기 (예시)">
     </div>
     <p class="reg__photo-help reg__help--info">구매자에게만<br>구매 직후 바로 공개돼요</p>
    </div>
@@ -131,17 +131,15 @@
 </div>
 
 <script>
-// 원본 사진 미리보기 + "비공개" 태그 (공개용 사진 미리보기는 static/main.js)
+// 원본 사진 미리보기 (처음엔 피그마처럼 예시 이미지, 공개용 사진 미리보기는 static/main.js)
 (function () {
   var input = document.getElementById("file_original");
   var img = document.getElementById("preview_original");
   var tag = document.getElementById("private_tag");
   input.addEventListener("change", function () {
     var file = input.files[0];
-    if (!file) { img.style.display = "none"; tag.hidden = true; return; }
+    if (!file) return;
     img.src = URL.createObjectURL(file);
-    img.style.display = "block";
-    tag.hidden = false;
   });
 })();
 
