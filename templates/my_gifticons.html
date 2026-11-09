@@ -1,0 +1,124 @@
+{% extends "index.html" %}
+{% block title %}내 기프티콘함 · 기쁘띠콘{% endblock title %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_gifticons.css') }}">
+{% endblock head %}
+
+{# 특별페이지 · 내 기프티콘함 (피그마 12): 구매한 기프티콘의 원본 바코드를 구매자 본인만 본다 #}
+{% macro barcode(bars) -%}
+<span class="barcode" aria-hidden="true">{% for width in bars %}<i style="width: {{ width }}px"></i>{% endfor %}</span>
+{%- endmacro %}
+
+{% block section %}
+{# ---------- 1. 제목 줄 ---------- #}
+<div class="wallet-head">
+ <div>
+  <h1 class="wallet-head__title">내 기프티콘함</h1>
+  <p class="wallet-head__desc">구매한 기프티콘의 원본(바코드)은 구매자 본인에게만 보여요. 매장에서 바로 보여 주세요!</p>
+ </div>
+ <a class="button button--secondary" href="{{ url_for('view_list') }}">상품 둘러보기 ›</a>
+</div>
+
+{# ---------- 2. 요약 지표 4칸 ---------- #}
+<section class="wallet-stats" aria-label="기프티콘함 요약">
+ <div class="wallet-stat">
+  <span class="wallet-stat__label">사용 가능</span>
+  <strong class="wallet-stat__value">{{ summary.usable }}개</strong>
+  <span class="wallet-stat__desc">지금 매장에서 쓸 수 있어요</span>
+ </div>
+ <div class="wallet-stat">
+  <span class="wallet-stat__label">3일 내 만료</span>
+  <strong class="wallet-stat__value wallet-stat__value--red">{{ summary.closing|length }}개</strong>
+  <span class="wallet-stat__desc">{% if summary.closing %}{{ summary.closing[0].brand }} · {{ summary.closing[0].expire[5:] }}{% else %}곧 만료되는 기프티콘이 없어요{% endif %}</span>
+ </div>
+ <div class="wallet-stat">
+  <span class="wallet-stat__label">사용 완료</span>
+  <strong class="wallet-stat__value wallet-stat__value--muted">{{ summary.used|length }}개</strong>
+  <span class="wallet-stat__desc">{% if summary.used %}{{ summary.used[0].brand }} {{ summary.used[0].name }}{% else %}아직 사용한 기프티콘이 없어요{% endif %}</span>
+ </div>
+ <div class="wallet-stat">
+  <span class="wallet-stat__label">지금까지 아낀 금액</span>
+  <strong class="wallet-stat__value">{{ "{:,}".format(summary.saved) }}원</strong>
+  <span class="wallet-stat__desc">정가 대비 할인받은 금액</span>
+ </div>
+</section>
+
+{# ---------- 3. 만료 임박 알림 ---------- #}
+{% for gift in summary.closing %}
+<p class="wallet-alert">
+ <span class="dday">D-{{ gift.dday }}</span>
+ <span>{{ gift.brand }} {{ gift.name }}{{ gift.particle }} {{ gift.dday }}일 뒤({{ gift.expire[5:10] }}) 만료돼요. 잊지 말고 사용하세요!</span>
+ <a class="wallet-alert__link" href="#gift-{{ gift.id }}">바코드 보기 ›</a>
+</p>
+{% endfor %}
+
+{# ---------- 4. 탭 · 정렬 ---------- #}
+<div class="wallet-tools">
+ {% for key, label in tabs.items() %}
+ <a class="chip{% if key == tab %} is-active{% endif %}" href="{{ url_for('view_my_gifticons', tab=key if key != 'all' else None) }}">{{ label }} {{ counts[key] }}</a>
+ {% endfor %}
+ <span class="wallet-tools__sort">유효기간 임박순</span>
+</div>
+
+{# ---------- 5. 기프티콘 카드 ---------- #}
+{% if cards %}
+<div class="wallet-grid">
+ {% for gift in cards %}
+ <article class="gift{% if gift.used %} gift--used{% endif %}" id="gift-{{ gift.id }}">
+  <header class="gift__top">
+   <img class="gift__thumb" src="{{ url_for('static', filename='images/' + gift.img) }}" alt="">
+   <div class="gift__title">
+    <span class="gift__brand">{{ gift.brand }}</span>
+    <strong class="gift__name">{{ gift.name }}</strong>
+   </div>
+   {% if gift.used %}
+   <span class="badge wallet-badge--used">사용 완료</span>
+   {% else %}
+   <span class="{% if gift.dday <= 7 %}dday{% else %}badge{% endif %}">D-{{ gift.dday }}</span>
+   {% endif %}
+  </header>
+
+  <div class="gift__body">
+   <div class="gift__barcode">
+    {{ barcode(gift.bars) }}
+    <span class="gift__number">{{ gift.number }}</span>
+    {% if gift.used %}
+    <span class="gift__zoom gift__zoom--off">사용이 완료된 기프티콘이에요</span>
+    {% else %}
+    <button class="gift__zoom" type="button" onclick="document.getElementById('barcode-{{ gift.id }}').showModal()">바코드 크게 보기</button>
+    {% endif %}
+   </div>
+
+   <dl class="gift__meta">
+    <div><dt>유효기간</dt><dd>{{ gift.expire }}</dd></div>
+    <div><dt>판매자</dt><dd>{{ gift.seller }}</dd></div>
+    <div><dt>구매일</dt><dd>{{ gift.bought }}</dd></div>
+    <div><dt>결제 금액</dt>
+     <dd><strong>{{ "{:,}".format(gift.paid) }}원</strong> <span class="text-strike gift__original">정가 {{ "{:,}".format(gift.original_price) }}원</span></dd>
+    </div>
+   </dl>
+
+   <div class="gift__actions">
+    {# 사용 완료 처리는 DB 연동 때 동작을 붙인다 #}
+    <button class="button button--secondary" type="button"{% if gift.used %} disabled{% endif %}>{% if gift.used %}사용 완료됨{% else %}사용 완료 처리{% endif %}</button>
+    <a class="button" href="{{ url_for('reg_review') }}">리뷰 쓰기</a>
+   </div>
+  </div>
+
+  {% if not gift.used %}
+  <dialog class="barcode-dialog" id="barcode-{{ gift.id }}" aria-label="{{ gift.brand }} {{ gift.name }} 바코드">
+   <p class="barcode-dialog__brand">{{ gift.brand }}</p>
+   <h2 class="barcode-dialog__name">{{ gift.name }}</h2>
+   {{ barcode(gift.bars) }}
+   <p class="barcode-dialog__number">{{ gift.number }}</p>
+   <p class="barcode-dialog__expire">유효기간 {{ gift.expire }}</p>
+   <form method="dialog"><button class="button button--block" type="submit">닫기</button></form>
+  </dialog>
+  {% endif %}
+ </article>
+ {% endfor %}
+</div>
+{% else %}
+<p class="wallet-empty">이 탭에 해당하는 기프티콘이 아직 없어요.</p>
+{% endif %}
+{% endblock section %}

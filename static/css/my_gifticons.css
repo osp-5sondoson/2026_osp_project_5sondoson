@@ -1,0 +1,396 @@
+/* 특별페이지 "내 기프티콘함" 전용 스타일 (피그마 12 · 내 기프티콘함) */
+
+/* ---------- 제목 줄 ---------- */
+.wallet-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.wallet-head__title {
+  margin: 0 0 8px;
+  font-size: 30px;
+  line-height: 42px;
+}
+
+.wallet-head__desc {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.wallet-head .button {
+  flex-shrink: 0;
+}
+
+/* ---------- 요약 지표 4칸 ---------- */
+.wallet-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.wallet-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 24px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.wallet-stat__label {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.wallet-stat__value {
+  font-size: 30px;
+  line-height: 42px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.wallet-stat__value--red   { color: var(--red); }
+.wallet-stat__value--muted { color: var(--text-secondary); }
+
+.wallet-stat__desc {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+
+/* ---------- 만료 임박 알림 ---------- */
+.wallet-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 14px 20px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--red);
+  background-color: var(--red-light);
+  border-radius: var(--radius-control);
+}
+
+.wallet-alert .dday {
+  flex-shrink: 0;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+}
+
+.wallet-alert__link {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--red);
+}
+
+/* ---------- 탭 · 정렬 ---------- */
+.wallet-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.wallet-tools .chip {
+  justify-content: center;
+  min-width: 110px;
+}
+
+.wallet-tools__sort {
+  margin-left: auto;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+/* ---------- 기프티콘 카드 ---------- */
+.wallet-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.gift {
+  overflow: hidden;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  scroll-margin-top: 24px;
+}
+
+/* "바코드 보기"로 넘어왔을 때 해당 카드를 강조 */
+.gift:target {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.gift__top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--primary-light);
+}
+
+.gift__thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: var(--radius-control);
+}
+
+.gift__title {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.gift__brand {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+.gift__name {
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 24px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gift__top .dday {
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+}
+
+.wallet-badge--used {
+  color: var(--text-secondary);
+  background-color: #f1f4f9;
+}
+
+.gift__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.gift__barcode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+}
+
+/* 바코드: 굵기가 다른 막대 46개 */
+.barcode {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  max-width: 100%;
+  height: 64px;
+  overflow: hidden;
+}
+
+.barcode i {
+  flex-shrink: 0;
+  height: 100%;
+  background-color: var(--text);
+}
+
+.gift__number {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.gift__zoom {
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--primary);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.gift__zoom:hover {
+  text-decoration: underline;
+}
+
+.gift__zoom:focus-visible {
+  outline: 2px solid var(--primary-dark);
+  outline-offset: 2px;
+}
+
+.gift__zoom--off {
+  color: var(--text-secondary);
+  cursor: default;
+}
+
+.gift__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.gift__meta div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gift__meta dt {
+  color: var(--text-secondary);
+}
+
+.gift__meta dd {
+  margin: 0;
+  font-weight: 500;
+  text-align: right;
+}
+
+.gift__original {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.gift__actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.gift__actions .button {
+  flex: 1;
+  padding: 0 12px;
+}
+
+.gift__actions .button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* 사용 완료된 카드는 흐리게 */
+.gift--used .gift__top     { background-color: #f1f4f9; }
+.gift--used .gift__thumb   { opacity: .5; }
+.gift--used .gift__name,
+.gift--used .gift__number  { color: var(--text-secondary); }
+.gift--used .barcode i     { opacity: .3; }
+
+.wallet-empty {
+  margin: 0;
+  padding: 64px 24px;
+  text-align: center;
+  color: var(--text-secondary);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+/* 바코드 크게 보기 창 */
+.barcode-dialog {
+  width: 480px;
+  max-width: calc(100% - 32px);
+  padding: 32px;
+  text-align: center;
+  color: var(--text);
+  background-color: var(--surface);
+  border: 0;
+  border-radius: var(--radius-panel);
+}
+
+.barcode-dialog::backdrop {
+  background-color: rgba(22, 34, 57, .5);
+}
+
+.barcode-dialog__brand {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+.barcode-dialog__name {
+  margin: 4px 0 24px;
+  font-size: 20px;
+  line-height: 30px;
+}
+
+.barcode-dialog .barcode {
+  gap: 3px;
+  height: 120px;
+}
+
+.barcode-dialog .barcode i {
+  min-width: 3px;
+  transform-origin: left;
+}
+
+.barcode-dialog__number {
+  margin: 16px 0 4px;
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.barcode-dialog__expire {
+  margin: 0 0 24px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+/* ---------- 반응형 ---------- */
+@media screen and (max-width: 1280px) {
+  .wallet-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media screen and (max-width: 1024px) {
+  .wallet-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wallet-guide__steps { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+}
+
+@media screen and (max-width: 768px) {
+  .wallet-head { flex-direction: column; align-items: flex-start; }
+  .wallet-stats { gap: 12px; }
+  .wallet-stat { padding: 16px; }
+  .wallet-stat__value { font-size: 24px; line-height: 34px; }
+  .wallet-alert { flex-wrap: wrap; }
+  .wallet-alert__link { margin-left: 0; }
+  .wallet-grid { grid-template-columns: minmax(0, 1fr); }
+  .wallet-guide { padding: 24px; }
+}
