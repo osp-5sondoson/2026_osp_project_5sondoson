@@ -232,6 +232,20 @@
   cursor: not-allowed;
 }
 
+/* 돌린 후 화면: 들어올 때 룰렛이 세 바퀴 돌고 멈춘다 */
+.wheel__disc--spin {
+  animation: wheel-spin 1.6s cubic-bezier(.15, .7, .2, 1);
+}
+
+@keyframes wheel-spin {
+  from { transform: rotate(-1080deg); }
+  to   { transform: rotate(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel__disc--spin { animation: none; }
+}
+
 /* 돌리기 전 빈 상태 안내 */
 .special-empty {
   display: flex;
@@ -272,6 +286,114 @@
   border-radius: var(--radius-card);
 }
 
+/* 추천 상품 카드 */
+.pick {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 24px;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+/* 상품 사진이 가로형(332:267)이라 잘리지 않게 칸도 같은 비율로 둔다 */
+.pick__image {
+  width: 232px;
+  height: 186px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: var(--radius-control);
+}
+
+.pick__body {
+  min-width: 0;
+}
+
+.pick__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.pick__badges .dday {
+  height: 28px;
+  padding: 0 14px;
+}
+
+.pick__brand {
+  margin: 0 0 4px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+.pick__name {
+  margin-bottom: 8px;
+}
+
+.pick__price {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 8px;
+}
+
+.pick__discount,
+.pick__current {
+  font-size: 24px;
+  line-height: 34px;
+  font-weight: 700;
+}
+
+.pick__discount {
+  color: var(--red);
+}
+
+.pick__seller {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+.pick__seller .text-rating {
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+.pick-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 28px 0;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 22px;
+  background-color: var(--primary-light);
+  border-radius: var(--radius-card);
+}
+
+.pick-info__row {
+  display: flex;
+}
+
+.pick-info dt {
+  width: 152px;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.pick-info dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.special-box .button--block + .button--block {
+  margin-top: 12px;
+}
+
 /* ---------- 이럴 때 추천해요 ---------- */
 .special-tips {
   display: flex;
@@ -308,4 +430,6 @@
   .wheel__slot--0 { width: 96px; margin-left: -48px; }
   .wheel__slot img { width: 80px; height: 64px; }
   .wheel__button { width: 96px; height: 96px; margin: -48px 0 0 -48px; font-size: 12px; }
+  .pick { flex-direction: column; align-items: flex-start; padding: 16px; }
+  .pick__image { width: 100%; height: auto; aspect-ratio: 332 / 267; }
 }
