@@ -1,24 +1,67 @@
-/* 상품 등록 (reg_items.html) 전용 스타일 — 피그마 "1. 상품 등록" 기준
+/* 상품 등록 (reg_items.html) 전용 스타일 — 피그마 "01 상품 등록" 기준
+   긴 폼은 2열: 왼쪽 폼 · 오른쪽 안내(보조 영역 376px)
    공통 토큰·클래스는 style.css, 여기는 등록 화면 배치만 */
 
-/* 폼 폭 656 · 가운데 정렬 */
 .reg {
-  max-width: 656px;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 376px;
+  gap: 32px;
+  align-items: start;
+  margin-top: 24px;
 }
 
-.reg__form {
+/* 폼은 카드로 감싸지 않고 배경 위에 바로 (공통 .form의 카드 모양만 끔) */
+.reg__form.form {
+  min-width: 0;
   max-width: none;
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
 }
 
-.reg__name input {
-  max-width: 404px;
+/* 사진 항목: 테두리 박스 안에 [사진 추가] [미리보기] [안내] 가로 배치 */
+.reg__photo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.reg .picture-add,
+.reg .preview {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+}
+
+.reg .picture-add {
+  border-style: dashed;
+  color: var(--text-secondary);
+}
+
+.reg .preview {
+  object-fit: contain;
+  background-color: var(--primary-light);
+}
+
+.reg__photo-help {
+  flex: 1;
+  margin: 0;
+}
+
+.reg__help--info {
+  color: var(--primary);
 }
 
 /* 원본 사진 미리보기 + "비공개" 태그 */
 .reg__private {
   position: relative;
   display: none;
+  flex-shrink: 0;
 }
 
 .reg__private-tag {
@@ -33,11 +76,7 @@
   border-radius: 4px;
 }
 
-.reg__help--info {
-  color: var(--primary);
-}
-
-/* 카테고리 (라디오를 둥근 칩으로) */
+/* 카테고리: 라디오 + 공통 .chip (radius 8 · 파란 테두리) */
 .reg__categories {
   display: flex;
   flex-wrap: wrap;
@@ -49,34 +88,55 @@
   opacity: 0;
 }
 
-.reg__category {
+.reg__categories input:checked + .chip {
+  color: var(--white);
+  background-color: var(--primary);
+}
+
+.reg__categories input:focus-visible + .chip {
+  outline: 2px solid var(--primary-dark);
+  outline-offset: 2px;
+}
+
+/* 상태: 라디오 버튼 가로 배치 + 오른쪽 할인 안내 */
+.reg__status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.reg__status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.reg__radio {
   display: inline-flex;
   align-items: center;
-  height: 40px;
-  padding: 0 18px;
+  gap: 8px;
+  margin: 0;
   font-size: 14px;
   line-height: 20px;
-  font-weight: 500;
-  color: var(--text);
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
+  font-weight: 400;
   cursor: pointer;
 }
 
-.reg__category:hover {
-  border-color: var(--primary);
+.reg__radio input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--primary);
 }
 
-.reg__categories input:checked + .reg__category {
-  color: var(--white);
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
-
-.reg__categories input:focus-visible + .reg__category {
-  outline: 2px solid var(--primary-dark);
-  outline-offset: 2px;
+.reg__discount {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  color: var(--red);
 }
 
 .reg textarea {
@@ -84,42 +144,83 @@
   resize: vertical;
 }
 
-/* 사진 칸: 피그마대로 120×120, 추가 박스와 미리보기를 한 줄에 */
-.reg .pictures {
-  flex-wrap: nowrap;
+/* 오른쪽 보조 영역 */
+.reg__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.reg .picture-add,
-.reg .preview {
-  width: 120px;
-  height: 120px;
+.reg__panel-title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 26px;
+  color: var(--primary);
 }
 
-.reg .picture-add {
-  border-style: dashed;
+.reg__panel-badge {
+  align-self: flex-start;
+}
+
+.reg__guide {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reg__guide li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 20px;
+  position: relative;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.reg__guide li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.reg__guide span {
   color: var(--text-secondary);
 }
 
-/* 미리보기는 잘리지 않게 전체를 보여 주고, 빈 곳은 연한 파랑 */
-.reg .preview {
-  object-fit: contain;
-  background-color: var(--primary-light);
+.reg__campus {
+  width: 100%;
+  aspect-ratio: 312 / 180;
+  object-fit: cover;
+  border-radius: var(--radius-card);
 }
 
-/* 할인 가격 미리보기 (판매가 아래) */
-.reg__discount {
+.reg__campus--empty {
   display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background-color: var(--surface);
 }
 
-.reg__discount-rate {
-  font-weight: 700;
-  color: var(--amber);
+@media screen and (max-width: 1024px) {
+  .reg {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
-.reg__discount-price {
-  font-weight: 700;
-  color: var(--text);
+@media screen and (max-width: 768px) {
+  .reg__photo {
+    flex-wrap: wrap;
+  }
+
+  .reg__photo-help {
+    flex-basis: 100%;
+  }
 }

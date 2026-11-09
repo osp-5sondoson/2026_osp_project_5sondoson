@@ -80,7 +80,7 @@
 .detail__discount {
   font-size: 26px;
   font-weight: 700;
-  color: var(--amber);
+  color: var(--red);
 }
 
 .detail__current {
@@ -89,11 +89,13 @@
   font-weight: 700;
 }
 
+/* 판매자·유효기간·지역·상태: 공통 연파랑 .panel 안에 */
 .detail__meta {
   display: grid;
   grid-template-columns: 124px minmax(0, 1fr);
-  row-gap: 12px;
+  gap: 12px 0;
   margin: 0;
+  padding: 24px;
   font-size: 14px;
   line-height: 20px;
 }
@@ -110,14 +112,37 @@
   font-weight: 500;
 }
 
-.detail__desc {
-  margin: 0;
-  font-size: 16px;
-  line-height: 24px;
+/* 상태 뱃지·글자: 판매중은 초록(--green) */
+.detail-status--selling {
+  color: var(--white);
+  background-color: var(--green);
 }
 
-.detail__buy {
-  max-width: 472px;
+.detail-status--reserved {
+  color: var(--white);
+  background-color: var(--amber);
+}
+
+.detail-status--sold {
+  color: var(--white);
+  background-color: var(--gray);
+}
+
+.detail__status-text--selling { color: var(--green); font-weight: 500; }
+.detail__status-text--reserved { color: var(--amber); font-weight: 500; }
+.detail__status-text--sold { color: var(--text-secondary); }
+
+.detail__subtitle {
+  margin: 0 0 -8px;
+  font-size: 18px;
+  line-height: 26px;
+}
+
+.detail__desc {
+  margin: 0;
+  padding: 20px;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 /* 판매자 리뷰 */
@@ -159,6 +184,7 @@
   width: 100px;
   height: 100px;
   flex-shrink: 0;
+  object-fit: cover;
   background-color: var(--primary-light);
   border-radius: var(--radius-control);
 }

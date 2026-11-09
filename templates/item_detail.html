@@ -21,8 +21,9 @@
 
  <div class="detail__info">
   <p class="detail__brand">
+   <span class="badge">{{ data.category }}</span>
+   <span class="badge detail-status detail-status--{{ data.status }}">{{ status_label[data.status] }}</span>
    {{ data.brand }}
-   <span class="badge badge--{{ data.status }}">{{ status_label[data.status] }}</span>
   </p>
   <h1 class="detail__name">{{ name }}</h1>
   <p class="detail__price">
@@ -31,8 +32,7 @@
    {% if data.original_price %}<span class="text-strike">{{ "{:,}".format(data.original_price) }}원</span>{% endif %}
   </p>
 
-  <hr class="divider">
-  <dl class="detail__meta">
+  <dl class="panel detail__meta">
    <dt>판매자</dt>
    <dd>{{ data.seller }} <span class="detail__rating">★ {{ data.seller_rating }}</span> (거래 {{ data.seller_deals }}회)</dd>
    <dt>유효기간</dt>
@@ -40,11 +40,11 @@
    <dt>사용 가능 지역</dt>
    <dd>{{ data.addr }}</dd>
    <dt>상태</dt>
-   <dd>{{ status_label[data.status] }}</dd>
+   <dd class="detail__status-text detail__status-text--{{ data.status }}">{{ status_label[data.status] }}</dd>
   </dl>
-  <hr class="divider">
 
-  <p class="detail__desc">{{ data.desc }}</p>
+  <h2 class="detail__subtitle">상품 설명</h2>
+  <p class="card detail__desc">{{ data.desc }}</p>
   <button class="button button--block detail__buy" type="button"{% if data.status != "selling" %} disabled{% endif %}>구매하기</button>
   <p class="notice notice--info">구매하면 바로 "내 기프티콘함"에서 바코드를 확인할 수 있어요 (가상 거래 · 실제 결제 없음)</p>
  </div>
@@ -65,7 +65,7 @@
  <div class="grid grid--2">
   {% for r in reviews %}
   <article class="card detail-review">
-   <div class="detail-review__thumb" aria-hidden="true"></div>
+   <img class="detail-review__thumb" src="{{ url_for('static', filename='images/' ~ data.img_path) }}" alt="" aria-hidden="true">
    <div class="detail-review__body">
     <p class="detail-review__rating">
      <span class="stars">{% for i in range(5) %}{% if i < r.rating|int %}★{% else %}☆{% endif %}{% endfor %}</span>

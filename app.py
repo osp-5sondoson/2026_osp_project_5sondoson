@@ -43,7 +43,7 @@ def view_item_detail(name):
     # TODO: 백엔드 단계에서 DB.get_item_byname(name)으로 교체
     data = {
         "brand": "스타벅스",
-        "category": "카페",
+        "category": "카페·베이커리",
         "seller": "ewha_kim",
         "seller_rating": 4.8,
         "seller_deals": 12,
