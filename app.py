@@ -275,7 +275,7 @@ def login():
 
 @app.route("/home")
 def home_logged_in():
-    if not session.get("user_id"):
+    if not session.get("id"):
         return redirect(url_for("login"))
     return render_template("home_logged_in.html")
 
@@ -289,7 +289,7 @@ def login_confirm():
     ).hexdigest()
 
     if DB.find_user(id_, pw_hash):
-        session["user_id"] = id_
+        session["id"] = id_
         return redirect(url_for("home_logged_in"))
 
     flash("Wrong ID or PW!")
