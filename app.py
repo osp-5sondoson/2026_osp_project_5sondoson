@@ -295,6 +295,13 @@ def login_confirm():
     flash("Wrong ID or PW!")
     return render_template("login.html")
 
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("view_list"))
+
+
 @app.route("/signup")
 def signup():
     return render_template("signup.html")
