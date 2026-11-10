@@ -43,10 +43,13 @@
 
  {# 통계는 위 샘플 리뷰에서 계산 #}
  {% set ok_count = all_reviews|selectattr("ok")|list|length %}
+ {# 이번 주 = 가장 최근 샘플 리뷰(2026.10.08)가 속한 주, 월요일부터 #}
+ {% set week_start = "2026.10.05" %}
+ {% set week_count = all_reviews|selectattr("date", "ge", week_start)|list|length %}
  <div class="review-stat-band">
   <div class="review-stat"><span class="review-stat__label">전체 리뷰</span><strong class="review-stat__value">{{ all_reviews|length }}개</strong></div>
   <div class="review-stat"><span class="review-stat__label">정상 사용 확인</span><strong class="review-stat__value">{{ (100 * ok_count / all_reviews|length)|round|int }}%</strong></div>
-  <div class="review-stat"><span class="review-stat__label">이번 주 새 리뷰</span><strong class="review-stat__value">0개</strong></div>
+  <div class="review-stat"><span class="review-stat__label">이번 주 새 리뷰</span><strong class="review-stat__value">{{ week_count }}개</strong></div>
   <div class="review-stat"><span class="review-stat__label">참여 판매자</span><strong class="review-stat__value">{{ all_reviews|map(attribute="seller")|unique|list|length }}명</strong></div>
  </div>
 

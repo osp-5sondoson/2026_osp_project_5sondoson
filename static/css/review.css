@@ -371,7 +371,7 @@ img.avatar {
 }
 
 .review-detail__text {
-  max-width: 460px;
+  max-width: 720px;
   margin-top: 24px;
   line-height: 26px;
 }
@@ -439,6 +439,7 @@ img.avatar {
 }
 
 .write-layout .form {
+  max-width: none;
   padding: 32px;
 }
 

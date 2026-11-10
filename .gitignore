@@ -229,3 +229,17 @@ authentication/
 static/images/*
 !static/images/.gitkeep
 !static/images/americano_gifticon.png
+# Review screen sample images
+!static/images/product_starbucks_americano.jpg
+!static/images/product_starbucks_latte.jpg
+!static/images/review_americano.jpg
+!static/images/review_cake.jpg
+!static/images/review_chicken.jpg
+!static/images/review_donut.jpg
+!static/images/review_ediya.jpg
+!static/images/review_emart24.jpg
+!static/images/review_latte.jpg
+!static/images/review_latte2.jpg
+!static/images/review_sb_americano.jpg
+!static/images/review_sb_americano2.jpg
+!static/images/seller_ewha_kim.jpg
