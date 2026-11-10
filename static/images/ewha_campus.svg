@@ -1,0 +1,202 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 128" width="2048" height="512">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E9F3FD"/><stop offset="1" stop-color="#E2F1FE"/>
+    </linearGradient>
+    <linearGradient id="mt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BDE5EB"/><stop offset="1" stop-color="#A9DCE2"/>
+    </linearGradient>
+    <linearGradient id="mtNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C4E8EC"/><stop offset="1" stop-color="#B2E1E5"/>
+    </linearGradient>
+    <linearGradient id="roofT" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8EDCC0"/><stop offset="1" stop-color="#6FCFAF"/>
+    </linearGradient>
+    <linearGradient id="roofL" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6ECDAE"/><stop offset="1" stop-color="#8ED9BC"/>
+    </linearGradient>
+    <linearGradient id="roofR" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#86D8BA"/><stop offset="1" stop-color="#9FD0BC"/>
+    </linearGradient>
+    <linearGradient id="wallT" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F6FBF6"/><stop offset="0.55" stop-color="#FFFFFF"/><stop offset="1" stop-color="#EEF0EE"/>
+    </linearGradient>
+    <linearGradient id="wallL" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F5F1EE"/><stop offset="1" stop-color="#FBF8F5"/>
+    </linearGradient>
+    <linearGradient id="wallR" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F8F8F6"/><stop offset="1" stop-color="#E6E7E6"/>
+    </linearGradient>
+    <linearGradient id="winT" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8BD0C6"/><stop offset="1" stop-color="#5FB9B0"/>
+    </linearGradient>
+    <linearGradient id="winW" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#93D8CA"/><stop offset="1" stop-color="#63BEB4"/>
+    </linearGradient>
+    <radialGradient id="treeD" cx="0.4" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#6ED6A4"/><stop offset="1" stop-color="#4CC48E"/>
+    </radialGradient>
+    <radialGradient id="treeM" cx="0.4" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#5BCB92"/><stop offset="1" stop-color="#3EB97F"/>
+    </radialGradient>
+    <radialGradient id="treeL" cx="0.4" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#7AD7A4"/><stop offset="1" stop-color="#62CD93"/>
+    </radialGradient>
+    <!-- 아치 창: 폭 1, 높이 2 기준 -->
+    <symbol id="win" viewBox="0 0 6 12" preserveAspectRatio="none">
+      <path d="M0 3 A3 3 0 0 1 6 3 V12 H0 Z" fill="url(#winW)"/>
+      <path d="M0.9 3.1 A2.1 2.1 0 0 1 5.1 3.1 V11.2 H0.9 Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="0.5"/>
+    </symbol>
+    <symbol id="winTall" viewBox="0 0 6 14" preserveAspectRatio="none">
+      <path d="M0 3 A3 3 0 0 1 6 3 V14 H0 Z" fill="url(#winT)"/>
+      <path d="M0.9 3.1 A2.1 2.1 0 0 1 5.1 3.1 V13.2 H0.9 Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="0.5"/>
+    </symbol>
+  </defs>
+
+  <rect width="512" height="128" fill="url(#sky)"/>
+
+  <!-- 구름 -->
+  <g fill="#FCFDFF">
+    <!-- 왼쪽 큰 구름 (x57~148, y20~52) -->
+    <circle cx="104" cy="36" r="16"/>
+    <circle cx="80" cy="44" r="10"/>
+    <circle cx="126" cy="43" r="9"/>
+    <circle cx="140" cy="48" r="6"/>
+    <circle cx="66" cy="48" r="6"/>
+    <rect x="57" y="46" width="91" height="6" rx="3"/>
+    <!-- 오른쪽 구름 (x390~468, y4~33) -->
+    <circle cx="426" cy="17" r="13"/>
+    <circle cx="405" cy="26" r="8"/>
+    <circle cx="449" cy="24" r="8"/>
+    <circle cx="462" cy="29" r="5"/>
+    <circle cx="395" cy="29" r="4"/>
+    <rect x="391" y="27" width="77" height="6" rx="3"/>
+    <!-- 오른쪽 위 구석 작은 구름 -->
+    <circle cx="507" cy="2" r="6"/>
+  </g>
+
+  <!-- 먼 산 (오른쪽 큰 산 + 가운데) -->
+  <path fill="url(#mt)" d="M300 128 V90 C318 84 334 76 353 75 C372 66 393 58 414 55 C432 56 452 70 470 80 C488 90 500 96 512 92 V128 Z"/>
+  <!-- 먼 산 (왼쪽) -->
+  <path fill="url(#mt)" d="M0 128 V104 C14 100 36 92 55 90 C72 88 90 104 108 113 C124 110 136 100 150 97 C162 95 172 100 180 104 V128 Z"/>
+  <!-- 가까운 완만한 언덕 (왼쪽) -->
+  <path fill="url(#mtNear)" d="M0 128 V112 C30 104 60 118 95 120 C125 122 150 112 180 114 V128 Z"/>
+  <!-- 오른쪽 앞 언덕 -->
+  <path fill="url(#mtNear)" d="M396 128 V110 C420 104 450 112 512 106 V128 Z"/>
+
+  <!-- 왼쪽 날개 뒤 초록 언덕 (불룩한 능선, x180~245, y74~100) -->
+  <path fill="#8FDBC1" d="M172 104 C178 94 186 84 196 78 C202 74 208 73 214 76 C219 79 223 84 229 82 C234 80 240 79 246 82 L246 104 Z"/>
+  <path fill="none" stroke="#BFECDC" stroke-width="1.2" stroke-linecap="round" d="M174 102 C180 93 187 85 196 78.5 C202 74.5 208 73.5 214 76.5 C219 79.5 223 84 229 82.5 C234 80.5 240 79.5 246 82.5"/>
+  <path fill="#7CD2B4" opacity="0.5" d="M196 78 C202 74 208 73 214 76 C219 79 223 84 229 82 L229 92 C220 92 210 90 196 92 Z"/>
+
+  <!-- ===== 왼쪽 먼 날개 (x167~228) ===== -->
+  <rect x="167" y="100" width="61" height="28" fill="url(#wallL)"/>
+  <rect x="166" y="99" width="63" height="2" fill="#FFFFFF"/>
+  <!-- 경사 지붕: 왼쪽 낮고 오른쪽 높음 -->
+  <path fill="url(#roofL)" d="M166 100 L249 64 L252 64 L252 100 Z"/>
+  <path fill="#A4E0CA" d="M166 100 L249 64 L250.5 65.5 L168 101.5 Z"/>
+  <!-- 창 (위 줄) -->
+  <use href="#win" x="177" y="108" width="6" height="11"/>
+  <use href="#win" x="191" y="108" width="6" height="11"/>
+  <use href="#win" x="204" y="108" width="7" height="11"/>
+  <use href="#win" x="218" y="108" width="6" height="11"/>
+  <!-- 창 (아래 줄, 바닥에 잘림) -->
+  <use href="#win" x="177" y="125" width="6" height="11"/>
+  <use href="#win" x="191" y="125" width="6" height="11"/>
+  <use href="#win" x="204" y="125" width="7" height="11"/>
+  <use href="#win" x="218" y="125" width="6" height="11"/>
+  <rect x="168" y="100" width="37" height="1" fill="#D9E3E0" opacity="0.6"/>
+  <rect x="168" y="121" width="60" height="0.8" fill="#E3E7E4"/>
+
+  <!-- ===== 왼쪽 박공 건물 (x228~283) ===== -->
+  <rect x="228" y="87" width="56" height="41" fill="url(#wallL)"/>
+  <rect x="227" y="86" width="58" height="2" fill="#FFFFFF"/>
+  <!-- 박공 지붕 (꼭대기 (249,64)) -->
+  <path fill="url(#roofT)" d="M228 88 L249 64 L284 64 L284 88 Z"/>
+  <path fill="#7DD3B6" d="M249 64 L284 64 L284 67 L252 67 Z"/>
+  <!-- 창 위 줄 (작은 아치) -->
+  <use href="#win" x="235" y="94" width="5" height="6"/>
+  <use href="#win" x="246" y="94" width="5" height="6"/>
+  <use href="#win" x="261" y="94" width="5" height="6"/>
+  <use href="#win" x="272" y="94" width="5" height="6"/>
+  <!-- 창 아래 줄 -->
+  <use href="#win" x="235" y="107" width="5" height="10"/>
+  <use href="#win" x="246" y="107" width="5" height="10"/>
+  <use href="#win" x="261" y="107" width="5" height="10"/>
+  <use href="#win" x="272" y="107" width="5" height="10"/>
+  <!-- 바닥 잘린 줄 -->
+  <use href="#win" x="235" y="125" width="5" height="10"/>
+  <use href="#win" x="246" y="125" width="5" height="10"/>
+  <use href="#win" x="261" y="125" width="5" height="10"/>
+  <use href="#win" x="272" y="125" width="5" height="10"/>
+  <rect x="229" y="102" width="55" height="0.8" fill="#E3E7E4"/>
+  <rect x="229" y="121" width="55" height="0.8" fill="#E3E7E4"/>
+
+  <!-- ===== 오른쪽 날개 (x322~396) ===== -->
+  <rect x="318" y="100" width="78" height="28" fill="url(#wallR)"/>
+  <rect x="321" y="99" width="76" height="2" fill="#FFFFFF"/>
+  <!-- 모임 지붕: 능선 y74 (x322~378), 오른쪽으로 내려감 -->
+  <path fill="url(#roofR)" d="M318 100 V74 H378 L397 100 Z"/>
+  <path fill="#A8E2CC" d="M318 74 H378 L379 76 H318 Z"/>
+  <path fill="#9BCDBA" d="M378 74 L397 100 L394 100 L376 76 Z"/>
+  <!-- 작은 굴뚝 -->
+  <rect x="367" y="88" width="5" height="5" fill="#CFE0E3"/>
+  <use href="#win" x="334" y="107" width="6" height="12"/>
+  <use href="#win" x="349" y="108" width="6" height="11"/>
+  <use href="#win" x="362" y="109" width="7" height="10"/>
+  <use href="#win" x="377" y="109" width="7" height="10"/>
+  <use href="#win" x="334" y="126" width="6" height="12"/>
+  <use href="#win" x="349" y="126" width="6" height="11"/>
+  <use href="#win" x="362" y="126" width="7" height="10"/>
+  <use href="#win" x="377" y="126" width="7" height="10"/>
+  <rect x="323" y="121" width="72" height="0.8" fill="#DDE0DE"/>
+
+  <!-- ===== 중앙 탑 (x283~324) ===== -->
+  <rect x="286" y="44" width="36" height="84" fill="url(#wallT)"/>
+  <!-- 코니스 -->
+  <rect x="282" y="42" width="44" height="3" rx="0.8" fill="#DEDBD9"/>
+  <rect x="283" y="43" width="42" height="1" fill="#FFFFFF"/>
+  <!-- 뾰족 지붕 꼭대기 (302,14), 밑변 y42 -->
+  <path fill="url(#roofT)" d="M283 42 L302 14 L321 42 Z"/>
+  <path fill="#A1E3CA" d="M283 42 L302 14 L303.5 15.5 L285.5 42 Z"/>
+  <path fill="#6FCDAE" d="M302 14 L321 42 L318 42 L301 17 Z"/>
+  <!-- 첨탑 꼭지 -->
+  <rect x="301.2" y="9" width="1.6" height="6" fill="#6FCDAE"/>
+  <circle cx="302" cy="9" r="1.6" fill="#7AD5B4"/>
+  <!-- 꼭대기 작은 창 3개 -->
+  <use href="#win" x="291" y="47" width="3.5" height="6"/>
+  <use href="#win" x="300" y="47" width="3.5" height="6"/>
+  <use href="#win" x="309" y="47" width="3.5" height="6"/>
+  <!-- 띠 -->
+  <rect x="287" y="56" width="34" height="0.8" fill="#E6E8E6"/>
+  <!-- 긴 아치 창 3개 -->
+  <use href="#winTall" x="299" y="60" width="6" height="14"/>
+  <use href="#winTall" x="299" y="81" width="6" height="15"/>
+  <use href="#winTall" x="299" y="102" width="6" height="15"/>
+  <!-- 바닥 잘린 창 -->
+  <use href="#winTall" x="299" y="124" width="6" height="14"/>
+  <!-- 모서리 음영 -->
+  <rect x="286" y="44" width="2" height="84" fill="#FFFFFF" opacity="0.8"/>
+  <rect x="319" y="44" width="3" height="84" fill="#E4E6E3" opacity="0.8"/>
+  <!-- 양쪽 벽 기둥 선 -->
+  <rect x="291" y="44" width="0.8" height="84" fill="#EDEFEC"/>
+  <rect x="312" y="44" width="0.8" height="84" fill="#EDEFEC"/>
+
+  <!-- 바닥 선 -->
+  <rect x="166" y="127" width="231" height="1" fill="#6FA69C" opacity="0.5"/>
+
+  <!-- ===== 나무: 왼쪽 작은 덤불 (x135~169) ===== -->
+  <circle cx="148" cy="124" r="10" fill="url(#treeL)"/>
+  <circle cx="162" cy="126" r="8" fill="url(#treeD)"/>
+  <circle cx="139" cy="128" r="6" fill="url(#treeM)"/>
+  <!-- 바닥 왼쪽 구석 작은 덤불 -->
+  <circle cx="22" cy="130" r="8" fill="url(#treeL)"/>
+  <!-- 오른쪽 큰 나무 무리 (x429~512, y80~128) -->
+  <circle cx="486" cy="104" r="26" fill="url(#treeD)"/>
+  <circle cx="453" cy="111" r="20" fill="url(#treeD)"/>
+  <circle cx="443" cy="124" r="13" fill="url(#treeM)"/>
+  <circle cx="489" cy="123" r="15" fill="url(#treeM)"/>
+  <circle cx="505" cy="118" r="12" fill="url(#treeL)"/>
+  <circle cx="470" cy="125" r="11" fill="url(#treeD)"/>
+  <circle cx="405" cy="130" r="9" fill="url(#treeL)"/>
+</svg>

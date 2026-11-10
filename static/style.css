@@ -674,6 +674,8 @@ textarea.input {
 .badge--ok       { color: var(--primary); background-color: var(--primary-light); } /* 정상 사용 확인 */
 .badge--problem  { color: var(--red);     background-color: var(--red-light); }     /* 문제 있었어요 */
 .badge--solid    { color: var(--white);   background-color: var(--primary); }       /* 이화인 전용 기프티콘 마켓 */
+.badge--available{ color: var(--white);   background-color: var(--green); }         /* 판매중 (상세·추천 결과) */
+.badge--small    { height: 22px; padding: 0 10px; font-size: 11px; line-height: 16px; }
 
 /* D-day 태그 (카드 이미지 위, fill #ff625c, padding 4 10) */
 .dday {
@@ -689,8 +691,12 @@ textarea.input {
   border-radius: var(--radius-pill);
 }
 
+.dday--soon {
+  background-color: var(--amber);            /* 8~30일 */
+}
+
 .dday--far {
-  background-color: var(--text-secondary);
+  background-color: var(--text-secondary);   /* 31일 이상 */
 }
 
 /* ---------- 11. 카드 ---------- */
@@ -714,8 +720,7 @@ textarea.input {
 .product-card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 16px;
+  overflow: hidden;
   color: var(--text);
   background-color: var(--surface);
   border: 1px solid var(--border);
@@ -730,10 +735,10 @@ textarea.input {
 
 .product-card__image {
   position: relative;
-  aspect-ratio: 302 / 200;
+  aspect-ratio: 334 / 264;
   overflow: hidden;
   background-color: var(--background);
-  border-radius: var(--radius-control);
+  border-bottom: 1px solid var(--border);
 }
 
 .product-card__image img {
@@ -746,6 +751,13 @@ textarea.input {
   position: absolute;
   top: 12px;
   left: 12px;
+}
+
+.product-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
 }
 
 .product-card__meta {
@@ -765,8 +777,11 @@ textarea.input {
   margin: 0;
   font-size: 16px;
   line-height: 24px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .product-card__price {
@@ -798,7 +813,7 @@ textarea.input {
 
 .product-card__divider {
   height: 1px;
-  margin: 0;
+  margin: 6px 0 4px;
   border: 0;
   background-color: var(--border);
 }
@@ -819,9 +834,9 @@ textarea.input {
 }
 
 /* 판매완료 카드는 흐리게 */
-.product-card.is-sold .product-card__image,
-.product-card.is-sold .product-card__name,
-.product-card.is-sold .product-card__price {
+.product-card.is-sold .product-card__image img,
+.product-card.is-sold .product-card__image .dday,
+.product-card.is-sold .product-card__body {
   opacity: .45;
 }
 

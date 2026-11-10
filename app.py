@@ -18,14 +18,91 @@ USER_ID_PATTERN = re.compile(r"[A-Za-z0-9]{4,20}")
 MIN_PW_LENGTH = 4
 
 
+# ---------- 화면 구현 단계용 샘플 상품 ----------
+# TODO: 백엔드 단계에서 DB.get_items()로 교체
+CATEGORIES = ["카페·베이커리", "치킨·피자·버거", "외식", "편의점", "영화·문화", "상품권", "기타"]
+SAMPLE_ITEMS = [
+    {"brand": "스타벅스", "name": "아이스 카페 아메리카노 T", "category": "카페·베이커리", "price": 3500, "original_price": 4500,
+     "seller": "ewha_kim", "rating": 4.8, "dday": 3, "status": "selling", "addr": "전국 스타벅스 매장", "img": "sample_starbucks_americano.jpg"},
+    {"brand": "CU", "name": "모바일 상품권 5,000원", "category": "편의점", "price": 4500, "original_price": 5000,
+     "seller": "ewha23", "rating": 4.6, "dday": 327, "status": "selling", "addr": "전국 CU 편의점", "img": "sample_cu_voucher.jpg"},
+    {"brand": "BBQ", "name": "황금올리브치킨순살+콜라1.25L", "category": "치킨·피자·버거", "price": 22500, "original_price": 27500,
+     "seller": "pear_blossom", "rating": 4.9, "dday": 7, "status": "reserved", "addr": "전국 BBQ 매장", "img": "sample_bbq_chicken.jpg"},
+    {"brand": "투썸플레이스", "name": "생딸기 생크림 케이크", "category": "카페·베이커리", "price": 29700, "original_price": 35000,
+     "seller": "sweet_ewha", "rating": 4.7, "dday": 45, "status": "selling", "addr": "전국 투썸플레이스 매장", "img": "sample_twosome_cake.jpg"},
+    {"brand": "던킨", "name": "먼치킨 10개입 2ea", "category": "카페·베이커리", "price": 9000, "original_price": 12000,
+     "seller": "donut_lover", "rating": 4.5, "dday": 1, "status": "selling", "addr": "전국 던킨 매장", "img": "sample_dunkin_munchkin.jpg"},
+    {"brand": "공차", "name": "블랙 밀크티 J", "category": "카페·베이커리", "price": 4500, "original_price": 5700,
+     "seller": "tea_time", "rating": 4.8, "dday": 30, "status": "sold", "addr": "전국 공차 매장", "img": "sample_gongcha_milktea.jpg"},
+    {"brand": "맘스터치", "name": "휠렛버거 세트", "category": "치킨·피자·버거", "price": 6600, "original_price": 7500,
+     "seller": "mom_touch", "rating": 4.3, "dday": 88, "status": "selling", "addr": "전국 맘스터치 매장", "img": "sample_momstouch_burger.jpg"},
+    {"brand": "배스킨라빈스", "name": "쿼터 아이스크림", "category": "카페·베이커리", "price": 15300, "original_price": 18500,
+     "seller": "ice_ewha", "rating": 5.0, "dday": 152, "status": "reserved", "addr": "전국 배스킨라빈스 매장", "img": "sample_baskin_quarter.jpg"},
+    {"brand": "이디야커피", "name": "시그니처라떼 ICED (L)", "category": "카페·베이커리", "price": 3300, "original_price": 4700,
+     "seller": "latte_ewha", "rating": 4.7, "dday": 2, "status": "selling", "addr": "전국 이디야커피 매장", "img": "sample_ediya_latte.jpg"},
+    {"brand": "이마트24", "name": "모바일 금액권 1만원권", "category": "상품권", "price": 9200, "original_price": 10000,
+     "seller": "cu_holic", "rating": 4.4, "dday": 210, "status": "selling", "addr": "전국 이마트24 편의점", "img": "sample_emart24_voucher.jpg"},
+    {"brand": "교촌치킨", "name": "반반콤보", "category": "치킨·피자·버거", "price": 19500, "original_price": 23000,
+     "seller": "chicken_day", "rating": 4.9, "dday": 19, "status": "reserved", "addr": "전국 교촌치킨 매장", "img": "sample_kyochon_combo.jpg"},
+    {"brand": "파리바게뜨", "name": "시즌과일 우유 생크림 케이크 1호", "category": "카페·베이커리", "price": 27500, "original_price": 32000,
+     "seller": "cake_ewha", "rating": 4.6, "dday": 63, "status": "selling", "addr": "전국 파리바게뜨 매장", "img": "sample_paris_cake.jpg"},
+]
+for _item in SAMPLE_ITEMS:
+    _item["discount"] = round((1 - _item["price"] / _item["original_price"]) * 100)
+
+ITEMS_PER_PAGE = 12
+LIST_SORTS = {"latest": "최신 등록순", "deadline": "마감 임박순", "price": "가격 낮은순"}
+
+
 @app.route("/")
 def hello():
-    return render_template("index.html")
+    return redirect(url_for("view_list"))
 
 
 @app.route("/list")
 def view_list():
-    return render_template("list.html")
+    category = request.args.get("category", "")
+    sort = request.args.get("sort", "latest")
+    selling_only = request.args.get("selling") == "1"
+    query = request.args.get("q", "").strip()
+    if category not in CATEGORIES:
+        category = ""
+    if sort not in LIST_SORTS:
+        sort = "latest"
+
+    items = SAMPLE_ITEMS
+    if category:
+        items = [i for i in items if i["category"] == category]
+    if selling_only:
+        items = [i for i in items if i["status"] == "selling"]
+    if query:
+        items = [i for i in items if query.lower() in (i["brand"] + " " + i["name"]).lower()]
+    if sort == "deadline":
+        items = sorted(items, key=lambda i: i["dday"])
+    elif sort == "price":
+        items = sorted(items, key=lambda i: i["price"])
+
+    total = len(items)
+    page_count = max(1, -(-total // ITEMS_PER_PAGE))
+    try:
+        page = int(request.args.get("page", 1))
+    except ValueError:
+        page = 1
+    page = min(max(page, 1), page_count)
+    start = (page - 1) * ITEMS_PER_PAGE
+
+    # 마감 임박 특가: 유효기간 3일 이내 · 판매중
+    deals = sorted((i for i in SAMPLE_ITEMS if i["dday"] <= 3 and i["status"] == "selling"), key=lambda i: i["dday"])
+    stats = {
+        "count": len(SAMPLE_ITEMS),
+        "discount": round(sum(i["discount"] for i in SAMPLE_ITEMS) / len(SAMPLE_ITEMS)),
+        "closing": sum(1 for i in SAMPLE_ITEMS if i["dday"] <= 1 and i["status"] == "selling"),
+    }
+    return render_template(
+        "list.html", items=items[start:start + ITEMS_PER_PAGE], total=total, page=page, page_count=page_count,
+        categories=CATEGORIES, sorts=LIST_SORTS, deals=deals[:3], stats=stats,
+        category=category, sort=sort, selling_only=selling_only, query=query,
+    )
 
 
 @app.route("/review")

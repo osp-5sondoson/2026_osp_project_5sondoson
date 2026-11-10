@@ -1,0 +1,283 @@
+/* 상품 목록 화면 전용 스타일 (피그마 02 · 상품 목록) */
+
+/* ---------- 소개 배너 (1408×298 · radius 20) ---------- */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 16px 40px 16px 74px;
+  background: linear-gradient(90deg, var(--primary-light) 0%, #e3f1ff 100%);
+  border-radius: var(--radius-panel);
+}
+
+.hero__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.hero__title {
+  margin: 24px 0 16px;
+  font-size: 36px;
+  line-height: 50px;
+  color: var(--primary-dark);
+}
+
+.hero__desc {
+  margin: 0 0 32px;
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+.hero__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.hero__actions .button {
+  min-width: 150px;
+}
+
+.hero__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+  width: 566px;
+  flex-shrink: 0;
+}
+
+.hero__stats {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero__stats .stat {
+  width: 172px;
+  padding: 12px 16px;
+}
+
+.hero__image {
+  width: 100%;
+  height: 174px;
+  object-fit: cover;
+  border-radius: var(--radius-card-lg);
+}
+
+/* ---------- 섹션 제목 (Bold 22/32) ---------- */
+.list-title {
+  font-size: 22px;
+  line-height: 32px;
+}
+
+.section-head {
+  margin: 32px 0 20px;
+}
+
+/* ---------- 마감 임박 특가 카드 (453×140) ---------- */
+.deal {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 20px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  transition: border-color .15s;
+}
+
+.deal:hover {
+  border-color: var(--primary);
+}
+
+.deal__image {
+  width: 104px;
+  height: 104px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: var(--radius-control);
+}
+
+.deal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.deal__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+.deal__meta .dday {
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 4px;
+}
+
+.deal__name {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-card__price {
+  margin: 0;
+}
+
+.product-card__meta,
+.product-card__seller {
+  margin: 0;
+}
+
+/* ---------- 카테고리 타일 (8칸 · 높이 90 · radius 12) ---------- */
+.categories {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 90px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--text);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  transition: border-color .15s, background-color .15s;
+}
+
+.category svg {
+  color: var(--primary);
+}
+
+.category:hover {
+  border-color: var(--primary);
+}
+
+.category.is-active {
+  color: var(--white);
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.category.is-active svg {
+  color: var(--white);
+}
+
+/* ---------- 개수 · 판매중만 보기 · 정렬 ---------- */
+.list-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.list-toolbar__count {
+  font-size: 18px;
+  line-height: 26px;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text);
+}
+
+.check__box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--white);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.check.is-checked .check__box {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.check.is-checked .check__box::before {
+  content: "✓";
+}
+
+.list-toolbar__sorts {
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.list-toolbar__sorts .chip {
+  justify-content: center;
+  min-width: 138px;
+}
+
+.list-empty {
+  margin: 0;
+  padding: 64px 24px;
+  text-align: center;
+  color: var(--text-secondary);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.pagination {
+  margin-top: 32px;
+}
+
+/* ---------- 반응형 ---------- */
+@media screen and (max-width: 1280px) {
+  .hero { padding-left: 40px; }
+  .hero__side { width: 460px; }
+  .hero__stats .stat { width: auto; flex: 1; }
+  .hero__stats { width: 100%; }
+}
+
+@media screen and (max-width: 1024px) {
+  .hero { flex-direction: column; padding: 32px; }
+  .hero__side { width: 100%; align-items: stretch; }
+  .categories { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .list-toolbar { flex-wrap: wrap; }
+  .list-toolbar__sorts { width: 100%; margin-left: 0; gap: 8px; }
+  .list-toolbar__sorts .chip { flex: 1; min-width: 0; }
+}
+
+@media screen and (max-width: 768px) {
+  .hero__title { font-size: 26px; line-height: 38px; }
+  .hero__stats { flex-wrap: wrap; }
+  .categories { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+}

@@ -1,5 +1,139 @@
 {% extends "index.html" %}
+{% block title %}상품 목록 · 기쁘띠콘{% endblock title %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list.css') }}">
+{% endblock head %}
+
+{# 지금 조건을 유지한 채 일부만 바꾼 목록 주소 #}
+{% macro list_url(new_category=category, new_sort=sort, new_selling=selling_only, new_page=None) -%}
+{{ url_for('view_list', category=new_category or None, sort=new_sort if new_sort != 'latest' else None,
+           selling='1' if new_selling else None, q=query or None, page=new_page if new_page and new_page > 1 else None) }}
+{%- endmacro %}
+
+{% macro dday_tag(dday) -%}
+<span class="dday{% if dday > 30 %} dday--far{% elif dday > 7 %} dday--soon{% endif %}">D-{{ dday }}</span>
+{%- endmacro %}
+
+{% macro status_badge(status) -%}
+{% if status == 'selling' %}<span class="badge badge--solid badge--small">판매중</span>
+{% elif status == 'reserved' %}<span class="badge badge--reserved badge--small">예약중</span>
+{% else %}<span class="badge badge--sold badge--small">판매완료</span>{% endif %}
+{%- endmacro %}
+
+{% set category_icons = {
+ '': '<rect x="4" y="4" width="8" height="8" rx="1.5"/><rect x="16" y="4" width="8" height="8" rx="1.5"/><rect x="4" y="16" width="8" height="8" rx="1.5"/><rect x="16" y="16" width="8" height="8" rx="1.5"/>',
+ '카페·베이커리': '<path d="M6 10h13v8a5 5 0 0 1-5 5h-3a5 5 0 0 1-5-5v-8Z"/><path d="M19 12h2a3 3 0 0 1 0 6h-2"/><path d="M10 4v3M14 4v3"/>',
+ '치킨·피자·버거': '<path d="M5 12a9 7 0 0 1 18 0H5Z"/><path d="M4 16h20"/><path d="M5 20h18v1a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-1Z"/>',
+ '외식': '<path d="M9 4v20M6 4v6a3 3 0 0 0 6 0V4"/><path d="M19 24V4c-3 2-4 6-4 10h4"/>',
+ '편의점': '<path d="M5 12h18v11H5z"/><path d="M4 12l2-7h16l2 7"/><path d="M11 23v-6h6v6"/>',
+ '영화·문화': '<path d="M4 8h20v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V8Z"/><path d="M16 8v12" stroke-dasharray="2 2"/>',
+ '상품권': '<rect x="5" y="12" width="18" height="12" rx="1.5"/><rect x="4" y="8" width="20" height="4" rx="1"/><path d="M14 8v16"/><path d="M14 8c-1.5-4-5.5-4.5-6-2.5S10 8 14 8Zm0 0c1.5-4 5.5-4.5 6-2.5S18 8 14 8Z"/>',
+ '기타': '<path d="M14 5v18M5 14h18"/>'
+} %}
+
 {% block section %}
-<h1>상품 목록</h1>
-<p class="desc">등록된 상품을 모아 보여 주는 페이지입니다.</p>
+{# ---------- 1. 소개 배너 ---------- #}
+<section class="hero">
+ <div class="hero__text">
+  <span class="badge badge--solid">이화인 전용 기프티콘 마켓</span>
+  <h1 class="hero__title">서랍 속 기프티콘, 만료 전에 기쁘게</h1>
+  <p class="hero__desc">이화인끼리 안 쓰는 기프티콘을 싸게 사고팔아요.</p>
+  <div class="hero__actions">
+   <a class="button" href="/reg_items">기프티콘 판매하기</a>
+   <a class="button button--secondary" href="#">거래 가이드</a>
+  </div>
+ </div>
+ <div class="hero__side">
+  <ul class="hero__stats">
+   <li class="stat"><strong class="stat__value">{{ stats.count }}</strong><span class="stat__label">등록된 기프티콘</span></li>
+   <li class="stat"><strong class="stat__value">{{ stats.discount }}%</strong><span class="stat__label">평균 할인율</span></li>
+   <li class="stat"><strong class="stat__value">{{ stats.closing }}</strong><span class="stat__label">오늘 마감 임박</span></li>
+  </ul>
+  <img class="hero__image" src="{{ url_for('static', filename='images/ewha_campus.svg') }}" alt="이화여대 캠퍼스 그림">
+ </div>
+</section>
+
+{# ---------- 2. 마감 임박 특가 ---------- #}
+<div class="section-head">
+ <h2 class="list-title">마감 임박 특가</h2>
+ <span class="section-head__sub">유효기간 3일 이내</span>
+ <a class="section-head__more" href="{{ list_url(new_category='', new_sort='deadline', new_selling=True) }}">전체 보기 ›</a>
+</div>
+<div class="grid grid--3">
+ {% for item in deals %}
+ <a class="deal" href="{{ url_for('view_item_detail', name=item.name) }}">
+  <img class="deal__image" src="{{ url_for('static', filename='images/' + item.img) }}" alt="{{ item.brand }} {{ item.name }}">
+  <div class="deal__body">
+   <p class="deal__meta">{{ dday_tag(item.dday) }} {{ item.brand }}</p>
+   <p class="deal__name">{{ item.name }}</p>
+   <p class="product-card__price">
+    <span class="product-card__discount">{{ item.discount }}%</span>
+    <strong class="product-card__current">{{ "{:,}".format(item.price) }}원</strong>
+    <span class="product-card__original">{{ "{:,}".format(item.original_price) }}원</span>
+   </p>
+  </div>
+ </a>
+ {% endfor %}
+</div>
+
+{# ---------- 3. 전체 기프티콘 ---------- #}
+<div class="section-head" id="all">
+ <h2 class="list-title">전체 기프티콘</h2>
+ {% if query %}<span class="section-head__sub">"{{ query }}" 검색 결과</span>{% endif %}
+</div>
+
+<nav class="categories" aria-label="카테고리">
+ {% for name in [''] + categories %}
+ <a class="category{% if name == category %} is-active{% endif %}" href="{{ list_url(new_category=name) }}#all">
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ category_icons[name]|safe }}</svg>
+  <span>{{ name or '전체' }}</span>
+ </a>
+ {% endfor %}
+</nav>
+
+<div class="list-toolbar">
+ <strong class="list-toolbar__count">총 {{ total }}개</strong>
+ <a class="check{% if selling_only %} is-checked{% endif %}" href="{{ list_url(new_selling=not selling_only) }}#all" role="checkbox" aria-checked="{{ 'true' if selling_only else 'false' }}">
+  <span class="check__box" aria-hidden="true"></span>판매중만 보기
+ </a>
+ <div class="list-toolbar__sorts">
+  {% for key, label in sorts.items() %}
+  <a class="chip{% if key == sort %} is-active{% endif %}" href="{{ list_url(new_sort=key) }}#all">{{ label }}{% if key == 'latest' %} ⌄{% endif %}</a>
+  {% endfor %}
+ </div>
+</div>
+
+{% if items %}
+<div class="grid">
+ {% for item in items %}
+ <a class="product-card{% if item.status == 'sold' %} is-sold{% endif %}" href="{{ url_for('view_item_detail', name=item.name) }}">
+  <div class="product-card__image">
+   <img src="{{ url_for('static', filename='images/' + item.img) }}" alt="{{ item.brand }} {{ item.name }}">
+   {{ dday_tag(item.dday) }}
+  </div>
+  <div class="product-card__body">
+   <p class="product-card__meta"><span>{{ item.brand }}</span>{{ status_badge(item.status) }}</p>
+   <h3 class="product-card__name">{{ item.name }}</h3>
+   <p class="product-card__price">
+    <span class="product-card__discount">{{ item.discount }}%</span>
+    <strong class="product-card__current">{{ "{:,}".format(item.price) }}원</strong>
+    <span class="product-card__original">{{ "{:,}".format(item.original_price) }}원</span>
+   </p>
+   <hr class="product-card__divider">
+   <p class="product-card__seller"><span>{{ item.seller }}</span><span class="product-card__rating">★ {{ item.rating }}</span></p>
+  </div>
+ </a>
+ {% endfor %}
+</div>
+{% else %}
+<p class="list-empty">조건에 맞는 기프티콘이 아직 없어요. 다른 카테고리를 골라 보세요.</p>
+{% endif %}
+
+<nav class="pagination" aria-label="페이지">
+ <a class="{% if page == 1 %}is-disabled{% endif %}" href="{{ list_url(new_page=page - 1) }}#all" aria-label="이전 페이지">‹</a>
+ {% for p in range(1, page_count + 1) %}
+ <a class="{% if p == page %}is-active{% endif %}" href="{{ list_url(new_page=p) }}#all"{% if p == page %} aria-current="page"{% endif %}>{{ p }}</a>
+ {% endfor %}
+ <a class="{% if page == page_count %}is-disabled{% endif %}" href="{{ list_url(new_page=page + 1) }}#all" aria-label="다음 페이지">›</a>
+</nav>
 {% endblock section %}
