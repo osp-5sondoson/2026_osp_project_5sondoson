@@ -278,8 +278,8 @@
             id="email_domain"
             required
           >
-            <option value="ewha.ac.kr">@ewha.ac.kr</option>
-            <option value="ewhain.net">@ewhain.net</option>
+            <option value="ewha.ac.kr"{% if f.get('email_domain') == 'ewha.ac.kr' %} selected{% endif %}>@ewha.ac.kr</option>
+            <option value="ewhain.net"{% if f.get('email_domain') == 'ewhain.net' %} selected{% endif %}>@ewhain.net</option>
           </select>
 
         </div>

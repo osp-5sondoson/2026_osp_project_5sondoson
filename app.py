@@ -16,7 +16,10 @@ ITEM_FIELDS = ["name", "seller", "email", "price", "addr", "status"]
 ITEM_STATUSES = {"selling", "reserved", "sold"}
 FORBIDDEN_KEY_CHARS = ".#$[]/"
 USER_ID_PATTERN = re.compile(r"[A-Za-z0-9]{4,20}")
-MIN_PW_LENGTH = 4
+MIN_PW_LENGTH = 8                                   # 회원가입 폼 안내와 동일: 영문·숫자 포함 8자 이상
+EMAIL_DOMAINS = {"ewha.ac.kr", "ewhain.net"}        # 학교 이메일만 가입 가능
+EMAIL_ID_PATTERN = re.compile(r"[A-Za-z0-9._-]{1,64}")
+PHONE_PATTERN = re.compile(r"01[016789][ -]?\d{3,4}[ -]?\d{4}")
 
 
 # ---------- 화면 구현 단계용 샘플 상품 ----------
@@ -296,19 +299,29 @@ def signup():
 
 @app.route("/signup_post", methods=["POST"])
 def register_user():
+    # 회원가입 폼 필드: id · pw · pw_confirm · email_id · email_domain · phone(선택)
     data = {
         "id": request.form.get("id", "").strip(),
-        "nickname": request.form.get("nickname", "").strip()
+        "email_id": request.form.get("email_id", "").strip(),
+        "email_domain": request.form.get("email_domain", "").strip().lstrip("@"),
+        "phone": request.form.get("phone", "").strip(),
     }
     pw = request.form.get("pw", "")
+    pw_confirm = request.form.get("pw_confirm", "")
 
     error = None
-    if not data["id"] or not data["nickname"] or not pw:
-        error = "아이디, 비밀번호, 닉네임을 모두 입력해 주세요."
+    if not data["id"] or not pw or not pw_confirm or not data["email_id"]:
+        error = "아이디, 비밀번호, 비밀번호 확인, 학교 이메일을 모두 입력해 주세요."
     elif not USER_ID_PATTERN.fullmatch(data["id"]):
         error = "아이디는 영문과 숫자로 4~20자까지 쓸 수 있어요."
-    elif len(pw) < MIN_PW_LENGTH:
-        error = "비밀번호는 {}자 이상으로 입력해 주세요.".format(MIN_PW_LENGTH)
+    elif len(pw) < MIN_PW_LENGTH or not re.search(r"[A-Za-z]", pw) or not re.search(r"[0-9]", pw):
+        error = "비밀번호는 영문과 숫자를 포함해 {}자 이상으로 입력해 주세요.".format(MIN_PW_LENGTH)
+    elif pw != pw_confirm:
+        error = "비밀번호가 일치하지 않아요."
+    elif data["email_domain"] not in EMAIL_DOMAINS or not EMAIL_ID_PATTERN.fullmatch(data["email_id"]):
+        error = "학교 이메일(@ewha.ac.kr 또는 @ewhain.net)을 확인해 주세요."
+    elif data["phone"] and not PHONE_PATTERN.fullmatch(data["phone"]):
+        error = "전화번호는 010 0000 0000 형식으로 입력해 주세요."
     if error:
         return render_template("signup.html", error=error, form=data)
 
