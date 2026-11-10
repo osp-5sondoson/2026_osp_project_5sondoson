@@ -177,7 +177,9 @@ def view_item_detail(name):
         flash("존재하지 않는 상품이에요.")
         return redirect(url_for("view_list"))
     # DB에 없는 값(브랜드·카테고리·원가·D-day·평점)은 상품명이 같은 샘플이 있을 때만 채움
-    sample = next((i for i in SAMPLE_ITEMS if i["name"] == name), None)
+    # 상품명이 "아이스 카페 아메리카노 T"든 "스타벅스 아이스 카페 아메리카노 T"든 같은 샘플로 찾음
+    sample = next((i for i in SAMPLE_ITEMS
+                   if name in (i["name"], i["brand"] + " " + i["name"])), None)
     if sample:
         extra = {"brand": sample["brand"], "category": sample["category"],
                  "original_price": sample["original_price"], "dday": sample["dday"],
