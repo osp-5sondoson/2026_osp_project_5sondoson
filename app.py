@@ -8,7 +8,9 @@ import re
 import uuid
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.urandom(24)
+# 세션 서명 키. 실행할 때마다 바뀌면(os.urandom) 서버를 다시 켤 때 전원이 로그아웃되므로 고정값을 쓴다.
+# 배포할 때는 환경변수 SECRET_KEY 로 바꿔 넣는다 (예: export SECRET_KEY="임의의 긴 문자열").
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "5sondoson-gifticon-dev-key")
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024   # 업로드 사진 한 장당 5MB까지
 DB = DBhandler()
 
