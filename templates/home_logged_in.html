@@ -1,0 +1,110 @@
+
+{% extends "index.html" %}
+
+{% block title %}기쁘띠콘 | 홈{% endblock title %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home_logged_in.css') }}">
+{% endblock head %}
+
+{% block section %}
+
+<div class="logged-home">
+
+  <!-- 환영 배너 -->
+  <section class="logged-home__hero">
+    <div class="logged-home__intro">
+      <span class="logged-home__badge">이화인 전용 기프티콘 마켓</span>
+
+      <h1>{{ session.get('user_id', '사용자') }}님, 환영해요!</h1>
+
+      <p>
+        오늘은 어떤 기프티콘을 거래해 볼까요?<br>
+        이화인끼리 더 가볍고 기분 좋은 거래를 시작해요.
+      </p>
+    </div>
+
+    <div class="logged-home__art">
+      <img
+        src="{{ url_for('static', filename='images/ewha_campus.svg') }}"
+        alt="이화여자대학교 캠퍼스 일러스트"
+      >
+    </div>
+  </section>
+
+  <!-- 주요 기능 카드 -->
+  <section class="logged-home__actions" aria-label="주요 서비스">
+
+    <!-- 기프티콘 판매하기 -->
+    <article class="logged-home__card">
+      <div class="logged-home__card-icon">
+        <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <rect x="8" y="19" width="32" height="23" rx="2" stroke="currentColor" stroke-width="1.8"/>
+          <rect x="5" y="13" width="38" height="7" rx="2" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M24 13v29M24 13c-10-1-13-6-10-10 4-4 10 4 10 10Zm0 0c10-1 13-6 10-10-4-4-10 4-10 10Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h2>기프티콘 판매하기</h2>
+
+      <p>
+        안 쓰는 기프티콘을 올리고<br>
+        새로운 주인을 찾아주세요.
+      </p>
+
+      <a href="{{ url_for('reg_item') }}" class="logged-home__button">
+        판매 등록하기
+      </a>
+    </article>
+
+    <!-- 상품 둘러보기 -->
+    <article class="logged-home__card">
+      <div class="logged-home__card-icon">
+        <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <path d="M12 16h24l4 27H8l4-27Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M18 19v-7a6 6 0 0 1 12 0v7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <h2>상품 둘러보기</h2>
+
+      <p>
+        필요한 기프티콘을<br>
+        더 합리적인 가격에 만나 보세요.
+      </p>
+
+      <a href="{{ url_for('view_list') }}" class="logged-home__button">
+        상품 목록 보기
+      </a>
+    </article>
+
+    <!-- 리뷰 쓰기 -->
+    <article class="logged-home__card">
+      <div class="logged-home__card-icon">
+        <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <path d="m24 4 6.1 12.5 13.9 2-10 9.8 2.4 13.7L24 35.5 11.6 42l2.4-13.7-10-9.8 13.9-2L24 4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h2>리뷰 쓰기</h2>
+
+      <p>
+        실제 사용 경험을 나누고<br>
+        믿을 수 있는 거래를 함께 만들어요.
+      </p>
+
+      <a href="{{ url_for('reg_review') }}" class="logged-home__button">
+        리뷰 작성하기
+      </a>
+    </article>
+
+  </section>
+
+  <!-- 하단 안내 문구 -->
+  <p class="logged-home__note">
+    학교 이메일로 연결되는 우리만의 기프티콘 마켓
+  </p>
+
+</div>
+
+{% endblock section %}

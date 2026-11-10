@@ -273,6 +273,12 @@ def view_my_gifticons():
 def login():
     return render_template("login.html")
 
+@app.route("/home")
+def home_logged_in():
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+    return render_template("home_logged_in.html")
+
 @app.route("/login_confirm", methods=["POST"])
 def login_confirm():
     id_ = request.form.get("id", "").strip()
@@ -283,8 +289,8 @@ def login_confirm():
     ).hexdigest()
 
     if DB.find_user(id_, pw_hash):
-        session["id"] = id_
-        return redirect(url_for("view_list"))
+        session["user_id"] = id_
+        return redirect(url_for("home_logged_in"))
 
     flash("Wrong ID or PW!")
     return render_template("login.html")
