@@ -104,3 +104,21 @@ if (signupPassword && signupPasswordConfirm) {
     checkPasswordMatch
   );
 }
+
+/* =========================================================
+   아직 만들지 않은 기능 안내
+   data-soon="기능 이름" 이 붙은 링크·버튼을 누르면 "준비 중" 알림만 띄움
+   (거래 가이드 · 자주 묻는 질문 · 비밀번호 찾기 · 구매하기)
+   ========================================================= */
+
+document.querySelectorAll("[data-soon]").forEach((element) => {
+  element.addEventListener("click", (event) => {
+    event.preventDefault();
+    const feature = element.dataset.soon;
+    const message =
+      feature === "구매"
+        ? "구매 기능은 준비 중이에요.\n지금은 상세 페이지의 판매자 이메일로 연락해 주세요."
+        : feature + " 페이지는 준비 중이에요.";
+    alert(message);
+  });
+});
