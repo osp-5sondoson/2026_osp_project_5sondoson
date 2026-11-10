@@ -6,6 +6,14 @@
 
 {% block section %}
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script>
+      alert({{ messages[0] | tojson }});
+    </script>
+  {% endif %}
+{% endwith %}
+
 <section class="login-page">
 
   <!-- 왼쪽 로그인 영역 -->
@@ -47,7 +55,7 @@
           >
 
           <button
-            class="login-password__toggle"
+            class="login-password__toggle password-toggle"
             type="button"
             data-target="pw"
             aria-label="비밀번호 보기"
@@ -240,7 +248,7 @@
 
     <div class="login-page__illustration">
       <img
-        src="{{ url_for('static', filename='images/ewha_campus.png') }}"
+        src="{{ url_for('static', filename='images/ewha_campus.svg') }}"
         alt="이화여자대학교 캠퍼스 일러스트"
       >
     </div>

@@ -159,7 +159,9 @@
   pointer-events: none;
 }
 
+
 /* 기본 상태 */
+
 .signup-password__icon--show {
   display: block;
 }
@@ -168,13 +170,37 @@
   display: none;
 }
 
+
 /* 비밀번호가 보이는 상태 */
+
 .signup-password__toggle.is-visible .signup-password__icon--show {
   display: none;
 }
 
 .signup-password__toggle.is-visible .signup-password__icon--hide {
   display: block;
+}
+
+
+/* ---------- 비밀번호 일치 메시지 ---------- */
+
+.signup-match-message {
+  display: none;
+
+  margin: 8px 0 0;
+
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.signup-match-message.is-match {
+  display: block;
+  color: #1b8f4d;
+}
+
+.signup-match-message.is-mismatch {
+  display: block;
+  color: #d94848;
 }
 
 
