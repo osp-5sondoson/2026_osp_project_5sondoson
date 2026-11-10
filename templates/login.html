@@ -6,14 +6,6 @@
 
 {% block section %}
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <script>
-      alert({{ messages[0] | tojson }});
-    </script>
-  {% endif %}
-{% endwith %}
-
 <section class="login-page">
 
   <!-- 왼쪽 로그인 영역 -->
