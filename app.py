@@ -8,7 +8,9 @@ import re
 import uuid
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.urandom(24)
+# 세션 서명 키. 실행할 때마다 바뀌면(os.urandom) 서버를 다시 켤 때 전원이 로그아웃되므로 고정값을 쓴다.
+# 배포할 때는 환경변수 SECRET_KEY 로 바꿔 넣는다 (예: export SECRET_KEY="임의의 긴 문자열").
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "5sondoson-gifticon-dev-key")
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024   # 업로드 사진 한 장당 5MB까지
 DB = DBhandler()
 
@@ -215,12 +217,24 @@ def view_review_detail(review_id):
     return render_template("review_detail.html", review_id=review_id)
 
 
+def login_redirect(message="로그인이 필요한 페이지예요."):
+    """로그인이 필요한 페이지에서 세션이 없을 때: 안내 후 로그인으로 보내고, 로그인하면 원래 주소로 돌아온다"""
+    flash(message)
+    return redirect(url_for("login", next=request.full_path.rstrip("?")))
+
+
+def safe_next_url(url):
+    """로그인 뒤 돌아갈 주소는 이 사이트 안의 경로("/...")만 허용 (외부 주소·"//host"는 무시)"""
+    if url and url.startswith("/") and not url.startswith("//"):
+        return url
+    return None
+
+
 @app.route("/reg_items")
 def reg_item():
     # 판매자 ID·이메일은 로그인한 계정에서 가져오므로 로그인이 필요
     if not session.get("id"):
-        flash("기프티콘을 판매하려면 로그인해 주세요.")
-        return redirect(url_for("login"))
+        return login_redirect("기프티콘을 판매하려면 로그인해 주세요.")
     user = DB.get_user(session["id"]) or {}
     return render_template("reg_items.html", categories=CATEGORIES,
                            seller=session["id"], seller_email=user.get("email", ""))
@@ -249,6 +263,8 @@ def view_item_detail(name):
 
 @app.route("/reg_reviews")
 def reg_review():
+    if not session.get("id"):
+        return login_redirect("리뷰를 쓰려면 로그인해 주세요.")
     return render_template("reg_reviews.html")
 
 
@@ -290,6 +306,8 @@ def subject_particle(word):
 
 @app.route("/my_gifticons")
 def view_my_gifticons():
+    if not session.get("id"):
+        return login_redirect("내 기프티콘함은 로그인 후 볼 수 있어요.")
     tab = request.args.get("tab", "all")
     if tab not in MY_TABS:
         tab = "all"
@@ -317,7 +335,8 @@ def view_my_gifticons():
 
 @app.route("/login")
 def login():
-    return render_template("login.html")
+    # next: 로그인이 필요한 페이지에서 넘어온 경우 로그인 뒤 돌아갈 주소 (폼의 hidden 값으로 전달)
+    return render_template("login.html", next=safe_next_url(request.args.get("next")) or "")
 
 @app.route("/home")
 def home_logged_in():
@@ -329,6 +348,7 @@ def home_logged_in():
 def login_confirm():
     id_ = request.form.get("id", "").strip()
     pw = request.form.get("pw", "")
+    next_url = safe_next_url(request.form.get("next"))
 
     pw_hash = hashlib.sha256(
         pw.encode("utf-8")
@@ -336,10 +356,10 @@ def login_confirm():
 
     if DB.find_user(id_, pw_hash):
         session["id"] = id_
-        return redirect(url_for("home_logged_in"))
+        return redirect(next_url or url_for("home_logged_in"))
 
     flash("Wrong ID or PW!")
-    return render_template("login.html")
+    return render_template("login.html", next=next_url or "")
 
 
 @app.route("/logout")
