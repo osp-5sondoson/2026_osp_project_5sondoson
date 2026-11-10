@@ -176,6 +176,13 @@ def view_item_detail(name):
     if not data:
         flash("존재하지 않는 상품이에요.")
         return redirect(url_for("view_list"))
+    # DB의 price는 문자열("3500", "3,500")이라 숫자로 바꾸고, 사진이 없으면 기본 사진을 씀
+    try:
+        data["price"] = int(str(data.get("price", 0)).replace(",", "").strip())
+    except ValueError:
+        data["price"] = 0
+    if not data.get("img_path"):
+        data["img_path"] = "americano_gifticon.png"
     # DB에 없는 값(브랜드·카테고리·원가·D-day·평점)은 상품명이 같은 샘플이 있을 때만 채움
     # 상품명이 "아이스 카페 아메리카노 T"든 "스타벅스 아이스 카페 아메리카노 T"든 같은 샘플로 찾음
     sample = next((i for i in SAMPLE_ITEMS
