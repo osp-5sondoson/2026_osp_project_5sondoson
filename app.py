@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from database import DBhandler
+from datetime import date, datetime
 import hashlib
 import os
 import random
@@ -8,11 +9,13 @@ import uuid
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.urandom(24)
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024   # 업로드 사진 한 장당 5MB까지
 DB = DBhandler()
 
 UPLOAD_DIR = os.path.join(app.root_path, "static", "images")
 ALLOWED_IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
-ITEM_FIELDS = ["name", "seller", "email", "price", "addr", "status"]
+# 등록 폼에서 받는 필수 항목 (판매자 ID·이메일은 로그인한 계정에서 가져오고, 설명은 선택)
+ITEM_FIELDS = ["name", "category", "price", "original_price", "addr", "expire", "status"]
 ITEM_STATUSES = {"selling", "reserved", "sold"}
 FORBIDDEN_KEY_CHARS = ".#$[]/"
 USER_ID_PATTERN = re.compile(r"[A-Za-z0-9]{4,20}")
@@ -67,11 +70,22 @@ def to_int(value, default=0):
         return default
 
 
+def days_until(expire):
+    """유효기간 문자열("2026-12-31" 또는 "2026.12.31")까지 남은 날. 없거나 형식이 다르면 None"""
+    if not expire:
+        return None
+    try:
+        return (date.fromisoformat(str(expire).replace(".", "-")[:10]) - date.today()).days
+    except ValueError:
+        return None
+
+
 def load_items():
     """DB.get_items()의 {상품명: {...}}를 목록 화면이 쓰는 dict 리스트로 바꾼다.
 
-    DB에는 seller · price · addr · status · email · img_path만 저장되므로
-    화면에서 쓰는 나머지 값(brand · category · original_price · rating · dday)은 기본값을 채운다.
+    DB에는 seller · price · addr · status · email · img_path(실습 기본)에
+    original_price · category · expire · desc · created_at(등록 폼 추가분)이 있고,
+    예전에 등록돼 값이 없는 상품은 기본값을 채운다. brand · rating은 아직 DB에 없다.
     """
     items = []
     for name, data in DB.get_items().items():
@@ -84,7 +98,7 @@ def load_items():
         status = data.get("status", "selling")
         if status not in ITEM_STATUSES:
             status = "selling"
-        dday = to_int(data.get("dday"), None) if data.get("dday") not in (None, "") else None
+        dday = days_until(data.get("expire"))
         rating = data.get("rating")
         try:
             rating = float(rating) if rating not in (None, "") else None
@@ -102,9 +116,15 @@ def load_items():
             "addr": data.get("addr", ""),
             "rating": rating,
             "dday": dday,            # 유효기간 정보가 없으면 None → D-day 표시 안 함
+            "expire": data.get("expire", ""),
+            "desc": data.get("desc", ""),
+            "created_at": data.get("created_at", ""),   # 없으면 "" → 최신순에서 맨 뒤
             "status": status,
             "img": data.get("img_path") or DEFAULT_ITEM_IMAGE,
         })
+    # 기본 정렬: 최신 등록순. 등록 시각이 없는 예전 상품은 뒤로 가고, 그 안에서는 이름순
+    items.sort(key=lambda i: i["name"])
+    items.sort(key=lambda i: i["created_at"], reverse=True)
     return items
 # 특별페이지 예산 구간: (키, 표시 이름, 최소 이상, 최대 미만)
 BUDGETS = [
@@ -223,7 +243,13 @@ def view_review_detail(review_id):
 
 @app.route("/reg_items")
 def reg_item():
-    return render_template("reg_items.html")
+    # 판매자 ID·이메일은 로그인한 계정에서 가져오므로 로그인이 필요
+    if not session.get("id"):
+        flash("기프티콘을 판매하려면 로그인해 주세요.")
+        return redirect(url_for("login"))
+    user = DB.get_user(session["id"]) or {}
+    return render_template("reg_items.html", categories=CATEGORIES,
+                           seller=session["id"], seller_email=user.get("email", ""))
 
 
 @app.route("/view_detail/<name>")
@@ -403,19 +429,42 @@ def register_user():
         return render_template("signup.html", error="이미 존재하는 아이디입니다.", form=data)
 
 
+@app.errorhandler(413)
+def upload_too_large(_error):
+    flash("사진은 한 장당 5MB까지 올릴 수 있어요.")
+    return redirect(url_for("reg_item"))
+
+
 @app.route("/submit_item_post", methods=["POST"])
 def reg_item_submit_post():
+    if not session.get("id"):
+        flash("기프티콘을 판매하려면 로그인해 주세요.")
+        return redirect(url_for("login"))
+
     data = {field: request.form.get(field, "").strip() for field in ITEM_FIELDS}
+    data["desc"] = request.form.get("desc", "").strip()
+    # 판매자 ID·이메일은 폼 값이 아니라 로그인한 계정에서 가져온다 (남의 아이디로 등록 방지)
+    user = DB.get_user(session["id"]) or {}
+    data["seller"] = session["id"]
+    data["email"] = user.get("email", "")
     image_file = request.files.get("file_input")
     ext = os.path.splitext(image_file.filename)[1].lower() if image_file else ""
 
     error = None
-    if not all(data.values()):
+    if not all(data[field] for field in ITEM_FIELDS):
         error = "모든 항목을 입력해 주세요."
     elif any(c in data["name"] for c in FORBIDDEN_KEY_CHARS):
         error = "상품명에는 . # $ [ ] / 를 쓸 수 없어요."
-    elif not data["price"].isdigit():
-        error = "판매가는 0 이상의 숫자로 입력해 주세요."
+    elif data["category"] not in CATEGORIES:
+        error = "카테고리를 다시 선택해 주세요."
+    elif not data["price"].isdigit() or not data["original_price"].isdigit():
+        error = "판매가와 원가는 0 이상의 숫자로 입력해 주세요."
+    elif int(data["price"]) > int(data["original_price"]):
+        error = "판매가는 원가보다 높을 수 없어요."
+    elif days_until(data["expire"]) is None:
+        error = "유효기간을 다시 선택해 주세요."
+    elif days_until(data["expire"]) < 0:
+        error = "유효기간이 이미 지난 기프티콘은 등록할 수 없어요."
     elif data["status"] not in ITEM_STATUSES:
         error = "상태를 다시 선택해 주세요."
     elif not image_file or not image_file.filename:
@@ -425,7 +474,8 @@ def reg_item_submit_post():
     elif DB.item_exists(data["name"]):
         error = "이미 등록된 상품명이에요. 다른 이름으로 등록해 주세요."
     if error:
-        return render_template("reg_items.html", error=error, form=data)
+        return render_template("reg_items.html", error=error, form=data, categories=CATEGORIES,
+                               seller=data["seller"], seller_email=data["email"])
 
     # Save under a random name so uploads never overwrite each other or escape the folder
     filename = uuid.uuid4().hex + ext
@@ -434,8 +484,9 @@ def reg_item_submit_post():
 
     DB.insert_item(data["name"], data, filename)
 
-    return render_template("result.html", data=data,
-                           img_path="static/images/{}".format(filename))
+    # 등록 결과 표 대신 방금 올린 상품 상세로 이동 (새로고침해도 다시 등록되지 않음)
+    flash("기프티콘이 등록되었어요.")
+    return redirect(url_for("view_item_detail", name=data["name"]))
 
 
 if __name__ == "__main__":

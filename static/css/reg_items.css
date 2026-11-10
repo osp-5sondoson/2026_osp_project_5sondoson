@@ -333,3 +333,15 @@
   .reg__status-row { flex-wrap: wrap; }
   .reg__discount { flex-basis: 100%; margin-left: 0; }
 }
+
+/* 로그인 계정에서 자동으로 채워지는 판매자 ID·이메일 (수정 불가) */
+.reg__form input[readonly] {
+  background: var(--background);
+  color: var(--text-secondary);
+  cursor: default;
+}
+
+.reg__form input[readonly]:focus {
+  border-color: var(--border);
+  box-shadow: none;
+}
