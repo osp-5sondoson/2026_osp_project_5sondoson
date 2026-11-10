@@ -29,6 +29,13 @@ class DBhandler:
     def item_exists(self, name):
         return self.db.child("item").child(name).get().val() is not None
 
+    def get_items(self):
+        items = self.db.child("item").get().val()
+        return items or {}          # {상품명: {seller, price, ...}, ...}
+
+    def get_item_byname(self, name):
+        return self.db.child("item").child(name).get().val()   # 없으면 None
+
     def insert_user(self, data, pw):
         user_info = {
             "id": data['id'],
