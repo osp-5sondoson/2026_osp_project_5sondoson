@@ -229,5 +229,5 @@ authentication/
 static/images/*
 !static/images/.gitkeep
 !static/images/americano_gifticon.png
-!static/images/ewha_campus_2.jpg
+!static/images/ewha_campus*
 !static/images/sample_*
