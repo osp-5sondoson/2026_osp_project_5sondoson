@@ -1,0 +1,654 @@
+/* 리뷰 화면 전용 스타일 (리뷰 목록 · 판매자별 리뷰 · 리뷰 작성 · 리뷰 상세) */
+
+.review-page h1 {
+  font-size: 28px;
+  line-height: 40px;
+}
+
+.review-page .desc {
+  margin-bottom: 24px;
+}
+
+.breadcrumb {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.breadcrumb a {
+  color: var(--text-secondary);
+}
+
+.review-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* 통계 띠 */
+.review-stat-band {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px 24px;
+  background-color: var(--primary-light);
+  border-radius: 12px;
+}
+
+.review-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.review-stat__label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.review-stat__value {
+  font-size: 24px;
+  line-height: 34px;
+  color: var(--primary);
+}
+
+/* 필터 · 정렬 */
+.review-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.review-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.review-chip {
+  padding: 6px 16px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--primary);
+  background-color: var(--white);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+}
+
+.review-chip--active {
+  color: var(--white);
+  background-color: var(--primary);
+}
+
+.sort {
+  height: 34px;
+  padding: 0 12px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--primary);
+  background-color: var(--white);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+}
+
+/* 리뷰 행 */
+.review-list {
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.review-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding: 12px 20px 12px 12px;
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.review-item:hover {
+  border-color: var(--primary);
+}
+
+.review-item__link {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.review-item__thumb {
+  flex-shrink: 0;
+  width: 88px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.review-item__thumb--empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  background-color: var(--background);
+}
+
+.review-item__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.review-item__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.review-item__title {
+  display: block;
+  font-size: 15px;
+}
+
+.review-item__content {
+  overflow: hidden;
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.review-item__info {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+.review-item__item {
+  color: var(--text);
+}
+
+/* 오른쪽 링크는 빈 칸 없이 행 오른쪽 끝에 붙임 (검토 메모 반영) */
+.review-item__right {
+  flex-shrink: 0;
+  margin-left: auto;
+  text-align: right;
+}
+
+.seller-link {
+  font-size: 12px;
+  color: var(--primary);
+}
+
+.seller-link__star {
+  color: #f5a623;
+}
+
+.review-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-secondary);
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.review-stars {
+  color: #f5a623;
+  letter-spacing: 1px;
+}
+
+.review-stars__off {
+  color: #d9dee6;
+}
+
+.review-stars__score {
+  font-weight: 500;
+  color: #f5a623;
+}
+
+.tag {
+  padding: 2px 8px;
+  font-size: 11px;
+  line-height: 16px;
+  border-radius: 4px;
+}
+
+.tag--ok {
+  color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.tag--problem {
+  color: #e5484d;
+  background-color: #fdecec;
+}
+
+/* 페이지네이션 */
+.review-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.review-pagination__item {
+  min-width: 32px;
+  height: 32px;
+  font-size: 13px;
+  line-height: 30px;
+  text-align: center;
+  color: var(--primary);
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.review-pagination__item--active {
+  color: var(--white);
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.review-pagination__item--disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* 판매자 카드 */
+.seller-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 20px 32px;
+  background-color: var(--primary-light);
+  border-radius: 12px;
+}
+
+.seller-card__profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.seller-card__name {
+  display: block;
+  font-size: 22px;
+  line-height: 32px;
+}
+
+.seller-card__sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.seller-card__stats {
+  display: flex;
+  gap: 40px;
+}
+
+.avatar {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  font-weight: 700;
+  color: var(--primary);
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+}
+
+img.avatar {
+  object-fit: cover;
+}
+
+.avatar--lg {
+  width: 72px;
+  height: 72px;
+  font-size: 28px;
+}
+
+/* 리뷰 상세 */
+.review-detail {
+  margin-bottom: 24px;
+  padding: 32px;
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.review-detail__title {
+  margin: 12px 0 4px;
+}
+
+.review-detail__by {
+  margin: 0 0 24px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.review-detail__body {
+  display: flex;
+  gap: 32px;
+}
+
+.review-detail__photo {
+  width: 320px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.review-detail__body {
+  align-items: flex-start;
+}
+
+.review-detail__body .trade-box {
+  flex: 1;
+}
+
+/* 실사 사진이 아닌 기프티콘 이미지는 잘리지 않게 전체 표시 */
+.review-detail__photo--card {
+  object-fit: contain;
+  background-color: var(--background);
+}
+
+.review-detail__text {
+  max-width: 720px;
+  margin-top: 24px;
+  line-height: 26px;
+}
+
+.review-detail__text p {
+  margin: 0 0 20px;
+}
+
+.review-detail__text p:last-child {
+  margin-bottom: 0;
+}
+
+.trade-box {
+  padding: 20px;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.trade-box__title {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.trade-box__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.trade-box__row + .trade-box__row {
+  border-top: 1px solid var(--border);
+}
+
+.trade-box__img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.trade-box__info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.trade-box__label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.trade-box__rating {
+  font-size: 12px;
+  color: #f5a623;
+}
+
+/* 리뷰 작성 */
+.write-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+.write-layout .form {
+  max-width: none;
+  padding: 32px;
+}
+
+.input--readonly {
+  background-color: var(--primary-light) !important;
+}
+
+.form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px 16px;
+  font: inherit;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.form textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.choice {
+  display: flex;
+  gap: 12px;
+}
+
+.choice input {
+  position: absolute;
+  opacity: 0;
+}
+
+.choice label {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.choice label::before {
+  content: "○ ";
+}
+
+.choice input:checked + label {
+  color: var(--white);
+  background-color: var(--primary);
+}
+
+.choice input:checked + label::before {
+  content: "● ";
+}
+
+.choice input:focus-visible + label {
+  outline: 2px solid var(--text);
+}
+
+.rating-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 오른쪽→왼쪽 순서로 놓고 뒤집어서 선택한 별까지 칠함 */
+.rating-input__stars {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.rating-input__stars input {
+  position: absolute;
+  opacity: 0;
+}
+
+.rating-input__stars label {
+  font-size: 30px;
+  line-height: 36px;
+  color: #d9dee6;
+  cursor: pointer;
+}
+
+.rating-input__stars input:checked ~ label,
+.rating-input__stars label:hover,
+.rating-input__stars label:hover ~ label {
+  color: #f5a623;
+}
+
+.rating-input__score {
+  font-size: 24px;
+  font-weight: 500;
+  color: #f5a623;
+}
+
+.write-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.side-card {
+  padding: 20px;
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.side-card--tint {
+  background-color: var(--primary-light);
+  border-color: transparent;
+}
+
+.side-card__title {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.side-card__title--primary {
+  color: var(--primary);
+}
+
+.side-product {
+  display: flex;
+  gap: 16px;
+}
+
+.side-product img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.side-product__name {
+  display: block;
+  margin: 6px 0 4px;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.side-product__price {
+  display: block;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.side-product__price em {
+  font-style: normal;
+  color: #e5484d;
+}
+
+.side-product__seller {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.guide {
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  line-height: 28px;
+  list-style: none;
+}
+
+.guide li::before {
+  content: "✓ ";
+  color: var(--primary);
+}
+
+.side-card--promo p {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+.side-card--promo span {
+  color: var(--primary);
+}
+
+@media screen and (max-width: 768px) {
+  .review-stat-band {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .review-item,
+  .review-item__link,
+  .review-detail__body,
+  .seller-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .review-item__info {
+    width: auto;
+  }
+
+  .review-detail__photo {
+    width: 100%;
+  }
+
+  .write-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .seller-card__stats {
+    gap: 20px;
+  }
+}

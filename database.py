@@ -1,3 +1,4 @@
+
 import os
 import json
 import pyrebase
@@ -29,6 +30,13 @@ class DBhandler:
     def item_exists(self, name):
         return self.db.child("item").child(name).get().val() is not None
 
+    def get_items(self):
+        items = self.db.child("item").get().val()
+        return items or {}          # {상품명: {seller, price, ...}, ...}
+
+    def get_item_byname(self, name):
+        return self.db.child("item").child(name).get().val()   # 없으면 None
+
     def insert_user(self, data, pw):
         user_info = {
             "id": data['id'],
@@ -50,3 +58,13 @@ class DBhandler:
             if isinstance(value, dict) and value.get('id') == id_string:
                 return False
         return True
+
+    def find_user(self, id_, pw_hash):
+        users = self.db.child("user").get()
+        if users.val() is None:
+            return False
+        for res in users.each():
+            value = res.val()
+            if isinstance(value, dict) and value.get('id') == id_ and value.get('pw') == pw_hash:
+                return True
+        return False
