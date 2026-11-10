@@ -25,9 +25,10 @@
   </a>
 
   <nav class="gnb" aria-label="메인 내비게이션">
-   <a class="gnb__link" href="/list">상품 목록</a>
-   <a class="gnb__link" href="/review">리뷰</a>
-   <a class="gnb__link" href="/today">오늘 뭐 먹지?</a>
+   {% set path = request.path %}
+   <a class="gnb__link{% if path.startswith('/list') or path.startswith('/view_detail') %} is-active{% endif %}" href="/list">상품 목록</a>
+   <a class="gnb__link{% if 'review' in path %} is-active{% endif %}" href="/review">리뷰</a>
+   <a class="gnb__link{% if path.startswith('/today') %} is-active{% endif %}" href="/today">오늘 뭐 먹지?</a>
   </nav>
 
   <form class="search{% if logged_in %} search--compact{% endif %}" action="/list" method="get" role="search">
@@ -35,20 +36,20 @@
     <circle cx="9.5" cy="9.5" r="6.5" stroke="currentColor" stroke-width="1.8"/>
     <path d="M14.5 14.5 19 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
    </svg>
-   <input class="search__input" type="search" name="q" placeholder="스타벅스, 치킨, 편의점 검색" aria-label="상품 검색">
+   <input class="search__input" type="search" name="q" value="{{ request.args.get('q', '') if request.path == '/list' else '' }}" placeholder="스타벅스, 치킨, 편의점 검색" aria-label="상품 검색">
   </form>
 
   <div class="header__spacer"></div>
 
   {% if logged_in %}
   <a class="button" href="/reg_items">+ 판매하기</a>
-  <span class="account">
+  <a class="account" href="/my_gifticons" title="내 기프티콘함">
    <svg class="account__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
     <circle cx="11" cy="7.5" r="4" stroke="currentColor" stroke-width="1.8"/>
     <path d="M3.5 19.5c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
    </svg>
    <span class="account__name">{{ logged_in }}님</span>
-  </span>
+  </a>
   <a class="button button--secondary" href="/logout">로그아웃</a>
   {% else %}
   <a class="button button--secondary" href="/login">로그인</a>

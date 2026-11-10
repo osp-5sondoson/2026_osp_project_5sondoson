@@ -229,7 +229,8 @@ authentication/
 static/images/*
 !static/images/.gitkeep
 !static/images/americano_gifticon.png
-!static/images/ewha_campus_2.jpg
+!static/images/ewha_campus*
+!static/images/sample_*
 # Review screen sample images
 !static/images/product_starbucks_americano.jpg
 !static/images/product_starbucks_latte.jpg

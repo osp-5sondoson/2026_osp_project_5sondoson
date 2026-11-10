@@ -1,0 +1,40 @@
+{% extends "special.html" %}
+{# 특별페이지(오늘 뭐 먹지?) · 룰렛을 돌린 후 화면 #}
+
+{% block wheel_class %} wheel__disc--spin{% endblock %}
+
+{% block wheel_top %}<img src="{{ url_for('static', filename='images/' + pick.img) }}" alt="{{ pick.brand }} {{ pick.name }}">{% endblock %}
+
+{% block wheel_label %}다시 돌리기{% endblock %}
+
+{% block result %}
+<article class="pick">
+ <img class="pick__image" src="{{ url_for('static', filename='images/' + pick.img) }}" alt="{{ pick.brand }} {{ pick.name }}">
+ <div class="pick__body">
+  <p class="pick__badges">
+   <span class="dday{% if pick.dday > 30 %} dday--far{% elif pick.dday > 7 %} dday--soon{% endif %}">D-{{ pick.dday }}</span>
+   <span class="badge badge--available">판매중</span>
+   <span class="badge">{{ pick.category }}</span>
+  </p>
+  <p class="pick__brand">{{ pick.brand }}</p>
+  <h3 class="pick__name">{{ pick.name }}</h3>
+  <p class="pick__price">
+   <span class="pick__discount">{{ pick.discount }}%</span>
+   <strong class="pick__current">{{ "{:,}".format(pick.price) }}원</strong>
+   <span class="text-strike text-small">{{ "{:,}".format(pick.original_price) }}원</span>
+  </p>
+  <p class="pick__seller">{{ pick.seller }} <span class="text-rating">★ {{ pick.rating }}</span></p>
+ </div>
+</article>
+
+<dl class="pick-info">
+ <div class="pick-info__row"><dt>사용 가능 지역</dt><dd>{{ pick.addr }}</dd></div>
+ <div class="pick-info__row"><dt>예산 대비</dt>
+  <dd class="text-primary">{% if spare is not none %}{{ "{:,}".format(spare) }}원 여유 있어요{% else %}예산 제한 없이 골랐어요{% endif %}</dd>
+ </div>
+</dl>
+
+<a class="button button--block" href="{{ url_for('view_item_detail', name=pick.name) }}">상품 상세 보기</a>
+<a class="button button--secondary button--block" href="{{ url_for('view_list', category=category or None, selling='1') }}">조건에 맞는 상품 더 보기</a>
+<p class="special-box__caption">상품 정보를 확인한 뒤 구매할 수 있어요.</p>
+{% endblock result %}
