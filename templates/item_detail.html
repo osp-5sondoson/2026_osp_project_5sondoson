@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/item_detail.css') }}">
 {% endblock head %}
 {% block section %}
-{# DB에는 seller·price·addr·status·email·img_path만 있음. 나머지(브랜드·카테고리·원가·D-day·유효기간·설명·평점)는 있을 때만 표시 #}
+{# data는 app.py normalize_item이 정리한 값(숫자 price·original_price·dday·카테고리·기본 사진). 브랜드·유효기간·설명·평점은 있을 때만 표시 #}
 {% set status_label = {"selling": "판매중", "reserved": "예약중", "sold": "판매완료"} %}
 {% set status_text = status_label.get(data.status, data.status) %}
 {% set price = data.price | int %}
@@ -21,7 +21,8 @@
 <section class="detail">
  <div class="detail__media">
   {% if data.get('dday') is not none and data.get('dday') != '' %}
-  <span class="dday{% if data.get('dday') | int > 7 %} dday--far{% endif %} detail__dday">유효기간 D-{{ data.get('dday') }}</span>
+  {% set dday = data.get('dday') | int %}
+  <span class="dday{% if dday > 7 %} dday--far{% endif %} detail__dday">{% if dday < 0 %}유효기간 만료{% else %}유효기간 D-{{ dday }}{% endif %}</span>
   {% endif %}
   <img class="detail__image" src="{{ url_for('static', filename='images/' ~ data.img_path) }}" alt="{{ item_name }} 기프티콘 이미지 (바코드 가림)">
  </div>

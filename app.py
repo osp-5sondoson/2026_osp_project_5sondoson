@@ -26,37 +26,7 @@ SCHOOL_EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._-]{1,64}@(ewha\.ac\.kr|ewhain\.n
 PHONE_PATTERN = re.compile(r"01[016789][ -]?\d{3,4}[ -]?\d{4}")
 
 
-# ---------- 화면 구현 단계용 샘플 상품 ----------
-# 상품 목록(/list)은 DB에서 읽고, 특별페이지(오늘 뭐 먹지?)는 아직 샘플을 씀
-CATEGORIES =["카페·베이커리", "치킨·피자·버거", "외식", "편의점", "영화·문화", "상품권", "기타"]
-SAMPLE_ITEMS = [
-    {"brand": "스타벅스", "name": "아이스 카페 아메리카노 T", "category": "카페·베이커리", "price": 3500, "original_price": 4500,
-     "seller": "ewha_kim", "rating": 4.8, "dday": 3, "status": "selling", "addr": "전국 스타벅스 매장", "img": "sample_starbucks_americano.jpg"},
-    {"brand": "CU", "name": "모바일 상품권 5,000원", "category": "편의점", "price": 4500, "original_price": 5000,
-     "seller": "ewha23", "rating": 4.6, "dday": 327, "status": "selling", "addr": "전국 CU 편의점", "img": "sample_cu_voucher.jpg"},
-    {"brand": "BBQ", "name": "황금올리브치킨순살+콜라1.25L", "category": "치킨·피자·버거", "price": 22500, "original_price": 27500,
-     "seller": "pear_blossom", "rating": 4.9, "dday": 7, "status": "reserved", "addr": "전국 BBQ 매장", "img": "sample_bbq_chicken.jpg"},
-    {"brand": "투썸플레이스", "name": "생딸기 생크림 케이크", "category": "카페·베이커리", "price": 29700, "original_price": 35000,
-     "seller": "sweet_ewha", "rating": 4.7, "dday": 45, "status": "selling", "addr": "전국 투썸플레이스 매장", "img": "sample_twosome_cake.jpg"},
-    {"brand": "던킨", "name": "먼치킨 10개입 2ea", "category": "카페·베이커리", "price": 9000, "original_price": 12000,
-     "seller": "donut_lover", "rating": 4.5, "dday": 1, "status": "selling", "addr": "전국 던킨 매장", "img": "sample_dunkin_munchkin.jpg"},
-    {"brand": "공차", "name": "블랙 밀크티 J", "category": "카페·베이커리", "price": 4500, "original_price": 5700,
-     "seller": "tea_time", "rating": 4.8, "dday": 30, "status": "sold", "addr": "전국 공차 매장", "img": "sample_gongcha_milktea.jpg"},
-    {"brand": "맘스터치", "name": "휠렛버거 세트", "category": "치킨·피자·버거", "price": 6600, "original_price": 7500,
-     "seller": "mom_touch", "rating": 4.3, "dday": 88, "status": "selling", "addr": "전국 맘스터치 매장", "img": "sample_momstouch_burger.jpg"},
-    {"brand": "배스킨라빈스", "name": "쿼터 아이스크림", "category": "카페·베이커리", "price": 15300, "original_price": 18500,
-     "seller": "ice_ewha", "rating": 5.0, "dday": 152, "status": "reserved", "addr": "전국 배스킨라빈스 매장", "img": "sample_baskin_quarter.jpg"},
-    {"brand": "이디야커피", "name": "시그니처라떼 ICED (L)", "category": "카페·베이커리", "price": 3300, "original_price": 4700,
-     "seller": "latte_ewha", "rating": 4.7, "dday": 2, "status": "selling", "addr": "전국 이디야커피 매장", "img": "sample_ediya_latte.jpg"},
-    {"brand": "이마트24", "name": "모바일 금액권 1만원권", "category": "상품권", "price": 9200, "original_price": 10000,
-     "seller": "cu_holic", "rating": 4.4, "dday": 210, "status": "selling", "addr": "전국 이마트24 편의점", "img": "sample_emart24_voucher.jpg"},
-    {"brand": "교촌치킨", "name": "반반콤보", "category": "치킨·피자·버거", "price": 19500, "original_price": 23000,
-     "seller": "chicken_day", "rating": 4.9, "dday": 19, "status": "reserved", "addr": "전국 교촌치킨 매장", "img": "sample_kyochon_combo.jpg"},
-    {"brand": "파리바게뜨", "name": "시즌과일 우유 생크림 케이크 1호", "category": "카페·베이커리", "price": 27500, "original_price": 32000,
-     "seller": "cake_ewha", "rating": 4.6, "dday": 63, "status": "selling", "addr": "전국 파리바게뜨 매장", "img": "sample_paris_cake.jpg"},
-]
-for _item in SAMPLE_ITEMS:
-    _item["discount"] = round((1 - _item["price"] / _item["original_price"]) * 100)
+CATEGORIES = ["카페·베이커리", "치킨·피자·버거", "외식", "편의점", "영화·문화", "상품권", "기타"]
 
 ITEMS_PER_PAGE = 12
 LIST_SORTS = {"latest": "최신 등록순", "deadline": "마감 임박순", "price": "가격 낮은순"}
@@ -81,48 +51,49 @@ def days_until(expire):
         return None
 
 
-def load_items():
-    """DB.get_items()의 {상품명: {...}}를 목록 화면이 쓰는 dict 리스트로 바꾼다.
+def normalize_item(name, data):
+    """DB의 상품 한 건 {seller, price, ...}를 화면(목록·상세·특별페이지)이 쓰는 dict로 바꾼다.
 
     DB에는 seller · price · addr · status · email · img_path(실습 기본)에
     original_price · category · expire · desc · created_at(등록 폼 추가분)이 있고,
-    예전에 등록돼 값이 없는 상품은 기본값을 채운다. brand · rating은 아직 DB에 없다.
+    값이 없는 상품은 기본값을 채운다. brand · rating은 아직 DB에 없다.
     """
-    items = []
-    for name, data in DB.get_items().items():
-        if not isinstance(data, dict):
-            continue
-        price = to_int(data.get("price"))
-        original_price = to_int(data.get("original_price"), price)
-        if original_price < price:
-            original_price = price
-        status = data.get("status", "selling")
-        if status not in ITEM_STATUSES:
-            status = "selling"
-        dday = days_until(data.get("expire"))
-        rating = data.get("rating")
-        try:
-            rating = float(rating) if rating not in (None, "") else None
-        except (TypeError, ValueError):
-            rating = None
-        items.append({
-            "name": name,
-            "brand": data.get("brand", ""),
-            "category": data.get("category") if data.get("category") in CATEGORIES else "기타",
-            "price": price,
-            "original_price": original_price,
-            "discount": round((1 - price / original_price) * 100) if original_price else 0,
-            "seller": data.get("seller", ""),
-            "email": data.get("email", ""),
-            "addr": data.get("addr", ""),
-            "rating": rating,
-            "dday": dday,            # 유효기간 정보가 없으면 None → D-day 표시 안 함
-            "expire": data.get("expire", ""),
-            "desc": data.get("desc", ""),
-            "created_at": data.get("created_at", ""),   # 없으면 "" → 최신순에서 맨 뒤
-            "status": status,
-            "img": data.get("img_path") or DEFAULT_ITEM_IMAGE,
-        })
+    price = to_int(data.get("price"))
+    original_price = to_int(data.get("original_price"), price)
+    if original_price < price:
+        original_price = price
+    status = data.get("status", "selling")
+    if status not in ITEM_STATUSES:
+        status = "selling"
+    dday = days_until(data.get("expire"))
+    rating = data.get("rating")
+    try:
+        rating = float(rating) if rating not in (None, "") else None
+    except (TypeError, ValueError):
+        rating = None
+    return {
+        "name": name,
+        "brand": data.get("brand", ""),
+        "category": data.get("category") if data.get("category") in CATEGORIES else "기타",
+        "price": price,
+        "original_price": original_price,
+        "discount": round((1 - price / original_price) * 100) if original_price else 0,
+        "seller": data.get("seller", ""),
+        "email": data.get("email", ""),
+        "addr": data.get("addr", ""),
+        "rating": rating,
+        "dday": dday,            # 유효기간 정보가 없으면 None → D-day 표시 안 함, 음수면 만료
+        "expire": data.get("expire", ""),
+        "desc": data.get("desc", ""),
+        "created_at": data.get("created_at", ""),   # 없으면 "" → 최신순에서 맨 뒤
+        "status": status,
+        "img": data.get("img_path") or DEFAULT_ITEM_IMAGE,
+    }
+
+
+def load_items():
+    """DB.get_items()의 {상품명: {...}}를 목록 화면이 쓰는 dict 리스트로 바꾼다 (최신 등록순)"""
+    items = [normalize_item(name, data) for name, data in DB.get_items().items() if isinstance(data, dict)]
     # 기본 정렬: 최신 등록순. 등록 시각이 없는 예전 상품은 뒤로 가고, 그 안에서는 이름순
     items.sort(key=lambda i: i["name"])
     items.sort(key=lambda i: i["created_at"], reverse=True)
@@ -176,13 +147,13 @@ def view_list():
     page = min(max(page, 1), page_count)
     start = (page - 1) * ITEMS_PER_PAGE
 
-    # 마감 임박 특가: 유효기간 3일 이내 · 판매중
-    deals = sorted((i for i in all_items if i["dday"] is not None and i["dday"] <= 3 and i["status"] == "selling"),
+    # 마감 임박 특가: 유효기간 3일 이내 · 판매중 (이미 지난 상품은 제외)
+    deals = sorted((i for i in all_items if i["dday"] is not None and 0 <= i["dday"] <= 3 and i["status"] == "selling"),
                    key=lambda i: i["dday"])
     stats = {
         "count": len(all_items),
         "discount": round(sum(i["discount"] for i in all_items) / len(all_items)) if all_items else 0,
-        "closing": sum(1 for i in all_items if i["dday"] is not None and i["dday"] <= 1 and i["status"] == "selling"),
+        "closing": sum(1 for i in all_items if i["dday"] is not None and 0 <= i["dday"] <= 1 and i["status"] == "selling"),
     }
     return render_template(
         "list.html", items=items[start:start + ITEMS_PER_PAGE], total=total, page=page, page_count=page_count,
@@ -198,9 +169,11 @@ def special_context():
     category = request.args.get("category", "")
     if category not in CATEGORIES:
         category = ""
+    # 판매 중이고 유효기간이 지나지 않은 DB 상품 중에서 고른다 (유효기간 정보가 없는 상품도 포함)
     candidates = [
-        i for i in SAMPLE_ITEMS
+        i for i in load_items()
         if i["status"] == "selling"
+        and (i["dday"] is None or i["dday"] >= 0)
         and i["price"] >= budget[2]
         and (budget[3] is None or i["price"] < budget[3])
         and (not category or i["category"] == category)
@@ -255,26 +228,13 @@ def reg_item():
 
 @app.route("/view_detail/<name>")
 def view_item_detail(name):
-    data = DB.get_item_byname(str(name))
-    if not data:
+    raw = DB.get_item_byname(str(name))
+    if not isinstance(raw, dict):
         flash("존재하지 않는 상품이에요.")
         return redirect(url_for("view_list"))
-    # DB의 price는 문자열("3500", "3,500")이라 숫자로 바꾸고, 사진이 없으면 기본 사진을 씀
-    try:
-        data["price"] = int(str(data.get("price", 0)).replace(",", "").strip())
-    except ValueError:
-        data["price"] = 0
-    if not data.get("img_path"):
-        data["img_path"] = "americano_gifticon.png"
-    # DB에 없는 값(브랜드·카테고리·원가·D-day·평점)은 상품명이 같은 샘플이 있을 때만 채움
-    # 상품명이 "아이스 카페 아메리카노 T"든 "스타벅스 아이스 카페 아메리카노 T"든 같은 샘플로 찾음
-    sample = next((i for i in SAMPLE_ITEMS
-                   if name in (i["name"], i["brand"] + " " + i["name"])), None)
-    if sample:
-        extra = {"brand": sample["brand"], "category": sample["category"],
-                 "original_price": sample["original_price"], "dday": sample["dday"],
-                 "seller_rating": sample["rating"]}
-        data = {**extra, **data}
+    # 목록과 같은 규칙으로 정리한 값(숫자 가격·원가·할인율·D-day·기본 사진)을 DB 원본 위에 덮어 쓴다
+    item = normalize_item(name, raw)
+    data = {**raw, **item, "img_path": item["img"], "seller_rating": item["rating"]}
     # 판매자 리뷰는 이번 과제 범위가 아니라 샘플 그대로 둠 (리뷰 백엔드 때 교체)
     reviews = [
         {"rating": 4.0, "title": "바코드도 잘 찍히고 바로 사용했어요!",
@@ -428,6 +388,11 @@ def register_user():
         return redirect(url_for("login"))
     else:
         return render_template("signup.html", error="이미 존재하는 아이디입니다.", form=data)
+
+
+@app.errorhandler(404)
+def page_not_found(_error):
+    return render_template("404.html"), 404
 
 
 @app.errorhandler(413)
