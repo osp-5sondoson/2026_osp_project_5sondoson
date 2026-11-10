@@ -10,9 +10,10 @@
            selling='1' if new_selling else None, q=query or None, page=new_page if new_page and new_page > 1 else None) }}
 {%- endmacro %}
 
-{# 유효기간 정보(dday)가 없는 상품은 D-day를 표시하지 않음 #}
+{# 유효기간 정보(dday)가 없는 상품은 D-day를 표시하지 않고, 지난 상품은 "만료"로 표시 #}
 {% macro dday_tag(dday) -%}
-{% if dday is not none %}<span class="dday{% if dday > 30 %} dday--far{% elif dday > 7 %} dday--soon{% endif %}">D-{{ dday }}</span>{% endif %}
+{% if dday is none %}{% elif dday < 0 %}<span class="dday">만료</span>
+{% else %}<span class="dday{% if dday > 30 %} dday--far{% elif dday > 7 %} dday--soon{% endif %}">D-{{ dday }}</span>{% endif %}
 {%- endmacro %}
 
 {% macro status_badge(status) -%}

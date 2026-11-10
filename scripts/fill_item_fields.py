@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from database import DBhandler  # noqa: E402
 
 # 상품명 → (원가, 카테고리, 유효기간까지 남은 날)
-# 원가·남은 날은 화면 설계 때 쓴 샘플 값(app.py SAMPLE_ITEMS)과 같게 맞춘다.
+# 원가·남은 날은 화면 설계 때 쓴 샘플 데이터와 같게 맞춘다.
 FIELDS = {
     "스타벅스 아이스 카페 아메리카노 T": (4500, "카페·베이커리", 3),
     "CU 모바일 상품권 5,000원": (5000, "편의점", 327),
