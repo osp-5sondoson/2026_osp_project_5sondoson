@@ -1,3 +1,4 @@
+
 import os
 import json
 import pyrebase
@@ -50,3 +51,13 @@ class DBhandler:
             if isinstance(value, dict) and value.get('id') == id_string:
                 return False
         return True
+
+    def find_user(self, id_, pw_hash):
+        users = self.db.child("user").get()
+        if users.val() is None:
+            return False
+        for res in users.each():
+            value = res.val()
+            if isinstance(value, dict) and value.get('id') == id_ and value.get('pw') == pw_hash:
+                return True
+        return False

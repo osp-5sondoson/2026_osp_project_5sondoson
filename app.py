@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from database import DBhandler
 import hashlib
 import os
@@ -273,6 +273,21 @@ def view_my_gifticons():
 def login():
     return render_template("login.html")
 
+@app.route("/login_confirm", methods=["POST"])
+def login_confirm():
+    id_ = request.form.get("id", "").strip()
+    pw = request.form.get("pw", "")
+
+    pw_hash = hashlib.sha256(
+        pw.encode("utf-8")
+    ).hexdigest()
+
+    if DB.find_user(id_, pw_hash):
+        session["id"] = id_
+        return redirect(url_for("view_list"))
+
+    flash("Wrong ID or PW!")
+    return render_template("login.html")
 
 @app.route("/signup")
 def signup():
