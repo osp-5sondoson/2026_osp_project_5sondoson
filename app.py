@@ -22,6 +22,7 @@ USER_ID_PATTERN = re.compile(r"[A-Za-z0-9]{4,20}")
 MIN_PW_LENGTH = 8                                   # 회원가입 폼 안내와 동일: 영문·숫자 포함 8자 이상
 EMAIL_DOMAINS = {"ewha.ac.kr", "ewhain.net"}        # 학교 이메일만 가입 가능
 EMAIL_ID_PATTERN = re.compile(r"[A-Za-z0-9._-]{1,64}")
+SCHOOL_EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._-]{1,64}@(ewha\.ac\.kr|ewhain\.net)")
 PHONE_PATTERN = re.compile(r"01[016789][ -]?\d{3,4}[ -]?\d{4}")
 
 
@@ -443,16 +444,19 @@ def reg_item_submit_post():
 
     data = {field: request.form.get(field, "").strip() for field in ITEM_FIELDS}
     data["desc"] = request.form.get("desc", "").strip()
-    # 판매자 ID·이메일은 폼 값이 아니라 로그인한 계정에서 가져온다 (남의 아이디로 등록 방지)
+    # 판매자 ID는 폼 값이 아니라 로그인한 계정 (남의 아이디로 등록 방지).
+    # 이메일도 계정에 있으면 그 값을 쓰고, 이메일 없이 가입한 예전 계정만 폼에서 받는다
     user = DB.get_user(session["id"]) or {}
     data["seller"] = session["id"]
-    data["email"] = user.get("email", "")
+    data["email"] = user.get("email") or request.form.get("email", "").strip()
     image_file = request.files.get("file_input")
     ext = os.path.splitext(image_file.filename)[1].lower() if image_file else ""
 
     error = None
-    if not all(data[field] for field in ITEM_FIELDS):
+    if not all(data[field] for field in ITEM_FIELDS) or not data["email"]:
         error = "모든 항목을 입력해 주세요."
+    elif not SCHOOL_EMAIL_PATTERN.fullmatch(data["email"]):
+        error = "이메일은 학교 이메일(@ewha.ac.kr 또는 @ewhain.net)로 입력해 주세요."
     elif any(c in data["name"] for c in FORBIDDEN_KEY_CHARS):
         error = "상품명에는 . # $ [ ] / 를 쓸 수 없어요."
     elif data["category"] not in CATEGORIES:
