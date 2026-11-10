@@ -155,6 +155,16 @@ def view_review():
     return render_template("review.html")
 
 
+@app.route("/seller_reviews/<seller>")
+def view_seller_reviews(seller):
+    return render_template("seller_reviews.html", seller=seller)
+
+
+@app.route("/review_detail/<int:review_id>")
+def view_review_detail(review_id):
+    return render_template("review_detail.html", review_id=review_id)
+
+
 @app.route("/reg_items")
 def reg_item():
     return render_template("reg_items.html")
