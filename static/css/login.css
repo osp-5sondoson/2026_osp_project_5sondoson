@@ -1,0 +1,331 @@
+/* =========================================================
+   로그인 페이지 전용 스타일
+   공통 header / page / button 스타일은 style.css 사용
+   ========================================================= */
+
+
+/* ---------- 전체 로그인 카드 ---------- */
+
+.login-page {
+  display: grid;
+  grid-template-columns: 1.08fr 0.92fr;
+
+  margin: 16px auto 0;
+
+  overflow: hidden;
+
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+}
+
+
+/* ---------- 왼쪽 로그인 영역 ---------- */
+
+.login-page__form {
+  padding: 64px 64px 32px;
+}
+
+.login-page__title {
+  margin: 0 0 4px;
+}
+
+.login-page__desc {
+  margin: 0 0 32px;
+
+  color: var(--text-secondary);
+}
+
+
+/* 로그인 안에서만 공통 form 스타일 조정 */
+
+.login-form {
+  max-width: none;
+
+  padding: 0;
+
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+
+/* ---------- 비밀번호 ---------- */
+
+.login-password {
+  position: relative;
+  width: 100%;
+}
+
+.login-password input {
+  width: 100%;
+  padding-right: 52px;
+}
+
+.login-password__toggle {
+  position: absolute;
+
+  top: 50%;
+  right: 12px;
+
+  width: 36px;
+  height: 36px;
+
+  padding: 0;
+  margin: 0;
+
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--text-secondary);
+  background: transparent;
+
+  border: 0;
+  border-radius: 50%;
+
+  cursor: pointer;
+  z-index: 2;
+}
+
+.login-password__toggle:hover {
+  color: var(--text);
+  background-color: var(--primary-light);
+}
+
+.login-password__toggle:focus {
+  outline: none;
+}
+
+.login-password__toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.login-password__icon {
+  width: 20px;
+  height: 20px;
+
+  pointer-events: none;
+}
+
+
+/* 기본 상태 */
+
+.login-password__icon--show {
+  display: block;
+}
+
+.login-password__icon--hide {
+  display: none;
+}
+
+
+/* 비밀번호가 보이는 상태 */
+
+.login-password__toggle.is-visible .login-password__icon--show {
+  display: none;
+}
+
+.login-password__toggle.is-visible .login-password__icon--hide {
+  display: block;
+}
+
+
+/* ---------- 아이디 저장 / 비밀번호 찾기 ---------- */
+
+.login-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin: -4px 0 28px;
+
+  font-size: 14px;
+  line-height: 20px;
+
+  color: var(--text-secondary);
+}
+
+.login-options__remember {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  cursor: pointer;
+}
+
+.login-options__remember input {
+  width: 18px;
+  height: 18px;
+
+  margin: 0;
+
+  accent-color: var(--primary);
+}
+
+.login-options__link {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.login-options__link:hover {
+  color: var(--primary-dark);
+}
+
+
+/* ---------- 로그인 버튼 ---------- */
+
+.login-form .form__actions {
+  display: block;
+}
+
+.login-form .button {
+  width: 100%;
+}
+
+.login-form .form__switch {
+  margin-top: 28px;
+}
+
+
+/* ---------- 오른쪽 이화인 안내 영역 ---------- */
+
+.login-page__info {
+  display: flex;
+  flex-direction: column;
+
+  padding: 52px 48px;
+
+  background-color: var(--primary-light);
+}
+
+.login-page__info-title {
+  margin: 0 0 24px;
+
+  font-size: 36px;
+  line-height: 1.35;
+  font-weight: 700;
+
+  color: var(--primary);
+}
+
+.login-page__info-desc {
+  margin: 0 0 28px;
+
+  color: var(--text-secondary);
+}
+
+
+/* ---------- 이메일 도메인 ---------- */
+
+.login-page__email-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 20px;
+
+  margin-bottom: 20px;
+}
+
+.login-page__email {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  font-size: 26px;
+  line-height: 36px;
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+.login-page__email-icon {
+  width: 28px;
+  height: 28px;
+
+  flex-shrink: 0;
+
+  color: var(--primary);
+}
+
+.login-page__info-note {
+  margin: 0;
+
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+
+  color: var(--primary);
+}
+
+
+/* ---------- 학교 이미지 ---------- */
+
+/* 회원가입 화면(signup.css)과 같은 세로 크롭: 가운데 건물이 보이게 */
+.login-page__illustration {
+  flex: none;
+
+  width: 100%;
+  height: 390px;
+
+  margin-top: 30px;
+
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.login-page__illustration img {
+  display: block;
+
+  width: calc(100% + 48px);
+  max-width: none;
+  height: 100%;
+
+  margin-left: -24px;
+
+  object-fit: cover;
+  object-position: center center;
+}
+
+
+/* ---------- 반응형 ---------- */
+
+@media screen and (max-width: 900px) {
+
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-page__form {
+    padding: 40px 32px;
+  }
+
+  .login-page__info {
+    padding: 40px 32px;
+  }
+}
+
+
+@media screen and (max-width: 600px) {
+
+  .login-page__form,
+  .login-page__info {
+    padding: 32px 24px;
+  }
+
+  .login-options {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .login-page__email {
+    font-size: 21px;
+  }
+}
