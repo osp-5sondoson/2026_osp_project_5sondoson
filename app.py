@@ -176,6 +176,13 @@ def view_item_detail(name):
     if not data:
         flash("존재하지 않는 상품이에요.")
         return redirect(url_for("view_list"))
+    # DB에 없는 값(브랜드·카테고리·원가·D-day·평점)은 상품명이 같은 샘플이 있을 때만 채움
+    sample = next((i for i in SAMPLE_ITEMS if i["name"] == name), None)
+    if sample:
+        extra = {"brand": sample["brand"], "category": sample["category"],
+                 "original_price": sample["original_price"], "dday": sample["dday"],
+                 "seller_rating": sample["rating"]}
+        data = {**extra, **data}
     # 판매자 리뷰는 이번 과제 범위가 아니라 샘플 그대로 둠 (리뷰 백엔드 때 교체)
     reviews = [
         {"rating": 4.0, "title": "바코드도 잘 찍히고 바로 사용했어요!",
