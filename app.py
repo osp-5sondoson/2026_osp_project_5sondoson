@@ -196,6 +196,69 @@ def reg_review():
     return render_template("reg_reviews.html")
 
 
+# 내 기프티콘함(특별페이지) 샘플 데이터: 로그인한 구매자가 산 기프티콘
+MY_GIFTICONS = [
+    {"id": 1, "brand": "스타벅스", "name": "아이스 카페 아메리카노 T 2잔", "dday": 3, "used": False,
+     "img": "sample_starbucks_americano.jpg", "number": "9120 4471 0385 2216",
+     "expire": "2026.10.09까지", "seller": "ewha_kim", "bought": "2026.10.02",
+     "paid": 7300, "original_price": 9400},
+    {"id": 2, "brand": "BBQ", "name": "황금올리브치킨순살+콜라1.25L", "dday": 128, "used": False,
+     "img": "sample_bbq_chicken.jpg", "number": "5837 2069 4412 7750",
+     "expire": "2027.02.11까지", "seller": "pear_blossom", "bought": "2026.10.04",
+     "paid": 22500, "original_price": 27500},
+    {"id": 3, "brand": "CU", "name": "모바일 상품권 5,000원", "dday": None, "used": True,
+     "img": "sample_cu_voucher.jpg", "number": "3306 9184 6627 0943",
+     "expire": "2026.10.01 사용", "seller": "ewha23", "bought": "2026.09.28",
+     "paid": 4500, "original_price": 5000},
+]
+MY_TABS = {"all": "전체", "usable": "사용 가능", "used": "사용 완료"}
+
+
+def barcode_bars(number):
+    """기프티콘 번호로 바코드 막대 굵기(2~5px) 46개를 만든다. 같은 번호면 항상 같은 모양."""
+    seed = int(number.replace(" ", "")) % 233280
+    bars = []
+    for _ in range(46):
+        seed = (seed * 9301 + 49297) % 233280
+        bars.append(2 + seed * 4 // 233280)
+    return bars
+
+
+def subject_particle(word):
+    """한글 받침에 맞는 주격 조사('이' 또는 '가')를 고른다. 한글로 끝나지 않으면 '이(가)'."""
+    last = word[-1]
+    if not "가" <= last <= "힣":
+        return "이(가)"
+    return "이" if (ord(last) - ord("가")) % 28 else "가"
+
+
+@app.route("/my_gifticons")
+def view_my_gifticons():
+    tab = request.args.get("tab", "all")
+    if tab not in MY_TABS:
+        tab = "all"
+    owned = [
+        dict(g, bars=barcode_bars(g["number"]), particle=subject_particle(g["name"]))
+        for g in MY_GIFTICONS
+    ]
+    usable = [g for g in owned if not g["used"]]
+    used = [g for g in owned if g["used"]]
+    # 유효기간 임박순: 사용 가능한 것이 먼저, 그 안에서는 남은 날이 적은 순
+    cards = {"all": usable + used, "usable": usable, "used": used}[tab]
+    cards = sorted(cards, key=lambda g: (g["used"], g["dday"] or 0))
+    closing = [g for g in usable if g["dday"] <= 3]
+    summary = {
+        "usable": len(usable), "closing": closing, "used": used,
+        "saved": sum(g["original_price"] - g["paid"] for g in owned),
+    }
+    history = sorted(owned, key=lambda g: g["bought"], reverse=True)
+    counts = {"all": len(owned), "usable": len(usable), "used": len(used)}
+    return render_template(
+        "my_gifticons.html", cards=cards, tab=tab, tabs=MY_TABS, counts=counts,
+        summary=summary, history=history,
+    )
+
+
 @app.route("/login")
 def login():
     return render_template("login.html")

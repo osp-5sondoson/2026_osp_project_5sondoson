@@ -43,13 +43,13 @@
 
   {% if logged_in %}
   <a class="button" href="/reg_items">+ 판매하기</a>
-  <span class="account">
+  <a class="account" href="/my_gifticons" title="내 기프티콘함">
    <svg class="account__icon" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
     <circle cx="11" cy="7.5" r="4" stroke="currentColor" stroke-width="1.8"/>
     <path d="M3.5 19.5c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
    </svg>
    <span class="account__name">{{ logged_in }}님</span>
-  </span>
+  </a>
   <a class="button button--secondary" href="/logout">로그아웃</a>
   {% else %}
   <a class="button button--secondary" href="/login">로그인</a>
