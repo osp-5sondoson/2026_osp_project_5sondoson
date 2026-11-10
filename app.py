@@ -23,8 +23,8 @@ PHONE_PATTERN = re.compile(r"01[016789][ -]?\d{3,4}[ -]?\d{4}")
 
 
 # ---------- 화면 구현 단계용 샘플 상품 ----------
-# TODO: 백엔드 단계에서 DB.get_items()로 교체
-CATEGORIES = ["카페·베이커리", "치킨·피자·버거", "외식", "편의점", "영화·문화", "상품권", "기타"]
+# 상품 목록(/list)은 DB에서 읽고, 특별페이지(오늘 뭐 먹지?)는 아직 샘플을 씀
+CATEGORIES =["카페·베이커리", "치킨·피자·버거", "외식", "편의점", "영화·문화", "상품권", "기타"]
 SAMPLE_ITEMS = [
     {"brand": "스타벅스", "name": "아이스 카페 아메리카노 T", "category": "카페·베이커리", "price": 3500, "original_price": 4500,
      "seller": "ewha_kim", "rating": 4.8, "dday": 3, "status": "selling", "addr": "전국 스타벅스 매장", "img": "sample_starbucks_americano.jpg"},
@@ -56,6 +56,56 @@ for _item in SAMPLE_ITEMS:
 
 ITEMS_PER_PAGE = 12
 LIST_SORTS = {"latest": "최신 등록순", "deadline": "마감 임박순", "price": "가격 낮은순"}
+DEFAULT_ITEM_IMAGE = "americano_gifticon.png"   # img_path가 비어 있는 상품에 보여 줄 사진
+
+
+def to_int(value, default=0):
+    """DB에 문자열로 저장된 숫자("3500", "3,500")를 int로. 못 바꾸면 default"""
+    try:
+        return int(str(value).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return default
+
+
+def load_items():
+    """DB.get_items()의 {상품명: {...}}를 목록 화면이 쓰는 dict 리스트로 바꾼다.
+
+    DB에는 seller · price · addr · status · email · img_path만 저장되므로
+    화면에서 쓰는 나머지 값(brand · category · original_price · rating · dday)은 기본값을 채운다.
+    """
+    items = []
+    for name, data in DB.get_items().items():
+        if not isinstance(data, dict):
+            continue
+        price = to_int(data.get("price"))
+        original_price = to_int(data.get("original_price"), price)
+        if original_price < price:
+            original_price = price
+        status = data.get("status", "selling")
+        if status not in ITEM_STATUSES:
+            status = "selling"
+        dday = to_int(data.get("dday"), None) if data.get("dday") not in (None, "") else None
+        rating = data.get("rating")
+        try:
+            rating = float(rating) if rating not in (None, "") else None
+        except (TypeError, ValueError):
+            rating = None
+        items.append({
+            "name": name,
+            "brand": data.get("brand", ""),
+            "category": data.get("category") if data.get("category") in CATEGORIES else "기타",
+            "price": price,
+            "original_price": original_price,
+            "discount": round((1 - price / original_price) * 100) if original_price else 0,
+            "seller": data.get("seller", ""),
+            "email": data.get("email", ""),
+            "addr": data.get("addr", ""),
+            "rating": rating,
+            "dday": dday,            # 유효기간 정보가 없으면 None → D-day 표시 안 함
+            "status": status,
+            "img": data.get("img_path") or DEFAULT_ITEM_IMAGE,
+        })
+    return items
 # 특별페이지 예산 구간: (키, 표시 이름, 최소 이상, 최대 미만)
 BUDGETS = [
     ("all", "전체", 0, None),
@@ -82,7 +132,8 @@ def view_list():
     if sort not in LIST_SORTS:
         sort = "latest"
 
-    items = SAMPLE_ITEMS
+    all_items = load_items()
+    items = all_items
     if category:
         items = [i for i in items if i["category"] == category]
     if selling_only:
@@ -90,7 +141,8 @@ def view_list():
     if query:
         items = [i for i in items if query.lower() in (i["brand"] + " " + i["name"]).lower()]
     if sort == "deadline":
-        items = sorted(items, key=lambda i: i["dday"])
+        # 유효기간이 없는 상품은 맨 뒤로
+        items = sorted(items, key=lambda i: (i["dday"] is None, i["dday"] or 0))
     elif sort == "price":
         items = sorted(items, key=lambda i: i["price"])
 
@@ -104,11 +156,12 @@ def view_list():
     start = (page - 1) * ITEMS_PER_PAGE
 
     # 마감 임박 특가: 유효기간 3일 이내 · 판매중
-    deals = sorted((i for i in SAMPLE_ITEMS if i["dday"] <= 3 and i["status"] == "selling"), key=lambda i: i["dday"])
+    deals = sorted((i for i in all_items if i["dday"] is not None and i["dday"] <= 3 and i["status"] == "selling"),
+                   key=lambda i: i["dday"])
     stats = {
-        "count": len(SAMPLE_ITEMS),
-        "discount": round(sum(i["discount"] for i in SAMPLE_ITEMS) / len(SAMPLE_ITEMS)),
-        "closing": sum(1 for i in SAMPLE_ITEMS if i["dday"] <= 1 and i["status"] == "selling"),
+        "count": len(all_items),
+        "discount": round(sum(i["discount"] for i in all_items) / len(all_items)) if all_items else 0,
+        "closing": sum(1 for i in all_items if i["dday"] is not None and i["dday"] <= 1 and i["status"] == "selling"),
     }
     return render_template(
         "list.html", items=items[start:start + ITEMS_PER_PAGE], total=total, page=page, page_count=page_count,
