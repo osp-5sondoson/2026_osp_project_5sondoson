@@ -172,24 +172,11 @@ def reg_item():
 
 @app.route("/view_detail/<name>")
 def view_item_detail(name):
-    # TODO: 백엔드 단계에서 DB.get_item_byname(name)으로 교체
-    data = {
-        "name": "아이스 카페 아메리카노 T",
-        "brand": "스타벅스",
-        "category": "카페·베이커리",
-        "seller": "ewha_kim",
-        "seller_rating": 4.8,
-        "seller_deals": 12,
-        "email": "ewha_kim@ewha.ac.kr",
-        "price": 3500,
-        "original_price": 4500,
-        "expire": "2026.12.20",
-        "dday": 3,
-        "addr": "전국 스타벅스 매장 (일부 특수매장 제외)",
-        "status": "selling",
-        "desc": "시험 기간에 받았는데 커피를 안 마셔서 팔아요.\n사이즈 업이나 샷 추가는 차액 내고 가능해요!",
-        "img_path": "product_starbucks_americano.jpg",
-    }
+    data = DB.get_item_byname(str(name))
+    if not data:
+        flash("존재하지 않는 상품이에요.")
+        return redirect(url_for("view_list"))
+    # 판매자 리뷰는 이번 과제 범위가 아니라 샘플 그대로 둠 (리뷰 백엔드 때 교체)
     reviews = [
         {"rating": 4.0, "title": "바코드도 잘 찍히고 바로 사용했어요!",
          "body": "바코드가 바로 인식돼서 매장에서 문제없이 결제했어요. 유효기간도 설명대로 넉넉했어요.",
