@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from database import DBhandler
 import hashlib
 import os
+import random
 import re
 import uuid
 
@@ -52,6 +53,14 @@ for _item in SAMPLE_ITEMS:
 
 ITEMS_PER_PAGE = 12
 LIST_SORTS = {"latest": "최신 등록순", "deadline": "마감 임박순", "price": "가격 낮은순"}
+# 특별페이지 예산 구간: (키, 표시 이름, 최소 이상, 최대 미만)
+BUDGETS = [
+    ("all", "전체", 0, None),
+    ("u5", "5,000원 미만", 0, 5000),
+    ("5-10", "5,000 ~ 10,000원 미만", 5000, 10000),
+    ("10-20", "10,000 ~ 20,000원 미만", 10000, 20000),
+    ("20-30", "20,000 ~ 30,000원 미만", 20000, 30000),
+]
 
 
 @app.route("/")
@@ -103,6 +112,42 @@ def view_list():
         categories=CATEGORIES, sorts=LIST_SORTS, deals=deals[:3], stats=stats,
         category=category, sort=sort, selling_only=selling_only, query=query,
     )
+
+
+def special_context():
+    """특별페이지(오늘 뭐 먹지?) 전·후 화면이 같이 쓰는 조건·후보 목록"""
+    budget_key = request.args.get("budget", "u5")
+    budget = next((b for b in BUDGETS if b[0] == budget_key), BUDGETS[1])
+    category = request.args.get("category", "")
+    if category not in CATEGORIES:
+        category = ""
+    candidates = [
+        i for i in SAMPLE_ITEMS
+        if i["status"] == "selling"
+        and i["price"] >= budget[2]
+        and (budget[3] is None or i["price"] < budget[3])
+        and (not category or i["category"] == category)
+    ]
+    return {
+        "budgets": BUDGETS, "budget": budget, "categories": CATEGORIES[:-1],
+        "category": category, "candidates": candidates,
+    }
+
+
+@app.route("/today")
+def view_special():
+    return render_template("special.html", **special_context())
+
+
+@app.route("/today/result")
+def view_special_result():
+    context = special_context()
+    if not context["candidates"]:
+        return render_template("special.html", **context)
+    pick = random.choice(context["candidates"])
+    budget_max = context["budget"][3]
+    spare = budget_max - pick["price"] if budget_max else None
+    return render_template("special_result.html", pick=pick, spare=spare, **context)
 
 
 @app.route("/review")
