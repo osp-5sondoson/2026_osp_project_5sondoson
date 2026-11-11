@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from database import DBhandler
+from datetime import date, datetime
 import hashlib
 import os
 import random
@@ -7,52 +8,98 @@ import re
 import uuid
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.urandom(24)
+# 세션 서명 키. 실행할 때마다 바뀌면(os.urandom) 서버를 다시 켤 때 전원이 로그아웃되므로 고정값을 쓴다.
+# 배포할 때는 환경변수 SECRET_KEY 로 바꿔 넣는다 (예: export SECRET_KEY="임의의 긴 문자열").
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "5sondoson-gifticon-dev-key")
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024   # 업로드 사진 한 장당 5MB까지
 DB = DBhandler()
 
 UPLOAD_DIR = os.path.join(app.root_path, "static", "images")
 ALLOWED_IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
-ITEM_FIELDS = ["name", "seller", "email", "price", "addr", "status"]
+# 등록 폼에서 받는 필수 항목 (판매자 ID·이메일은 로그인한 계정에서 가져오고, 설명은 선택)
+ITEM_FIELDS = ["name", "category", "price", "original_price", "addr", "expire", "status"]
 ITEM_STATUSES = {"selling", "reserved", "sold"}
 FORBIDDEN_KEY_CHARS = ".#$[]/"
 USER_ID_PATTERN = re.compile(r"[A-Za-z0-9]{4,20}")
-MIN_PW_LENGTH = 4
+MIN_PW_LENGTH = 8                                   # 회원가입 폼 안내와 동일: 영문·숫자 포함 8자 이상
+EMAIL_DOMAINS = {"ewha.ac.kr", "ewhain.net"}        # 학교 이메일만 가입 가능
+EMAIL_ID_PATTERN = re.compile(r"[A-Za-z0-9._-]{1,64}")
+SCHOOL_EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._-]{1,64}@(ewha\.ac\.kr|ewhain\.net)")
+PHONE_PATTERN = re.compile(r"01[016789][ -]?\d{3,4}[ -]?\d{4}")
 
 
-# ---------- 화면 구현 단계용 샘플 상품 ----------
-# TODO: 백엔드 단계에서 DB.get_items()로 교체
 CATEGORIES = ["카페·베이커리", "치킨·피자·버거", "외식", "편의점", "영화·문화", "상품권", "기타"]
-SAMPLE_ITEMS = [
-    {"brand": "스타벅스", "name": "아이스 카페 아메리카노 T", "category": "카페·베이커리", "price": 3500, "original_price": 4500,
-     "seller": "ewha_kim", "rating": 4.8, "dday": 3, "status": "selling", "addr": "전국 스타벅스 매장", "img": "sample_starbucks_americano.jpg"},
-    {"brand": "CU", "name": "모바일 상품권 5,000원", "category": "편의점", "price": 4500, "original_price": 5000,
-     "seller": "ewha23", "rating": 4.6, "dday": 327, "status": "selling", "addr": "전국 CU 편의점", "img": "sample_cu_voucher.jpg"},
-    {"brand": "BBQ", "name": "황금올리브치킨순살+콜라1.25L", "category": "치킨·피자·버거", "price": 22500, "original_price": 27500,
-     "seller": "pear_blossom", "rating": 4.9, "dday": 7, "status": "reserved", "addr": "전국 BBQ 매장", "img": "sample_bbq_chicken.jpg"},
-    {"brand": "투썸플레이스", "name": "생딸기 생크림 케이크", "category": "카페·베이커리", "price": 29700, "original_price": 35000,
-     "seller": "sweet_ewha", "rating": 4.7, "dday": 45, "status": "selling", "addr": "전국 투썸플레이스 매장", "img": "sample_twosome_cake.jpg"},
-    {"brand": "던킨", "name": "먼치킨 10개입 2ea", "category": "카페·베이커리", "price": 9000, "original_price": 12000,
-     "seller": "donut_lover", "rating": 4.5, "dday": 1, "status": "selling", "addr": "전국 던킨 매장", "img": "sample_dunkin_munchkin.jpg"},
-    {"brand": "공차", "name": "블랙 밀크티 J", "category": "카페·베이커리", "price": 4500, "original_price": 5700,
-     "seller": "tea_time", "rating": 4.8, "dday": 30, "status": "sold", "addr": "전국 공차 매장", "img": "sample_gongcha_milktea.jpg"},
-    {"brand": "맘스터치", "name": "휠렛버거 세트", "category": "치킨·피자·버거", "price": 6600, "original_price": 7500,
-     "seller": "mom_touch", "rating": 4.3, "dday": 88, "status": "selling", "addr": "전국 맘스터치 매장", "img": "sample_momstouch_burger.jpg"},
-    {"brand": "배스킨라빈스", "name": "쿼터 아이스크림", "category": "카페·베이커리", "price": 15300, "original_price": 18500,
-     "seller": "ice_ewha", "rating": 5.0, "dday": 152, "status": "reserved", "addr": "전국 배스킨라빈스 매장", "img": "sample_baskin_quarter.jpg"},
-    {"brand": "이디야커피", "name": "시그니처라떼 ICED (L)", "category": "카페·베이커리", "price": 3300, "original_price": 4700,
-     "seller": "latte_ewha", "rating": 4.7, "dday": 2, "status": "selling", "addr": "전국 이디야커피 매장", "img": "sample_ediya_latte.jpg"},
-    {"brand": "이마트24", "name": "모바일 금액권 1만원권", "category": "상품권", "price": 9200, "original_price": 10000,
-     "seller": "cu_holic", "rating": 4.4, "dday": 210, "status": "selling", "addr": "전국 이마트24 편의점", "img": "sample_emart24_voucher.jpg"},
-    {"brand": "교촌치킨", "name": "반반콤보", "category": "치킨·피자·버거", "price": 19500, "original_price": 23000,
-     "seller": "chicken_day", "rating": 4.9, "dday": 19, "status": "reserved", "addr": "전국 교촌치킨 매장", "img": "sample_kyochon_combo.jpg"},
-    {"brand": "파리바게뜨", "name": "시즌과일 우유 생크림 케이크 1호", "category": "카페·베이커리", "price": 27500, "original_price": 32000,
-     "seller": "cake_ewha", "rating": 4.6, "dday": 63, "status": "selling", "addr": "전국 파리바게뜨 매장", "img": "sample_paris_cake.jpg"},
-]
-for _item in SAMPLE_ITEMS:
-    _item["discount"] = round((1 - _item["price"] / _item["original_price"]) * 100)
 
 ITEMS_PER_PAGE = 12
 LIST_SORTS = {"latest": "최신 등록순", "deadline": "마감 임박순", "price": "가격 낮은순"}
+DEFAULT_ITEM_IMAGE = "americano_gifticon.png"   # img_path가 비어 있는 상품에 보여 줄 사진
+
+
+def to_int(value, default=0):
+    """DB에 문자열로 저장된 숫자("3500", "3,500")를 int로. 못 바꾸면 default"""
+    try:
+        return int(str(value).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return default
+
+
+def days_until(expire):
+    """유효기간 문자열("2026-12-31" 또는 "2026.12.31")까지 남은 날. 없거나 형식이 다르면 None"""
+    if not expire:
+        return None
+    try:
+        return (date.fromisoformat(str(expire).replace(".", "-")[:10]) - date.today()).days
+    except ValueError:
+        return None
+
+
+def normalize_item(name, data):
+    """DB의 상품 한 건 {seller, price, ...}를 화면(목록·상세·특별페이지)이 쓰는 dict로 바꾼다.
+
+    DB에는 seller · price · addr · status · email · img_path(실습 기본)에
+    original_price · category · expire · desc · created_at(등록 폼 추가분)이 있고,
+    값이 없는 상품은 기본값을 채운다. brand · rating은 아직 DB에 없다.
+    """
+    price = to_int(data.get("price"))
+    original_price = to_int(data.get("original_price"), price)
+    if original_price < price:
+        original_price = price
+    status = data.get("status", "selling")
+    if status not in ITEM_STATUSES:
+        status = "selling"
+    dday = days_until(data.get("expire"))
+    rating = data.get("rating")
+    try:
+        rating = float(rating) if rating not in (None, "") else None
+    except (TypeError, ValueError):
+        rating = None
+    return {
+        "name": name,
+        "brand": data.get("brand", ""),
+        "category": data.get("category") if data.get("category") in CATEGORIES else "기타",
+        "price": price,
+        "original_price": original_price,
+        "discount": round((1 - price / original_price) * 100) if original_price else 0,
+        "seller": data.get("seller", ""),
+        "email": data.get("email", ""),
+        "addr": data.get("addr", ""),
+        "rating": rating,
+        "dday": dday,            # 유효기간 정보가 없으면 None → D-day 표시 안 함, 음수면 만료
+        "expire": data.get("expire", ""),
+        "desc": data.get("desc", ""),
+        "created_at": data.get("created_at", ""),   # 없으면 "" → 최신순에서 맨 뒤
+        "status": status,
+        "img": data.get("img_path") or DEFAULT_ITEM_IMAGE,
+    }
+
+
+def load_items():
+    """DB.get_items()의 {상품명: {...}}를 목록 화면이 쓰는 dict 리스트로 바꾼다 (최신 등록순)"""
+    items = [normalize_item(name, data) for name, data in DB.get_items().items() if isinstance(data, dict)]
+    # 기본 정렬: 최신 등록순. 등록 시각이 없는 예전 상품은 뒤로 가고, 그 안에서는 이름순
+    items.sort(key=lambda i: i["name"])
+    items.sort(key=lambda i: i["created_at"], reverse=True)
+    return items
 # 특별페이지 예산 구간: (키, 표시 이름, 최소 이상, 최대 미만)
 BUDGETS = [
     ("all", "전체", 0, None),
@@ -79,7 +126,8 @@ def view_list():
     if sort not in LIST_SORTS:
         sort = "latest"
 
-    items = SAMPLE_ITEMS
+    all_items = load_items()
+    items = all_items
     if category:
         items = [i for i in items if i["category"] == category]
     if selling_only:
@@ -87,7 +135,8 @@ def view_list():
     if query:
         items = [i for i in items if query.lower() in (i["brand"] + " " + i["name"]).lower()]
     if sort == "deadline":
-        items = sorted(items, key=lambda i: i["dday"])
+        # 유효기간이 없는 상품은 맨 뒤로
+        items = sorted(items, key=lambda i: (i["dday"] is None, i["dday"] or 0))
     elif sort == "price":
         items = sorted(items, key=lambda i: i["price"])
 
@@ -100,12 +149,13 @@ def view_list():
     page = min(max(page, 1), page_count)
     start = (page - 1) * ITEMS_PER_PAGE
 
-    # 마감 임박 특가: 유효기간 3일 이내 · 판매중
-    deals = sorted((i for i in SAMPLE_ITEMS if i["dday"] <= 3 and i["status"] == "selling"), key=lambda i: i["dday"])
+    # 마감 임박 특가: 유효기간 3일 이내 · 판매중 (이미 지난 상품은 제외)
+    deals = sorted((i for i in all_items if i["dday"] is not None and 0 <= i["dday"] <= 3 and i["status"] == "selling"),
+                   key=lambda i: i["dday"])
     stats = {
-        "count": len(SAMPLE_ITEMS),
-        "discount": round(sum(i["discount"] for i in SAMPLE_ITEMS) / len(SAMPLE_ITEMS)),
-        "closing": sum(1 for i in SAMPLE_ITEMS if i["dday"] <= 1 and i["status"] == "selling"),
+        "count": len(all_items),
+        "discount": round(sum(i["discount"] for i in all_items) / len(all_items)) if all_items else 0,
+        "closing": sum(1 for i in all_items if i["dday"] is not None and 0 <= i["dday"] <= 1 and i["status"] == "selling"),
     }
     return render_template(
         "list.html", items=items[start:start + ITEMS_PER_PAGE], total=total, page=page, page_count=page_count,
@@ -121,9 +171,11 @@ def special_context():
     category = request.args.get("category", "")
     if category not in CATEGORIES:
         category = ""
+    # 판매 중이고 유효기간이 지나지 않은 DB 상품 중에서 고른다 (유효기간 정보가 없는 상품도 포함)
     candidates = [
-        i for i in SAMPLE_ITEMS
+        i for i in load_items()
         if i["status"] == "selling"
+        and (i["dday"] is None or i["dday"] >= 0)
         and i["price"] >= budget[2]
         and (budget[3] is None or i["price"] < budget[3])
         and (not category or i["category"] == category)
@@ -165,31 +217,39 @@ def view_review_detail(review_id):
     return render_template("review_detail.html", review_id=review_id)
 
 
+def login_redirect(message="로그인이 필요한 페이지예요."):
+    """로그인이 필요한 페이지에서 세션이 없을 때: 안내 후 로그인으로 보내고, 로그인하면 원래 주소로 돌아온다"""
+    flash(message)
+    return redirect(url_for("login", next=request.full_path.rstrip("?")))
+
+
+def safe_next_url(url):
+    """로그인 뒤 돌아갈 주소는 이 사이트 안의 경로("/...")만 허용 (외부 주소·"//host"는 무시)"""
+    if url and url.startswith("/") and not url.startswith("//"):
+        return url
+    return None
+
+
 @app.route("/reg_items")
 def reg_item():
-    return render_template("reg_items.html")
+    # 판매자 ID·이메일은 로그인한 계정에서 가져오므로 로그인이 필요
+    if not session.get("id"):
+        return login_redirect("기프티콘을 판매하려면 로그인해 주세요.")
+    user = DB.get_user(session["id"]) or {}
+    return render_template("reg_items.html", categories=CATEGORIES,
+                           seller=session["id"], seller_email=user.get("email", ""))
 
 
 @app.route("/view_detail/<name>")
 def view_item_detail(name):
-    # TODO: 백엔드 단계에서 DB.get_item_byname(name)으로 교체
-    data = {
-        "name": "아이스 카페 아메리카노 T",
-        "brand": "스타벅스",
-        "category": "카페·베이커리",
-        "seller": "ewha_kim",
-        "seller_rating": 4.8,
-        "seller_deals": 12,
-        "email": "ewha_kim@ewha.ac.kr",
-        "price": 3500,
-        "original_price": 4500,
-        "expire": "2026.12.20",
-        "dday": 3,
-        "addr": "전국 스타벅스 매장 (일부 특수매장 제외)",
-        "status": "selling",
-        "desc": "시험 기간에 받았는데 커피를 안 마셔서 팔아요.\n사이즈 업이나 샷 추가는 차액 내고 가능해요!",
-        "img_path": "product_starbucks_americano.jpg",
-    }
+    raw = DB.get_item_byname(str(name))
+    if not isinstance(raw, dict):
+        flash("존재하지 않는 상품이에요.")
+        return redirect(url_for("view_list"))
+    # 목록과 같은 규칙으로 정리한 값(숫자 가격·원가·할인율·D-day·기본 사진)을 DB 원본 위에 덮어 쓴다
+    item = normalize_item(name, raw)
+    data = {**raw, **item, "img_path": item["img"], "seller_rating": item["rating"]}
+    # 판매자 리뷰는 이번 과제 범위가 아니라 샘플 그대로 둠 (리뷰 백엔드 때 교체)
     reviews = [
         {"rating": 4.0, "title": "바코드도 잘 찍히고 바로 사용했어요!",
          "body": "바코드가 바로 인식돼서 매장에서 문제없이 결제했어요. 유효기간도 설명대로 넉넉했어요.",
@@ -203,6 +263,8 @@ def view_item_detail(name):
 
 @app.route("/reg_reviews")
 def reg_review():
+    if not session.get("id"):
+        return login_redirect("리뷰를 쓰려면 로그인해 주세요.")
     return render_template("reg_reviews.html")
 
 
@@ -244,6 +306,8 @@ def subject_particle(word):
 
 @app.route("/my_gifticons")
 def view_my_gifticons():
+    if not session.get("id"):
+        return login_redirect("내 기프티콘함은 로그인 후 볼 수 있어요.")
     tab = request.args.get("tab", "all")
     if tab not in MY_TABS:
         tab = "all"
@@ -271,11 +335,12 @@ def view_my_gifticons():
 
 @app.route("/login")
 def login():
-    return render_template("login.html")
+    # next: 로그인이 필요한 페이지에서 넘어온 경우 로그인 뒤 돌아갈 주소 (폼의 hidden 값으로 전달)
+    return render_template("login.html", next=safe_next_url(request.args.get("next")) or "")
 
 @app.route("/home")
 def home_logged_in():
-    if not session.get("user_id"):
+    if not session.get("id"):
         return redirect(url_for("login"))
     return render_template("home_logged_in.html")
 
@@ -283,17 +348,25 @@ def home_logged_in():
 def login_confirm():
     id_ = request.form.get("id", "").strip()
     pw = request.form.get("pw", "")
+    next_url = safe_next_url(request.form.get("next"))
 
     pw_hash = hashlib.sha256(
         pw.encode("utf-8")
     ).hexdigest()
 
     if DB.find_user(id_, pw_hash):
-        session["user_id"] = id_
-        return redirect(url_for("home_logged_in"))
+        session["id"] = id_
+        return redirect(next_url or url_for("home_logged_in"))
 
     flash("Wrong ID or PW!")
-    return render_template("login.html")
+    return render_template("login.html", next=next_url or "")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("view_list"))
+
 
 @app.route("/signup")
 def signup():
@@ -302,19 +375,29 @@ def signup():
 
 @app.route("/signup_post", methods=["POST"])
 def register_user():
+    # 회원가입 폼 필드: id · pw · pw_confirm · email_id · email_domain · phone(선택)
     data = {
         "id": request.form.get("id", "").strip(),
-        "nickname": request.form.get("nickname", "").strip()
+        "email_id": request.form.get("email_id", "").strip(),
+        "email_domain": request.form.get("email_domain", "").strip().lstrip("@"),
+        "phone": request.form.get("phone", "").strip(),
     }
     pw = request.form.get("pw", "")
+    pw_confirm = request.form.get("pw_confirm", "")
 
     error = None
-    if not data["id"] or not data["nickname"] or not pw:
-        error = "아이디, 비밀번호, 닉네임을 모두 입력해 주세요."
+    if not data["id"] or not pw or not pw_confirm or not data["email_id"]:
+        error = "아이디, 비밀번호, 비밀번호 확인, 학교 이메일을 모두 입력해 주세요."
     elif not USER_ID_PATTERN.fullmatch(data["id"]):
         error = "아이디는 영문과 숫자로 4~20자까지 쓸 수 있어요."
-    elif len(pw) < MIN_PW_LENGTH:
-        error = "비밀번호는 {}자 이상으로 입력해 주세요.".format(MIN_PW_LENGTH)
+    elif len(pw) < MIN_PW_LENGTH or not re.search(r"[A-Za-z]", pw) or not re.search(r"[0-9]", pw):
+        error = "비밀번호는 영문과 숫자를 포함해 {}자 이상으로 입력해 주세요.".format(MIN_PW_LENGTH)
+    elif pw != pw_confirm:
+        error = "비밀번호가 일치하지 않아요."
+    elif data["email_domain"] not in EMAIL_DOMAINS or not EMAIL_ID_PATTERN.fullmatch(data["email_id"]):
+        error = "학교 이메일(@ewha.ac.kr 또는 @ewhain.net)을 확인해 주세요."
+    elif data["phone"] and not PHONE_PATTERN.fullmatch(data["phone"]):
+        error = "전화번호는 010 0000 0000 형식으로 입력해 주세요."
     if error:
         return render_template("signup.html", error=error, form=data)
 
@@ -327,19 +410,50 @@ def register_user():
         return render_template("signup.html", error="이미 존재하는 아이디입니다.", form=data)
 
 
+@app.errorhandler(404)
+def page_not_found(_error):
+    return render_template("404.html"), 404
+
+
+@app.errorhandler(413)
+def upload_too_large(_error):
+    flash("사진은 한 장당 5MB까지 올릴 수 있어요.")
+    return redirect(url_for("reg_item"))
+
+
 @app.route("/submit_item_post", methods=["POST"])
 def reg_item_submit_post():
+    if not session.get("id"):
+        flash("기프티콘을 판매하려면 로그인해 주세요.")
+        return redirect(url_for("login"))
+
     data = {field: request.form.get(field, "").strip() for field in ITEM_FIELDS}
+    data["desc"] = request.form.get("desc", "").strip()
+    # 판매자 ID는 폼 값이 아니라 로그인한 계정 (남의 아이디로 등록 방지).
+    # 이메일도 계정에 있으면 그 값을 쓰고, 이메일 없이 가입한 예전 계정만 폼에서 받는다
+    user = DB.get_user(session["id"]) or {}
+    data["seller"] = session["id"]
+    data["email"] = user.get("email") or request.form.get("email", "").strip()
     image_file = request.files.get("file_input")
     ext = os.path.splitext(image_file.filename)[1].lower() if image_file else ""
 
     error = None
-    if not all(data.values()):
+    if not all(data[field] for field in ITEM_FIELDS) or not data["email"]:
         error = "모든 항목을 입력해 주세요."
+    elif not SCHOOL_EMAIL_PATTERN.fullmatch(data["email"]):
+        error = "이메일은 학교 이메일(@ewha.ac.kr 또는 @ewhain.net)로 입력해 주세요."
     elif any(c in data["name"] for c in FORBIDDEN_KEY_CHARS):
         error = "상품명에는 . # $ [ ] / 를 쓸 수 없어요."
-    elif not data["price"].isdigit():
-        error = "판매가는 0 이상의 숫자로 입력해 주세요."
+    elif data["category"] not in CATEGORIES:
+        error = "카테고리를 다시 선택해 주세요."
+    elif not data["price"].isdigit() or not data["original_price"].isdigit():
+        error = "판매가와 원가는 0 이상의 숫자로 입력해 주세요."
+    elif int(data["price"]) > int(data["original_price"]):
+        error = "판매가는 원가보다 높을 수 없어요."
+    elif days_until(data["expire"]) is None:
+        error = "유효기간을 다시 선택해 주세요."
+    elif days_until(data["expire"]) < 0:
+        error = "유효기간이 이미 지난 기프티콘은 등록할 수 없어요."
     elif data["status"] not in ITEM_STATUSES:
         error = "상태를 다시 선택해 주세요."
     elif not image_file or not image_file.filename:
@@ -349,7 +463,8 @@ def reg_item_submit_post():
     elif DB.item_exists(data["name"]):
         error = "이미 등록된 상품명이에요. 다른 이름으로 등록해 주세요."
     if error:
-        return render_template("reg_items.html", error=error, form=data)
+        return render_template("reg_items.html", error=error, form=data, categories=CATEGORIES,
+                               seller=data["seller"], seller_email=data["email"])
 
     # Save under a random name so uploads never overwrite each other or escape the folder
     filename = uuid.uuid4().hex + ext
@@ -358,8 +473,9 @@ def reg_item_submit_post():
 
     DB.insert_item(data["name"], data, filename)
 
-    return render_template("result.html", data=data,
-                           img_path="static/images/{}".format(filename))
+    # 등록 결과 표 대신 방금 올린 상품 상세로 이동 (새로고침해도 다시 등록되지 않음)
+    flash("기프티콘이 등록되었어요.")
+    return redirect(url_for("view_item_detail", name=data["name"]))
 
 
 if __name__ == "__main__":

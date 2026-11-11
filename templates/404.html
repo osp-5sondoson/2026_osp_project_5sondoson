@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+{% block title %}페이지를 찾을 수 없어요 · 기쁘띠콘{% endblock title %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/error.css') }}">
+{% endblock head %}
+{% block section %}
+{# 없는 주소로 들어왔을 때 (app.py errorhandler 404) #}
+<section class="card card--lg error-page">
+ <p class="error-page__code">404</p>
+ <h1 class="error-page__title">페이지를 찾을 수 없어요</h1>
+ <p class="error-page__desc">주소가 바뀌었거나 삭제된 상품일 수 있어요.<br>아래에서 다른 기프티콘을 둘러보세요.</p>
+ <div class="error-page__actions">
+  <a class="button" href="{{ url_for('view_list') }}">상품 목록으로</a>
+  <a class="button button--secondary" href="{{ url_for('view_special') }}">오늘 뭐 먹지?</a>
+ </div>
+</section>
+{% endblock section %}

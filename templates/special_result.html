@@ -3,27 +3,28 @@
 
 {% block wheel_class %} wheel__disc--spin{% endblock %}
 
-{% block wheel_top %}<img src="{{ url_for('static', filename='images/' + pick.img) }}" alt="{{ pick.brand }} {{ pick.name }}">{% endblock %}
+{% block wheel_top %}<img src="{{ url_for('static', filename='images/' + pick.img) }}" alt="{{ pick.name }}">{% endblock %}
 
 {% block wheel_label %}다시 돌리기{% endblock %}
 
 {% block result %}
 <article class="pick">
- <img class="pick__image" src="{{ url_for('static', filename='images/' + pick.img) }}" alt="{{ pick.brand }} {{ pick.name }}">
+ <img class="pick__image" src="{{ url_for('static', filename='images/' + pick.img) }}" alt="{{ pick.name }}">
  <div class="pick__body">
+  {# DB 상품이라 유효기간·브랜드·평점·원가는 값이 있을 때만 표시 #}
   <p class="pick__badges">
-   <span class="dday{% if pick.dday > 30 %} dday--far{% elif pick.dday > 7 %} dday--soon{% endif %}">D-{{ pick.dday }}</span>
+   {% if pick.dday is not none %}<span class="dday{% if pick.dday > 30 %} dday--far{% elif pick.dday > 7 %} dday--soon{% endif %}">D-{{ pick.dday }}</span>{% endif %}
    <span class="badge badge--available">판매중</span>
    <span class="badge">{{ pick.category }}</span>
   </p>
-  <p class="pick__brand">{{ pick.brand }}</p>
+  {% if pick.brand %}<p class="pick__brand">{{ pick.brand }}</p>{% endif %}
   <h3 class="pick__name">{{ pick.name }}</h3>
   <p class="pick__price">
-   <span class="pick__discount">{{ pick.discount }}%</span>
+   {% if pick.discount %}<span class="pick__discount">{{ pick.discount }}%</span>{% endif %}
    <strong class="pick__current">{{ "{:,}".format(pick.price) }}원</strong>
-   <span class="text-strike text-small">{{ "{:,}".format(pick.original_price) }}원</span>
+   {% if pick.discount %}<span class="text-strike text-small">{{ "{:,}".format(pick.original_price) }}원</span>{% endif %}
   </p>
-  <p class="pick__seller">{{ pick.seller }} <span class="text-rating">★ {{ pick.rating }}</span></p>
+  <p class="pick__seller">{{ pick.seller }}{% if pick.rating is not none %} <span class="text-rating">★ {{ pick.rating }}</span>{% endif %}</p>
  </div>
 </article>
 

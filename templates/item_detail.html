@@ -1,51 +1,66 @@
 {% extends "index.html" %}
-{% block title %}{{ data.name or name }} · 기쁘띠콘{% endblock title %}
+{% set item_name = data.get('name') or name %}
+{% block title %}{{ item_name }} · 기쁘띠콘{% endblock title %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/item_detail.css') }}">
 {% endblock head %}
 {% block section %}
+{# data는 app.py normalize_item이 정리한 값(숫자 price·original_price·dday·카테고리·기본 사진). 브랜드·유효기간·설명·평점은 있을 때만 표시 #}
 {% set status_label = {"selling": "판매중", "reserved": "예약중", "sold": "판매완료"} %}
-{% set discount = ((1 - data.price / data.original_price) * 100) | round | int if data.original_price else 0 %}
+{% set status_text = status_label.get(data.status, data.status) %}
+{% set price = data.price | int %}
+{% set original_price = data.get('original_price') | int if data.get('original_price') else 0 %}
+{% set discount = ((1 - price / original_price) * 100) | round | int if original_price > price else 0 %}
 
 <nav class="breadcrumb" aria-label="현재 위치">
- <a href="/list">상품 목록</a> <span aria-hidden="true">›</span>
- <span>{{ data.category }}</span> <span aria-hidden="true">›</span>
- <span>{{ data.brand }}</span>
+ <a href="{{ url_for('view_list') }}">상품 목록</a>
+ {% if data.get('category') %}<span aria-hidden="true">›</span> <span>{{ data.get('category') }}</span>{% endif %}
+ {% if data.get('brand') %}<span aria-hidden="true">›</span> <span>{{ data.get('brand') }}</span>{% endif %}
 </nav>
 
 <section class="detail">
  <div class="detail__media">
-  <span class="dday{% if data.dday > 7 %} dday--far{% endif %} detail__dday">유효기간 D-{{ data.dday }}</span>
-  <img class="detail__image" src="{{ url_for('static', filename='images/' ~ data.img_path) }}" alt="{{ data.name or name }} 기프티콘 이미지 (바코드 가림)">
+  {% if data.get('dday') is not none and data.get('dday') != '' %}
+  {% set dday = data.get('dday') | int %}
+  <span class="dday{% if dday > 7 %} dday--far{% endif %} detail__dday">{% if dday < 0 %}유효기간 만료{% else %}유효기간 D-{{ dday }}{% endif %}</span>
+  {% endif %}
+  <img class="detail__image" src="{{ url_for('static', filename='images/' ~ data.img_path) }}" alt="{{ item_name }} 기프티콘 이미지 (바코드 가림)">
  </div>
 
  <div class="detail__info">
   <p class="detail__brand">
-   <span class="badge">{{ data.category }}</span>
-   <span class="badge detail-status detail-status--{{ data.status }}">{{ status_label[data.status] }}</span>
-   {{ data.brand }}
+   {% if data.get('category') %}<span class="badge">{{ data.get('category') }}</span>{% endif %}
+   <span class="badge detail-status detail-status--{{ data.status }}">{{ status_text }}</span>
+   {% if data.get('brand') %}{{ data.get('brand') }}{% endif %}
   </p>
-  <h1 class="detail__name">{{ data.name or name }}</h1>
+  <h1 class="detail__name">{{ item_name }}</h1>
   <p class="detail__price">
    {% if discount > 0 %}<span class="detail__discount">{{ discount }}%</span>{% endif %}
-   <span class="detail__current">{{ "{:,}".format(data.price) }}원</span>
-   {% if data.original_price %}<span class="text-strike">{{ "{:,}".format(data.original_price) }}원</span>{% endif %}
+   <span class="detail__current">{{ "{:,}".format(price) }}원</span>
+   {% if discount > 0 %}<span class="text-strike">{{ "{:,}".format(original_price) }}원</span>{% endif %}
   </p>
 
   <dl class="panel detail__meta">
    <dt>판매자</dt>
-   <dd>{{ data.seller }} <span class="detail__rating">★ {{ data.seller_rating }}</span> (거래 {{ data.seller_deals }}회)</dd>
+   <dd>{{ data.seller }}{% if data.get('seller_rating') %} <span class="detail__rating">★ {{ data.get('seller_rating') }}</span>{% endif %}{% if data.get('seller_deals') %} (거래 {{ data.get('seller_deals') }}회){% endif %}</dd>
+   <dt>이메일</dt>
+   <dd>{{ data.email }}</dd>
+   {% if data.get('expire') %}
    <dt>유효기간</dt>
-   <dd>{{ data.expire }}까지</dd>
+   <dd>{{ data.get('expire') }}까지</dd>
+   {% endif %}
    <dt>사용 가능 지역</dt>
    <dd>{{ data.addr }}</dd>
    <dt>상태</dt>
-   <dd class="detail__status-text detail__status-text--{{ data.status }}">{{ status_label[data.status] }}</dd>
+   <dd class="detail__status-text detail__status-text--{{ data.status }}">{{ status_text }}</dd>
   </dl>
 
+  {% if data.get('desc') %}
   <h2 class="detail__subtitle">상품 설명</h2>
-  <p class="card detail__desc">{{ data.desc }}</p>
-  <button class="button button--block detail__buy" type="button"{% if data.status != "selling" %} disabled{% endif %}>구매하기</button>
+  <p class="card detail__desc">{{ data.get('desc') }}</p>
+  {% endif %}
+  {# 구매 흐름은 아직 없어서 누르면 "준비 중" 안내 (static/main.js data-soon) #}
+  <button class="button button--block detail__buy" type="button" data-soon="구매"{% if data.status != "selling" %} disabled{% endif %}>구매하기</button>
   <p class="notice notice--info detail__notice">구매하면 바로 바코드를 확인할 수 있어요 <span aria-hidden="true">|</span> 가상 거래 · 실제 결제 없음</p>
  </div>
 </section>
@@ -54,8 +69,8 @@
  <div class="seller-reviews__head">
   <div>
    <h2 class="seller-reviews__title">
-    판매자 {{ data.seller }}님이 받은 거래 리뷰 {{ data.seller_deals }}
-    <span class="stars">★★★★★</span> <span class="seller-reviews__score">{{ data.seller_rating }}</span>
+    판매자 {{ data.seller }}님이 받은 거래 리뷰{% if data.get('seller_deals') %} {{ data.get('seller_deals') }}{% endif %}
+    {% if data.get('seller_rating') %}<span class="stars">★★★★★</span> <span class="seller-reviews__score">{{ data.get('seller_rating') }}</span>{% endif %}
    </h2>
    <p class="section-head__sub">기프티콘은 한 번 팔리면 끝이라, 리뷰는 상품이 아닌 판매자에게 쌓여요. 이 판매자의 지난 거래 후기를 확인해 보세요.</p>
   </div>

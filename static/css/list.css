@@ -90,6 +90,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
   transition: border-color .15s;
+  min-width: 0;   /* 그리드 칸보다 내용이 길어도 칸 밖으로 넘치지 않게 */
 }
 
 .deal:hover {
@@ -277,7 +278,12 @@
 }
 
 @media screen and (max-width: 768px) {
+  .hero { padding: 24px; }
   .hero__title { font-size: 26px; line-height: 38px; }
+  .hero__actions { flex-wrap: wrap; }
+  /* flex: 1(기준 0)은 줄바꿈이 안 되고 글자가 한 자씩 떨어지므로, 기준 폭을 주고 넘치면 다음 줄로 */
   .hero__stats { flex-wrap: wrap; }
+  .hero__stats .stat { flex: 1 1 140px; padding: 12px; }
+  .hero__stats .stat__label { white-space: nowrap; }
   .categories { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 }
