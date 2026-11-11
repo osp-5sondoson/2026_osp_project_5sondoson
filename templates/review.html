@@ -47,12 +47,34 @@
  {% set week_start = "2026.10.05" %}
  {% set week_count = all_reviews|selectattr("date", "ge", week_start)|list|length %}
  <div class="review-stat-band">
-  <div class="review-stat"><span class="review-stat__label">전체 리뷰</span><strong class="review-stat__value">{{ all_reviews|length }}개</strong></div>
-  <div class="review-stat"><span class="review-stat__label">정상 사용 확인</span><strong class="review-stat__value">{{ (100 * ok_count / all_reviews|length)|round|int }}%</strong></div>
-  <div class="review-stat"><span class="review-stat__label">이번 주 새 리뷰</span><strong class="review-stat__value">{{ week_count }}개</strong></div>
-  <div class="review-stat"><span class="review-stat__label">참여 판매자</span><strong class="review-stat__value">{{ all_reviews|map(attribute="seller")|unique|list|length }}명</strong></div>
- </div>
+  <div class="review-stat">
+    <span class="review-stat__label">전체 리뷰</span>
+    <strong class="review-stat__value">{{ all_reviews|length }}개</strong>
+  </div>
 
+  <div class="review-stat">
+    <span class="review-stat__label">정상 사용 확인</span>
+    <strong class="review-stat__value">{{ (100 * ok_count / all_reviews|length)|round|int }}%</strong>
+  </div>
+
+  <div class="review-stat">
+    <span class="review-stat__label">이번 주 새 리뷰</span>
+    <strong class="review-stat__value">{{ week_count }}개</strong>
+  </div>
+
+  <div class="review-stat">
+    <span class="review-stat__label">참여 판매자</span>
+    <strong class="review-stat__value">{{ all_reviews|map(attribute="seller")|unique|list|length }}명</strong>
+  </div>
+
+  <div class="review-stat__illustration">
+    <img
+      src="{{ url_for('static', filename='images/ewha_campus.svg') }}"
+      alt=""
+      aria-hidden="true"
+    >
+  </div>
+</div>
  <div class="review-toolbar">
   <div class="review-chips">
    {% for key, label in filters %}

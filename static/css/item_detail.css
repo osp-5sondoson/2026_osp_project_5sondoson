@@ -19,7 +19,7 @@
   display: grid;
   grid-template-columns: 480px minmax(0, 1fr);
   gap: 40px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .detail__media {
@@ -27,7 +27,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 480 / 522;
   max-width: 100%;
   padding: 48px;
   background-color: #f5f5f5;
@@ -155,6 +154,11 @@
   white-space: pre-line;
 }
 
+.detail__buy,
+.detail__notice {
+  margin: 0;
+}
+
 .detail__notice {
   justify-content: center;
   text-align: center;
@@ -162,8 +166,8 @@
 
 /* 판매자 리뷰: 위에 구분선 */
 .seller-reviews {
-  margin-top: 24px;
-  padding-top: 28px;
+  margin-top: 32px;
+  padding-top: 32px;
   border-top: 1px solid var(--border);
 }
 

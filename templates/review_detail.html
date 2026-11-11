@@ -18,7 +18,11 @@
 } %}
 {% set review = samples.get(review_id) %}
 <div class="review-page">
- <p class="breadcrumb"><a href="/review">거래 리뷰</a> › 리뷰 상세</p>
+ <p class="breadcrumb">
+  <a href="/review">거래 리뷰</a>
+  <span class="breadcrumb__sep">›</span>
+  <span>리뷰 상세</span>
+ </p>
 
  {% if review %}
  <article class="review-detail">
