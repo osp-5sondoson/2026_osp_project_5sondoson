@@ -412,6 +412,12 @@
   color: var(--text);
 }
 
+.special-tips > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* ---------- 반응형 ---------- */
 @media screen and (max-width: 1024px) {
   .special-hero__image { width: 320px; }

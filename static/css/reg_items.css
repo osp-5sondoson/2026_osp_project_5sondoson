@@ -239,7 +239,7 @@
 .reg__guide {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -250,7 +250,7 @@
 .reg__guide li {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .reg__guide li::before {
@@ -264,7 +264,7 @@
 }
 
 .reg__ewha .panel__title {
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .reg__mails {
@@ -285,43 +285,51 @@
   gap: 14px;
 }
 
-.reg__mails li::before {
-  content: "✉";
-  font-size: 22px;
-  font-weight: 400;
+.reg__mail-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
   color: var(--primary);
+  transform: translateY(2.5px);
 }
 
 .reg__ewha-note {
-  margin: 0;
+  margin: 6px 0 0;
   font-size: 13px;
   line-height: 18px;
   color: var(--primary);
 }
 
-/* 캠퍼스 사진: 패널 아래를 꽉 채우고, 위쪽은 패널 색으로 스며들게 (불투명도 85%) */
+/* 캠퍼스 사진 */
 .reg__campus {
   position: relative;
   flex: 1;
   min-height: 200px;
-  margin-top: 12px;
+
+  margin-top: 16px;
+  margin-bottom: 8px;
+
+  overflow: hidden;
+  border-radius: var(--radius-card);
 }
 
 .reg__campus img {
   position: absolute;
   inset: 0;
+
   display: block;
-  width: 100%;
+
+  width: calc(100% + 48px);
+  max-width: none;
   height: 100%;
+
+  margin-left: -24px;
+
   object-fit: cover;
-  object-position: center 20%;
-  opacity: .85;
-  border-radius: var(--radius-card);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 22%);
+  object-position: center center;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1400px) {
   .reg {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -345,3 +353,13 @@
   border-color: var(--border);
   box-shadow: none;
 }
+
+.reg input[type="date"] {
+  height: 48px;
+  padding: 0 14px;
+}
+
+.reg input[type="date"]::-webkit-datetime-edit {
+  padding-top: 9.5px;
+}
+

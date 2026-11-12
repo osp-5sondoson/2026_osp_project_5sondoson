@@ -12,13 +12,13 @@
 
   width: 100%;
 
-  margin: 16px auto 0;
+  margin: 0 auto;
 
   overflow: hidden;
 
   background-color: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: var(--radius-panel);
 }
 
 
@@ -195,12 +195,12 @@
 
 .signup-match-message.is-match {
   display: block;
-  color: #1b8f4d;
+  color: var(--green);
 }
 
 .signup-match-message.is-mismatch {
   display: block;
-  color: #d94848;
+  color: var(--red);
 }
 
 
@@ -268,7 +268,7 @@
 }
 
 .signup-form .form__switch {
-  margin-top: 18px;
+  margin-top: 24px;
 
   font-size: 14px;
   line-height: 20px;
@@ -298,11 +298,9 @@
 
 .signup-page__info-title {
   margin: 0 0 24px;
-
   font-size: 36px;
-  line-height: 1.35;
+  line-height: 50px;
   font-weight: 700;
-
   color: var(--primary);
 }
 
@@ -347,6 +345,7 @@
   flex-shrink: 0;
 
   color: var(--primary);
+  transform: translateY(2.5px);
 }
 
 .signup-page__info-note {
@@ -364,14 +363,11 @@
 
 .signup-page__illustration {
   flex: none;
-
   width: 100%;
-  height: 390px;
-
+  height: 370px;
   margin-top: 30px;
-
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: var(--radius-card-lg);
 }
 
 .signup-page__illustration img {
