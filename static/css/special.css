@@ -266,7 +266,6 @@
   font-size: 18px;
   line-height: 28px;
   font-weight: 500;
-  white-space: nowrap;
 }
 
 .special-empty__desc {
@@ -411,6 +410,12 @@
 
 .special-tips__title {
   color: var(--text);
+}
+
+.special-tips > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* ---------- 반응형 ---------- */

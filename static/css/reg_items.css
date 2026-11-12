@@ -329,7 +329,7 @@
   object-position: center center;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1400px) {
   .reg {
     grid-template-columns: minmax(0, 1fr);
   }

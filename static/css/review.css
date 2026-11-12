@@ -34,7 +34,7 @@
 /* 통계 띠 */
 .review-stat-band {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) 400px;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 1fr);
   align-items: center;
   gap: 10px;
 
@@ -141,7 +141,7 @@
 
 .review-item__link {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr) 440px;
+  grid-template-columns: 88px minmax(0, 1fr) auto;
   align-items: center;
   gap: 16px;
 
@@ -205,8 +205,8 @@
 
 /* 오른쪽 링크는 빈 칸 없이 행 오른쪽 끝에 붙임 (검토 메모 반영) */
 .review-item__right {
-  flex: 0 0 190px;
-  width: 190px;
+  flex: 0 1 auto;
+  width: auto;
   margin-left: 0;
   text-align: right;
 }
@@ -669,6 +669,21 @@ img.avatar {
   color: var(--primary);
 }
 
+@media screen and (min-width: 1200px) {
+  .review-item__link {
+    grid-template-columns: 88px minmax(0, 1fr) 440px;
+  }
+
+  .review-item__right {
+    flex: 0 0 190px;
+    width: 190px;
+  }
+
+  .review-stat-band {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 400px;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .review-stat-band {
     grid-template-columns: repeat(2, 1fr);
@@ -692,6 +707,18 @@ img.avatar {
 
   .write-layout {
     grid-template-columns: 1fr;
+  }
+
+  .trade-box__row {
+  flex-wrap: wrap;
+  }
+
+.trade-box__row .button {
+  margin-left: 0;
+  }
+
+.trade-box__rating {
+  width: 100%;
   }
 }
 
