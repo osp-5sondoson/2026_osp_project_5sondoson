@@ -16,14 +16,20 @@
    </div>
    <div class="form__field">
     <label for="item">상품명 *</label>
-    {# 피그마 04: 상품명 드롭다운. 상품 상세의 '리뷰 쓰기'로 들어온 상품이 선택된 상태 (app.py 변경 없이 화면에서만 처리) #}
+    {# 피그마 04: 상품명 드롭다운. 보기는 리뷰 목록(샘플 리뷰 10개)에 나오는 상품들 (Firebase item 노드의 상품명)
+       상품 상세의 '리뷰 쓰기'로 들어오면 그 상품이 선택된 상태 #}
+    {% set review_items = ["BBQ 황금올리브치킨 순살+콜라", "던킨 먼치킨 10개입 2ea", "메가커피 아이스 아메리카노",
+                           "스타벅스 아이스 카페 아메리카노 T", "스타벅스 카페라떼 T", "이디야커피 시그니처라떼 ICED (L)",
+                           "이마트24 모바일 금액권 1만원권", "투썸플레이스 생딸기 생크림 케이크"] %}
     <div class="select-wrap">
      <select name="item" id="item" required>
-      {% if product %}
+      <option value="" disabled {% if not product %}selected{% endif %}>리뷰를 쓸 상품을 골라 주세요</option>
+      {% if product and item_name not in review_items %}
       <option value="{{ item_name }}" selected>{{ item_name }}</option>
-      {% else %}
-      <option value="" disabled selected>상품 상세에서 '리뷰 쓰기'를 눌러 주세요</option>
       {% endif %}
+      {% for n in review_items %}
+      <option value="{{ n }}" {% if product and n == item_name %}selected{% endif %}>{{ n }}</option>
+      {% endfor %}
      </select>
     </div>
     {% if product %}<p class="form__help">판매자 {{ product.seller }}님과 거래한 상품이에요.</p>{% endif %}
@@ -95,7 +101,7 @@
      <div class="side-product__placeholder" aria-hidden="true">?</div>
      <div>
       <strong class="side-product__name">리뷰할 상품이 없어요</strong>
-      <span class="side-product__seller">상품 상세에서 '리뷰 쓰기'를<br>눌러 주세요.</span>
+      <span class="side-product__seller">상품명에서 리뷰를 쓸 상품을<br>골라 주세요.</span>
      </div>
     </div>
    </div>{% endif %}
@@ -127,6 +133,11 @@
   el.addEventListener("change", () => {
    document.getElementById("rating_score").textContent = Number(el.value).toFixed(1);
   });
+ });
+ // 드롭다운에서 상품을 고르면 그 상품으로 다시 열어 오른쪽 "거래한 상품" 카드 표시
+ const itemSelect = document.getElementById("item");
+ itemSelect.addEventListener("change", () => {
+  location.href = "{{ url_for('reg_review') }}?item=" + encodeURIComponent(itemSelect.value);
  });
  const content = document.getElementById("content");
  content.addEventListener("input", () => {
