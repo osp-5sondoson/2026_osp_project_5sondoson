@@ -270,13 +270,7 @@ def reg_review():
     product = normalize_item(item_name, raw) if isinstance(raw, dict) else None
     if product:
         product = {**raw, **product}
-    else:
-        item_name = ""
-    # 상품 상세의 "리뷰 쓰기"로 오면 그 상품명이 자동 입력,
-    # 홈·리뷰 목록처럼 상품 없이 오면 드롭다운에서 고름 (DB에 없는 이름이어도 고르는 화면으로)
-    item_names = [] if product else sorted(DB.get_items().keys())
-    return render_template("reg_reviews.html", item_name=item_name, product=product,
-                           item_names=item_names)
+    return render_template("reg_reviews.html", item_name=item_name, product=product)
 
 
 # 내 기프티콘함(특별페이지) 샘플 데이터: 로그인한 구매자가 산 기프티콘

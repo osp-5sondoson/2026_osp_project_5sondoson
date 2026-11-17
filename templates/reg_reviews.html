@@ -20,15 +20,8 @@
     {# 상품 상세의 "리뷰 쓰기"로 들어온 상품: 자동 입력 (고칠 수 없음) #}
     <input type="text" name="item" id="item" value="{{ item_name }}" readonly class="input--readonly" required>
     {% else %}
-    {# 상품 없이 들어온 경우(홈·리뷰 목록 등): 드롭다운에서 고르면 그 상품으로 다시 열림 #}
-    <div class="select-wrap">
-     <select name="item" id="item" required>
-      <option value="" disabled selected>리뷰를 쓸 상품을 골라 주세요</option>
-      {% for n in item_names %}
-      <option value="{{ n }}">{{ n }}</option>
-      {% endfor %}
-     </select>
-    </div>
+    {# 상품 없이 들어온 경우(홈·리뷰 목록 등): 상품명을 직접 입력 #}
+    <input type="text" name="item" id="item" value="{{ item_name }}" placeholder="리뷰를 쓸 상품명을 입력해 주세요" required>
     {% endif %}
     {% if product %}<p class="form__help">판매자 {{ product.seller }}님과 거래한 상품이에요.</p>{% endif %}
    </div>
@@ -122,13 +115,6 @@
    document.getElementById("rating_score").textContent = Number(el.value).toFixed(1);
   });
  });
- // 드롭다운에서 상품을 고르면 그 상품으로 다시 열어 상품명 자동 입력 + 오른쪽 카드 표시
- const itemSelect = document.querySelector("select#item");
- if (itemSelect) {
-  itemSelect.addEventListener("change", (e) => {
-   location.href = "{{ url_for('reg_review') }}?item=" + encodeURIComponent(e.target.value);
-  });
- }
  const content = document.getElementById("content");
  content.addEventListener("input", () => {
   document.getElementById("content_count").textContent = content.value.length;
