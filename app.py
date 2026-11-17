@@ -280,17 +280,16 @@ def reg_review():
 
 
 # 내 기프티콘함(특별페이지) 샘플 데이터: 로그인한 구매자가 산 기프티콘
-# item: 리뷰 쓰기 때 상품명이 자동 입력되도록 DB(item 노드)에 등록된 상품명
 MY_GIFTICONS = [
-    {"id": 1, "brand": "스타벅스", "name": "아이스 카페 아메리카노 T 2잔", "item": "스타벅스 아이스 카페 아메리카노 T", "dday": 3, "used": False,
+    {"id": 1, "brand": "스타벅스", "name": "아이스 카페 아메리카노 T 2잔", "dday": 3, "used": False,
      "img": "sample_starbucks_americano.jpg", "number": "9120 4471 0385 2216",
      "expire": "2026.10.09까지", "seller": "ewha_kim", "bought": "2026.10.02",
      "paid": 7300, "original_price": 9400},
-    {"id": 2, "brand": "BBQ", "name": "황금올리브치킨순살+콜라1.25L", "item": "BBQ 황금올리브치킨 순살+콜라", "dday": 128, "used": False,
+    {"id": 2, "brand": "BBQ", "name": "황금올리브치킨순살+콜라1.25L", "dday": 128, "used": False,
      "img": "sample_bbq_chicken.jpg", "number": "5837 2069 4412 7750",
      "expire": "2027.02.11까지", "seller": "pear_blossom", "bought": "2026.10.04",
      "paid": 22500, "original_price": 27500},
-    {"id": 3, "brand": "CU", "name": "모바일 상품권 5,000원", "item": "CU 모바일 상품권 5,000원", "dday": None, "used": True,
+    {"id": 3, "brand": "CU", "name": "모바일 상품권 5,000원", "dday": None, "used": True,
      "img": "sample_cu_voucher.jpg", "number": "3306 9184 6627 0943",
      "expire": "2026.10.01 사용", "seller": "ewha23", "bought": "2026.09.28",
      "paid": 4500, "original_price": 5000},
