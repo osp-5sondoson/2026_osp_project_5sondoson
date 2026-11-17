@@ -267,13 +267,14 @@ def reg_review():
         return login_redirect("리뷰를 쓰려면 로그인해 주세요.")
     item_name = request.args.get("item", "").strip()
     raw = DB.get_item_byname(item_name) if item_name else None
+    # 리뷰는 상품 상세의 "리뷰 쓰기"로만 들어옴. 상품이 없으면 목록으로 안내
+    if not isinstance(raw, dict):
+        flash("리뷰를 쓸 상품의 상세 페이지에서 '리뷰 쓰기'를 눌러 주세요.")
+        return redirect(url_for("view_list"))
     product = normalize_item(item_name, raw) if isinstance(raw, dict) else None
     if product:
         product = {**raw, **product}
-    # 피그마 04: 상품명은 드롭다운. 등록된 상품 이름을 보기로 넘김
-    item_names = sorted(DB.get_items().keys())
-    return render_template("reg_reviews.html", item_name=item_name, product=product,
-                           item_names=item_names)
+    return render_template("reg_reviews.html", item_name=item_name, product=product)
 
 
 # 내 기프티콘함(특별페이지) 샘플 데이터: 로그인한 구매자가 산 기프티콘
