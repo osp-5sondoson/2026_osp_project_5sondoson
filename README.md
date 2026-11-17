@@ -25,20 +25,35 @@
 
 ## 주요 기능
 
+**상품 목록 · 상세**
+- Firebase에 등록된 상품을 한 쪽에 12개씩 보여 주고, 카테고리 · 정렬 · 검색 · 판매중만 보기를 지원합니다.
+- 상품 사진을 누르면 상세 페이지(`/view_detail/<상품명>`)로 이동합니다.
+- 상세 페이지에는 판매자 평점과 판매자가 받은 최근 거래 리뷰가 나옵니다.
+
 **상품 등록**
-- 사진, 상품명, 판매자 ID, 이메일, 판매가, 사용 가능 지역, 상태(판매중·예약중·판매완료)를 입력하면 Firebase에 저장합니다.
-- 사진을 고르면 바로 미리보기가 나타납니다.
+- 사진, 상품명, 카테고리, 판매가 · 원가, 사용 가능 지역, 유효기간, 상태(판매중 · 예약중 · 판매완료), 설명을 입력하면 Firebase에 저장합니다.
+- 판매자 ID와 이메일은 로그인한 계정에서 가져옵니다.
 - 같은 상품명은 다시 등록할 수 없어 다른 판매자의 상품을 덮어쓰지 않습니다.
-- 입력이 잘못되면 안내 메시지와 함께 입력한 값을 그대로 유지합니다.
 
-**회원가입**
-- 아이디, 비밀번호, 닉네임으로 가입합니다.
-- 아이디 중복을 검사합니다.
-- 비밀번호는 원문이 아닌 **SHA-256 해시값**으로 저장합니다.
-- 가입이 끝나면 로그인 페이지로 이동합니다.
+**거래 리뷰**
+- 상품 상세의 `리뷰 쓰기`를 누르면 상품명이 채워진 작성 화면이 열립니다.
+- 제목 · 사진 · 본문 · 별점을 입력하면 사진은 서버에 저장하고, 리뷰는 `review` 노드에 `push()`로 저장합니다.
+- 리뷰 목록은 2×2로 한 쪽에 4개씩 보여 주고, 사진을 누르면 자동 생성된 리뷰 ID를 쓰는 상세 페이지로 이동합니다.
+- 리뷰는 상품이 아닌 판매자에게 쌓이며, 판매자 평점은 받은 리뷰 별점의 평균으로 계산합니다.
 
-**공통**
-- 모든 페이지에 같은 내비게이션 바(상품 목록 · 리뷰 목록 · 상품 등록 · 리뷰 등록 · 로그인)가 있습니다.
+**좋아요**
+- 상품 상세의 하트 버튼을 처음 누르면 좋아요, 다시 누르면 취소됩니다.
+- AJAX로 처리해 페이지를 새로 고치지 않고 버튼만 바뀝니다.
+- 로그인한 사용자별로 `like` 노드에 저장합니다. 로그인하지 않았으면 로그인 화면으로 안내합니다.
+
+**회원**
+- 아이디, 비밀번호, 학교 이메일(@ewha.ac.kr · @ewhain.net), 전화번호(선택)로 가입합니다.
+- 아이디 중복을 검사하고, 비밀번호는 원문이 아닌 **SHA-256 해시값**으로 저장합니다.
+- 로그인하면 세션에 아이디를 저장하고, 로그인이 필요한 페이지는 로그인 후 원래 페이지로 돌아옵니다.
+
+**특별 페이지**
+- 오늘 뭐 먹지?: 예산과 카테고리로 판매 중인 상품을 추천합니다.
+- 내 기프티콘함: 구매한 기프티콘을 모아 봅니다.
 
 ## 기술 스택
 
@@ -109,13 +124,23 @@ export SECRET_KEY="임의의 긴 문자열"   # Windows: set SECRET_KEY=...
 
 | 페이지 | 경로 | 방식 | 설명 |
 |---|---|---|---|
-| 홈 | `/` | GET | 서비스 소개 |
-| 상품 목록 | `/list` | GET | 상품 목록 화면 |
-| 리뷰 목록 | `/review` | GET | 리뷰 목록 화면 |
-| 상품 등록 | `/reg_items` | GET | 상품 등록 화면 |
-| 상품 등록 처리 | `/submit_item_post` | POST | 입력 검사 → 사진 저장 → Firebase 저장 → 결과 화면 |
-| 리뷰 등록 | `/reg_reviews` | GET | 리뷰 등록 화면 |
+| 홈 | `/` | GET | 상품 목록으로 이동 |
+| 상품 목록 | `/list` | GET | 상품 목록 (`?page=` 페이지 · 카테고리 · 정렬 · 검색) |
+| 상품 상세 | `/view_detail/<상품명>` | GET | 상품 정보 · 판매자 평점 · 판매자 리뷰 · 좋아요 |
+| 좋아요 | `/like/<상품명>` | POST | 좋아요 설정 · 취소 후 결과를 JSON으로 반환 (AJAX) |
+| 상품 등록 | `/reg_items` | GET | 상품 등록 화면 (로그인 필요) |
+| 상품 등록 처리 | `/submit_item_post` | POST | 입력 검사 → 사진 저장 → Firebase 저장 → 상세로 이동 |
+| 리뷰 목록 | `/review` | GET | 리뷰 목록 (2×2, 한 쪽에 4개) |
+| 리뷰 상세 | `/review_detail/<리뷰 ID>` | GET | 리뷰 한 건 (리뷰 ID는 `push()`가 만든 키) |
+| 판매자별 리뷰 | `/seller_reviews/<판매자 ID>` | GET | 판매자가 받은 리뷰와 평점 |
+| 리뷰 작성 | `/reg_reviews?item=<상품명>` | GET | 상품명이 채워진 리뷰 작성 화면 (로그인 필요) |
+| 리뷰 등록 처리 | `/submit_review_post` | POST | 입력 검사 → 사진 저장 → `review` 노드에 `push()` |
+| 오늘 뭐 먹지? | `/today`, `/today/result` | GET | 예산 · 카테고리로 상품 추천 |
+| 내 기프티콘함 | `/my_gifticons` | GET | 구매한 기프티콘 (로그인 필요) |
+| 로그인 후 홈 | `/home` | GET | 로그인 후 첫 화면 |
 | 로그인 | `/login` | GET | 로그인 화면 |
+| 로그인 처리 | `/login_confirm` | POST | 아이디 · 비밀번호 해시 확인 후 세션 저장 |
+| 로그아웃 | `/logout` | GET | 세션 삭제 후 상품 목록으로 이동 |
 | 회원가입 | `/signup` | GET | 회원가입 화면 |
 | 회원가입 처리 | `/signup_post` | POST | 입력 검사 → 중복 검사 → 해시 저장 → 로그인 페이지로 이동 |
 
@@ -124,11 +149,13 @@ export SECRET_KEY="임의의 긴 문자열"   # Windows: set SECRET_KEY=...
 | 항목 | 규칙 |
 |---|---|
 | 상품명 | 비워 둘 수 없음, `. # $ [ ] /` 사용 불가 (Firebase 키 규칙), 이미 등록된 이름 불가 |
-| 판매가 | 0 이상의 정수 |
-| 사진 | png, jpg, jpeg, gif, webp |
+| 판매가 · 원가 | 0 이상의 정수, 판매가는 원가보다 높을 수 없음 |
+| 유효기간 | 이미 지난 날짜 불가 |
+| 리뷰 | 상품명 · 제목(40자까지) · 별점(1~5) · 내용(1000자까지) 필수, 사진은 선택 |
+| 사진 | png, jpg, jpeg, gif, webp, 한 장당 5MB까지 |
 | 아이디 | 영문과 숫자 4~20자, 중복 불가 |
-| 비밀번호 | 4자 이상 |
-| 그 밖의 항목 | 모두 필수 입력 |
+| 비밀번호 | 영문과 숫자를 포함해 8자 이상 |
+| 이메일 | 학교 이메일(@ewha.ac.kr · @ewhain.net)만 가능 |
 
 업로드한 사진은 서버에 **겹치지 않는 임의 이름**으로 저장되어, 파일 이름이 같아도 서로 덮어쓰지 않습니다.
 
@@ -139,40 +166,71 @@ Firebase Realtime Database에 아래 구조로 저장됩니다.
 ```
 item/
 └── <상품명>/
-    ├── seller      판매자 ID
-    ├── price       판매가
-    ├── addr        사용 가능 지역 / 매장
-    ├── status      selling | reserved | sold
-    ├── email       이메일
-    └── img_path    static/images/ 아래 사진 파일 이름
+    ├── seller          판매자 ID (로그인한 계정)
+    ├── email           판매자 이메일
+    ├── price           판매가
+    ├── original_price  원가
+    ├── category        카테고리
+    ├── addr            사용 가능 지역 / 매장
+    ├── expire          유효기간 (YYYY-MM-DD)
+    ├── status          selling | reserved | sold
+    ├── desc            상품 설명
+    ├── img_path        static/images/ 아래 사진 파일 이름
+    └── created_at      등록 시각
+review/
+└── <push() 자동 생성 키 = 리뷰 ID>/
+    ├── item            상품명
+    ├── title           제목
+    ├── content         본문
+    ├── rating          별점 1~5
+    ├── used            ok (정상 사용) | problem (문제 있었음)
+    ├── writer          작성자 ID (로그인한 계정)
+    ├── img_path        리뷰 사진 파일 이름 (사진이 없으면 상품 사진)
+    ├── date            작성일 (YYYY.MM.DD)
+    └── created_at      작성 시각
+like/
+└── <상품명>/
+    └── <사용자 ID>     true (좋아요를 누른 사용자만 저장, 취소하면 삭제)
 user/
 └── <자동 생성 키>/
-    ├── id          아이디
-    ├── nickname    닉네임
-    └── pw          비밀번호 SHA-256 해시
+    ├── id              아이디
+    ├── pw              비밀번호 SHA-256 해시
+    ├── email           학교 이메일
+    └── phone           전화번호 (선택)
 ```
+
+판매자 평점은 따로 저장하지 않고, 리뷰의 상품명으로 판매자를 찾아 받은 리뷰 별점의 평균으로 계산합니다.
 
 ## 프로젝트 구조
 
 ```
 2026_osp_project_5sondoson/
-├── app.py                Flask 라우트와 입력 검사
-├── database.py           Firebase 연결 (DBhandler)
-├── requirements.txt      필요한 패키지
+├── app.py                  Flask 라우트와 입력 검사
+├── database.py             Firebase 연결 (DBhandler)
+├── requirements.txt        필요한 패키지
+├── scripts/                기존 상품 데이터 보정 스크립트
 ├── templates/
-│   ├── index.html        공통 레이아웃 (내비게이션 바)
-│   ├── list.html         상품 목록
-│   ├── review.html       리뷰 목록
-│   ├── reg_items.html    상품 등록
-│   ├── result.html       상품 등록 결과
-│   ├── reg_reviews.html  리뷰 등록
-│   ├── login.html        로그인
-│   └── signup.html       회원가입
+│   ├── index.html          공통 레이아웃 (헤더 · 푸터)
+│   ├── list.html           상품 목록
+│   ├── item_detail.html    상품 상세 (좋아요 버튼)
+│   ├── reg_items.html      상품 등록
+│   ├── review.html         리뷰 목록
+│   ├── review_detail.html  리뷰 상세
+│   ├── seller_reviews.html 판매자별 리뷰
+│   ├── reg_reviews.html    리뷰 작성
+│   ├── special.html        오늘 뭐 먹지? (조건 선택)
+│   ├── special_result.html 오늘 뭐 먹지? (추천 결과)
+│   ├── my_gifticons.html   내 기프티콘함
+│   ├── home_logged_in.html 로그인 후 홈
+│   ├── login.html          로그인
+│   ├── signup.html         회원가입
+│   └── 404.html            없는 페이지
 ├── static/
-│   ├── style.css         스타일
-│   ├── main.js           사진 미리보기
-│   └── images/           샘플 이미지와 업로드된 사진
-└── authentication/       Firebase 설정 파일 (GitHub에 올리지 않음)
+│   ├── style.css           공통 스타일 (디자인 토큰 · 버튼 · 카드)
+│   ├── css/                화면별 스타일
+│   ├── main.js             사진 미리보기 · 좋아요(AJAX) 등
+│   └── images/             샘플 이미지와 업로드된 사진
+└── authentication/         Firebase 설정 파일 (GitHub에 올리지 않음)
 ```
 
 ## 팀원
