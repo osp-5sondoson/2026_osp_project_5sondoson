@@ -85,6 +85,16 @@
       <span class="side-product__seller">판매자 {{ product.seller }}{% if product.rating is not none %} · ★{{ product.rating }}{% endif %}</span>
      </div>
     </div>
+   </div>{% else %}<div class="side-card">
+    <h2 class="side-card__title">거래한 상품</h2>
+    {# 상품 없이 들어온 경우: 카드 자리는 그대로 두고 안내만 표시 #}
+    <div class="side-product side-product--empty">
+     <div class="side-product__placeholder" aria-hidden="true">?</div>
+     <div>
+      <strong class="side-product__name">리뷰할 상품이 없어요</strong>
+      <span class="side-product__seller">상품 상세에서 '리뷰 쓰기'를 누르거나<br>상품명을 입력해 주세요.</span>
+     </div>
+    </div>
    </div>{% endif %}
    <div class="side-card side-card--tint">
     <h2 class="side-card__title side-card__title--primary">리뷰 작성 가이드</h2>
