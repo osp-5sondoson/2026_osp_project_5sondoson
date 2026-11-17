@@ -67,6 +67,24 @@ class DBhandler:
         }
         result = self.db.child("review").push(review_info)
         return result["name"]
+    
+    def get_reviews(self):
+        """Firebase review 노드의 전체 리뷰를 가져온다"""
+        reviews = self.db.child("review").get()
+
+        if reviews.val() is None:
+            return []
+
+        result = []
+
+        for review in reviews.each():
+            data = dict(review.val())
+
+            if isinstance(data, dict):
+                data["id"] = review.key()
+                result.append(data)
+
+        return result
 
     def insert_user(self, data, pw):
         user_info = {
