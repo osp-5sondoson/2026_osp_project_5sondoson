@@ -119,6 +119,10 @@
 
 /* 리뷰 행 */
 .review-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+
   margin: 0 0 24px;
   padding: 0;
   list-style: none;
@@ -126,10 +130,10 @@
 
 .review-item {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 8px;
-  padding: 12px 20px 12px 12px;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+
   background-color: var(--white);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -141,19 +145,29 @@
 
 .review-item__link {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 16px;
+  grid-template-columns: 120px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
 
-  flex: 1;
   min-width: 0;
 }
 
+.review-item__link > a:first-child {
+  grid-row: 1 / span 2;
+  align-self: stretch;
+}
+
 .review-item__thumb {
-  width: 88px;
-  height: 64px;
+  width: 120px;
+  height: 120px;
+
   object-fit: cover;
   border-radius: 8px;
+}
+
+.review-item__thumb--card {
+  object-fit: contain;
+  background-color: var(--background);
 }
 
 .review-item__thumb--empty {
@@ -191,6 +205,8 @@
 }
 
 .review-item__info {
+  grid-column: 2;
+
   display: flex;
   flex-direction: column;
 
@@ -199,16 +215,15 @@
   color: var(--text-secondary);
 }
 
-.review-item__item {
-  color: var(--text);
+.review-item__info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
-/* 오른쪽 링크는 빈 칸 없이 행 오른쪽 끝에 붙임 (검토 메모 반영) */
-.review-item__right {
-  flex: 0 1 auto;
-  width: auto;
-  margin-left: 0;
-  text-align: right;
+.review-item__item {
+  color: var(--text);
 }
 
 .seller-link {
@@ -221,6 +236,8 @@
 }
 
 .review-empty {
+  grid-column: 1 / -1;
+
   padding: 40px;
   text-align: center;
   color: var(--text-secondary);
@@ -462,16 +479,61 @@ img.avatar {
 }
 
 /* 리뷰 작성 */
+/* 피그마 04: 폼 900 : 오른쪽 468, 사이 40 */
 .write-layout {
   display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 24px;
+  grid-template-columns: minmax(0, 900fr) minmax(0, 468fr);
+  gap: 40px;
   align-items: stretch;
 }
 
+/* 공통 .form의 카드 모양만 끔 (상품 등록 화면과 같은 방식) */
 .write-layout .form {
   max-width: none;
-  padding: 32px;
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.write-layout .form__field {
+  margin-bottom: 20px;
+}
+
+/* 피그마 04: 상품명 드롭다운 (입력칸과 같은 높이·테두리, 오른쪽 ⌄) */
+.select-wrap select {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  /* 기본 화살표 대신 회색 ⌄ 를 오른쪽에서 20px 띄워서 표시 */
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 48px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238a94a6' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 20px center;
+  background-size: 12px 8px;
+}
+
+.select-wrap select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.write-cancel {
+  width: 100px;
+}
+
+.write-submit {
+  width: 160px;
 }
 
 .input--readonly {
@@ -504,9 +566,18 @@ img.avatar {
   opacity: 0;
 }
 
+.choice {
+  gap: 16px;
+}
+
+/* 피그마 04: 버튼은 글자 길이만큼(270·290), 왼쪽 정렬 */
 .choice label {
-  flex: 1;
-  padding: 10px 16px;
+  flex: 0 0 auto;
+  min-width: 270px;
+  box-sizing: border-box;
+  height: 48px;
+  padding: 12px 24px;
+  font-size: 15px;
   font-size: 14px;
   text-align: center;
   color: var(--primary);
@@ -549,21 +620,26 @@ img.avatar {
   opacity: 0;
 }
 
+/* 피그마 04: 고른 별은 ★, 나머지는 테두리만 있는 ☆ (둘 다 주황) */
 .rating-input__stars label {
-  font-size: 30px;
-  line-height: 36px;
-  color: #d9dee6;
+  font-size: 36px;
+  line-height: 40px;
+  color: var(--amber);
   cursor: pointer;
 }
 
-.rating-input__stars input:checked ~ label,
-.rating-input__stars label:hover,
-.rating-input__stars label:hover ~ label {
-  color: var(--amber);
+.rating-input__stars label::before {
+  content: "☆";
+}
+
+.rating-input__stars input:checked ~ label::before,
+.rating-input__stars label:hover::before,
+.rating-input__stars label:hover ~ label::before {
+  content: "★";
 }
 
 .rating-input__score {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 500;
   color: var(--amber);
 }
@@ -576,7 +652,7 @@ img.avatar {
 }
 
 .side-card {
-  padding: 20px;
+  padding: 24px;
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-card-lg);
@@ -588,8 +664,8 @@ img.avatar {
 }
 
 .side-card__title {
-  margin: 0 0 12px;
-  font-size: 18px;
+  margin: 0 0 16px;
+  font-size: 22px;
 }
 
 .side-card__title--primary {
@@ -598,28 +674,34 @@ img.avatar {
 
 .side-product {
   display: flex;
-  gap: 12px;
+  gap: 32px;
+  padding-left: 12px;
 }
 
 .side-product img {
   width: 88px;
-  height: 112px;
+  height: 140px;
   object-fit: contain;
   border-radius: 8px;
 }
 
 .side-product__name {
   display: block;
-  max-width: 116px;
-  margin: 6px 0 4px;
-  font-size: 15px;
-  line-height: 22px;
+  max-width: 180px;
+  margin: 8px 0 6px;
+  font-size: 20px;
+  line-height: 30px;
+  word-break: keep-all;     /* "카페"처럼 단어 중간에서 줄이 안 바뀌게 */
 }
 
+/* 피그마 04: 할인율과 가격 모두 빨강 */
 .side-product__price {
   display: block;
+  margin-bottom: 6px;
+  font-size: 24px;
+  line-height: 32px;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--red);
 }
 
 .side-product__price em {
@@ -627,16 +709,34 @@ img.avatar {
   color: var(--red);
 }
 
+/* 상품 없이 들어왔을 때: 카드 자리는 유지하고 안내만 */
+.side-product--empty {
+  align-items: center;
+}
+
+.side-product__placeholder {
+  flex: 0 0 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background-color: var(--primary-light);
+  border-radius: 8px;
+}
+
 .side-product__seller {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 
 .guide {
   margin: 0;
   padding: 0;
-  font-size: 13px;
-  line-height: 28px;
+  font-size: 14px;
+  line-height: 36px;
   list-style: none;
 }
 
@@ -657,12 +757,15 @@ img.avatar {
   flex-direction: column;
 }
 
+.side-card--promo {
+  padding: 36px;
+}
+
 .side-card--promo p {
   margin: 0;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
-  line-height: 30px;
-  padding: 8px 8px;
+  line-height: 40px;
 }
 
 .side-card--promo span {
@@ -670,27 +773,21 @@ img.avatar {
 }
 
 @media screen and (min-width: 1200px) {
-  .review-item__link {
-    grid-template-columns: 88px minmax(0, 1fr) 440px;
-  }
-
-  .review-item__right {
-    flex: 0 0 190px;
-    width: 190px;
-  }
-
   .review-stat-band {
     grid-template-columns: repeat(4, minmax(0, 1fr)) 400px;
   }
 }
 
 @media screen and (max-width: 768px) {
+  .review-list {
+  grid-template-columns: 1fr;
+  }
+
   .review-stat-band {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .review-item,
-  .review-item__link,
   .review-detail__body,
   .seller-card {
     flex-direction: column;
@@ -701,12 +798,23 @@ img.avatar {
     width: auto;
   }
 
+  .review-item__info-row {
+  flex-wrap: wrap;
+  }
+
   .review-detail__photo {
     width: 100%;
   }
 
   .write-layout {
     grid-template-columns: 1fr;
+  }
+
+  /* 좁은 화면에서는 두 버튼을 반반으로 (가로 넘침 방지) */
+  .choice label {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 8px;
   }
 
   .trade-box__row {
@@ -722,9 +830,10 @@ img.avatar {
   }
 }
 
+/* 피그마 04: 구름까지 보이는 가로 풍경을 카드 아래쪽에 (약 2:1) */
 .side-card__campus {
-  flex: 1;
-  margin: 24px 0 8px;
+  margin: auto 0 0;
+  padding-top: 24px;
   overflow: hidden;
   border-radius: var(--radius-card);
 }
@@ -732,7 +841,7 @@ img.avatar {
 .side-card__campus img {
   display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 2 / 1;
   object-fit: cover;
-  object-position: 55% center;
+  object-position: 50% center;
 }

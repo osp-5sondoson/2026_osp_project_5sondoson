@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from database import DBhandler
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import hashlib
 import os
 import random
@@ -19,6 +19,11 @@ ALLOWED_IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
 # 등록 폼에서 받는 필수 항목 (판매자 ID·이메일은 로그인한 계정에서 가져오고, 설명은 선택)
 ITEM_FIELDS = ["name", "category", "price", "original_price", "addr", "expire", "status"]
 ITEM_STATUSES = {"selling", "reserved", "sold"}
+# 리뷰 작성 폼에서 받는 필수 항목 (작성자는 로그인 계정에서 가져옴)
+REVIEW_FIELDS = ["item", "title", "content", "rating"]
+REVIEW_USED = {"ok", "problem"}
+REVIEW_TITLE_MAX = 40
+REVIEW_CONTENT_MAX = 1000                          # 팀 결정: 피그마(200)보다 넉넉하게
 FORBIDDEN_KEY_CHARS = ".#$[]/"
 USER_ID_PATTERN = re.compile(r"[A-Za-z0-9]{4,20}")
 MIN_PW_LENGTH = 8                                   # 회원가입 폼 안내와 동일: 영문·숫자 포함 8자 이상
@@ -204,7 +209,36 @@ def view_special_result():
 
 @app.route("/review")
 def view_review():
-    return render_template("review.html")
+    reviews = DB.get_reviews()
+
+    for review in reviews:
+        item = DB.get_item_byname(review.get("item", "")) or {}
+
+        # 리뷰가 작성된 상품의 판매자 정보
+        review["seller"] = item.get("seller", "")
+
+        # 리뷰 사진을 직접 올렸는지 여부
+        # 사진을 안 올렸을 경우 상품 이미지가 대신 저장됨
+        review["has_photo"] = (
+            bool(review.get("img_path"))
+            and review.get("img_path") != item.get("img_path")
+        )
+
+    # 이번 주 월요일부터 작성된 리뷰 수
+    today = date.today()
+    week_start = today - timedelta(days=today.weekday())
+    week_start_str = week_start.strftime("%Y.%m.%d")
+
+    week_count = sum(
+        1 for review in reviews
+        if review.get("date", "") >= week_start_str
+    )
+
+    return render_template(
+        "review.html",
+        reviews=reviews,
+        week_count=week_count
+    )
 
 @app.route("/seller_reviews/<seller>")
 def view_seller_reviews(seller):
@@ -491,6 +525,56 @@ def reg_item_submit_post():
     # 등록 결과 표 대신 방금 올린 상품 상세로 이동 (새로고침해도 다시 등록되지 않음)
     flash("기프티콘이 등록되었어요.")
     return redirect(url_for("view_item_detail", name=data["name"]))
+
+
+@app.route("/submit_review_post", methods=["POST"])
+def reg_review_submit_post():
+    if not session.get("id"):
+        # POST 주소로 되돌아오면 405가 나니, 로그인 후에는 다시 작성 화면부터 열게 함
+        flash("리뷰를 쓰려면 로그인해 주세요.")
+        return redirect(url_for("login"))
+
+    data = {field: request.form.get(field, "").strip() for field in REVIEW_FIELDS}
+    data["used"] = request.form.get("used", "ok")
+    data["writer"] = session["id"]          # 작성자는 폼 값이 아니라 로그인한 계정
+    image_file = request.files.get("photo")
+    ext = os.path.splitext(image_file.filename)[1].lower() if image_file else ""
+
+    error = None
+    if not all(data[field] for field in REVIEW_FIELDS):
+        error = "상품명·제목·별점·내용을 모두 입력해 주세요."
+    elif not DB.item_exists(data["item"]):
+        error = "등록된 상품에만 리뷰를 쓸 수 있어요."
+    elif data["rating"] not in {"1", "2", "3", "4", "5"}:
+        error = "별점을 다시 선택해 주세요."
+    elif data["used"] not in REVIEW_USED:
+        error = "사용 여부를 다시 선택해 주세요."
+    elif len(data["title"]) > REVIEW_TITLE_MAX:
+        error = "제목은 {}자까지 쓸 수 있어요.".format(REVIEW_TITLE_MAX)
+    elif len(data["content"]) > REVIEW_CONTENT_MAX:
+        error = "내용은 {}자까지 쓸 수 있어요.".format(REVIEW_CONTENT_MAX)
+    elif image_file and image_file.filename and ext not in ALLOWED_IMAGE_EXTS:
+        error = "사진은 png, jpg, jpeg, gif, webp 파일만 올릴 수 있어요."
+    if error:
+        # 작성 화면으로 돌아가 알림으로 안내 (작성 화면 주소는 1번 담당이라 바로 전 페이지로 보냄)
+        flash(error)
+        return redirect(request.referrer or url_for("reg_review"))
+
+    data["rating"] = int(data["rating"])
+    if image_file and image_file.filename:
+        # 상품 등록과 같은 방식: 겹치지 않는 이름으로 서버에 저장하고 DB에는 파일명만
+        filename = uuid.uuid4().hex + ext
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        image_file.save(os.path.join(UPLOAD_DIR, filename))
+    else:
+        # 사진은 선택(피그마 04). 목록에서 사진을 눌러 상세로 가야 하니 거래한 상품 사진으로 대신 저장
+        item = DB.get_item_byname(data["item"]) or {}
+        filename = item.get("img_path") or DEFAULT_ITEM_IMAGE
+
+    DB.insert_review(data, filename)
+
+    flash("리뷰가 등록되었어요.")
+    return redirect(url_for("view_review"))
 
 
 if __name__ == "__main__":

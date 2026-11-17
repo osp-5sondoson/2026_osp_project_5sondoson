@@ -52,11 +52,46 @@ class DBhandler:
     def get_item_byname(self, name):
         return self.db.child("item").child(name).get().val()   # 없으면 None
 
+
     def get_review_by_id(self, review_id):
-    """Firebase에서 리뷰 ID로 리뷰 한 건 조회"""
-    review = self.db.child("review").child(review_id).get().val()
-    return review if isinstance(review, dict) else None
+        """Firebase에서 리뷰 ID로 리뷰 한 건 조회"""
+        review = self.db.child("review").child(review_id).get().val()
+        return review if isinstance(review, dict) else None
     
+    def insert_review(self, data, img_path):
+        """리뷰 하나를 review 노드에 push()로 저장하고, 자동 생성된 리뷰 ID(키)를 돌려준다"""
+        review_info = {
+            "item": data['item'],
+            "title": data['title'],
+            "content": data['content'],
+            "rating": data['rating'],          # 1~5 숫자
+            "used": data['used'],              # ok(문제없이 사용) / problem(문제 있었음)
+            "writer": data['writer'],          # 로그인한 계정 ID
+            "img_path": img_path,              # static/images 안의 파일명
+            "date": datetime.now().strftime("%Y.%m.%d"),
+            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        }
+        result = self.db.child("review").push(review_info)
+        return result["name"]
+    
+    def get_reviews(self):
+        """Firebase review 노드의 전체 리뷰를 가져온다"""
+        reviews = self.db.child("review").get()
+
+        if reviews.val() is None:
+            return []
+
+        result = []
+
+        for review in reviews.each():
+            data = dict(review.val())
+
+            if isinstance(data, dict):
+                data["id"] = review.key()
+                result.append(data)
+
+        return result
+
     def insert_user(self, data, pw):
         user_info = {
             "id": data['id'],
