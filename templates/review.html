@@ -29,7 +29,7 @@
 {% elif f == "problem" %}{% set shown = shown|rejectattr("ok")|list %}{% endif %}
 {% if s == "high" %}{% set shown = shown|sort(attribute="rating", reverse=true) %}
 {% elif s == "low" %}{% set shown = shown|sort(attribute="rating") %}{% endif %}
-{% set per_page = 6 %}
+{% set per_page = 4 %}
 {% set pages = [(shown|length + per_page - 1) // per_page, 1]|max %}
 {% set page = [[request.args.get("page", 1)|int, 1]|max, pages]|min %}
 <div class="review-page">
@@ -94,8 +94,15 @@
  <ul class="review-list">
   {% for r in shown[(page - 1) * per_page:page * per_page] %}
   <li class="review-item">
-   <a class="review-item__link" href="/review_detail/{{ r.id }}">
-    <img class="review-item__thumb" src="{{ url_for('static', filename='images/' ~ r.img) }}" alt="">
+    <div class="review-item__link">
+      <a href="/review_detail/{{ r.id }}">
+        <img
+          class="review-item__thumb {% if r.card %}review-item__thumb--card{% endif %}"
+          src="{{ url_for('static', filename='images/' ~ r.img) }}"
+          alt=""
+        >
+      </a>
+      
     <div class="review-item__main">
      <div class="review-item__meta">
       <span class="review-stars">{% for i in range(5) %}{% if i < r.rating %}★{% else %}<span class="review-stars__off">★</span>{% endif %}{% endfor %}</span>
@@ -106,13 +113,19 @@
      <p class="review-item__content">{{ r.content }}</p>
     </div>
     <div class="review-item__info">
-     <span>{{ r.writer }} · {{ r.date }}</span>
-     <span class="review-item__item">{{ r.item }}</span>
+      <div class="review-item__info-row">
+        <span>{{ r.writer }} · {{ r.date }}</span>
+
+        <a class="seller-link" href="/seller_reviews/{{ r.seller }}">
+          판매자 {{ r.seller }}
+          <span class="seller-link__star">★{{ r.score }}</span>
+        </a>
+      </div>
+
+      <span class="review-item__item">{{ r.item }}</span>
     </div>
-   </a>
-   <div class="review-item__right">
-    <a class="seller-link" href="/seller_reviews/{{ r.seller }}">판매자 {{ r.seller }} <span class="seller-link__star">★{{ r.score }}</span></a>
-   </div>
+    </div>
+    
   </li>
   {% else %}
   <li class="review-empty">조건에 맞는 리뷰가 없어요.</li>
