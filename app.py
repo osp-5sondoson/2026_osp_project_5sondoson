@@ -275,7 +275,10 @@ def reg_review():
     product = normalize_item(item_name, raw) if isinstance(raw, dict) else None
     if product:
         product = {**raw, **product}
-    return render_template("reg_reviews.html", item_name=item_name, product=product)
+    # 피그마 04: 상품명은 드롭다운. 등록된 상품 이름을 보기로 넘김 (상세에서 오면 그 상품이 선택된 상태)
+    item_names = sorted(DB.get_items().keys())
+    return render_template("reg_reviews.html", item_name=item_name, product=product,
+                           item_names=item_names)
 
 
 # 내 기프티콘함(특별페이지) 샘플 데이터: 로그인한 구매자가 산 기프티콘
