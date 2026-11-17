@@ -52,6 +52,54 @@ class DBhandler:
     def get_item_byname(self, name):
         return self.db.child("item").child(name).get().val()   # 없으면 None
 
+    
+    def get_review_by_id(self, review_id):
+        """Firebase 리뷰 ID로 리뷰 한 건 조회"""
+        review = self.db.child("review").child(review_id).get().val()
+        return review if isinstance(review, dict) else None
+
+    def get_seller_review_stats(self, seller):
+        """판매자 상품에 작성된 리뷰의 평균 평점과 개수 계산"""
+        reviews = self.db.child("review").get().val() or {}
+        items = self.get_items()
+
+        if not isinstance(reviews, dict) or not isinstance(items, dict):
+            return None, 0
+
+        ratings = []
+        review_count = 0
+
+        for review in reviews.values():
+            if not isinstance(review, dict):
+                continue
+
+            item_name = review.get("item", "")
+            item = items.get(item_name, {})
+
+            if not isinstance(item, dict):
+                continue
+
+            if item.get("seller") != seller:
+                continue
+
+            review_count += 1
+
+            try:
+                rating = int(review.get("rating"))
+                if 1 <= rating <= 5:
+                    ratings.append(rating)
+            except (TypeError, ValueError):
+                continue
+
+        average = round(sum(ratings) / len(ratings), 1) if ratings else None
+
+        return average, review_count
+    
+    def get_review_by_id(self, review_id):
+        """Firebase에서 리뷰 ID로 리뷰 한 건 조회"""
+        review = self.db.child("review").child(review_id).get().val()
+        return review if isinstance(review, dict) else None
+    
     def insert_user(self, data, pw):
         user_info = {
             "id": data['id'],
