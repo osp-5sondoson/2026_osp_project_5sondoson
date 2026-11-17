@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, session, abort, jsonify
 from database import DBhandler
 from datetime import date, datetime, timedelta
 import hashlib
@@ -337,7 +337,23 @@ def view_item_detail(name):
     # 판매자가 받은 리뷰 중 최근 2개 (리뷰는 상품이 아니라 판매자에게 쌓임)
     reviews = sorted((r for r in all_reviews if r["seller"] == item["seller"]),
                      key=lambda r: r.get("created_at", ""), reverse=True)[:2]
-    return render_template("item_detail.html", name=name, data=data, reviews=reviews)
+    # 좋아요: 로그인한 사용자가 이미 눌렀는지와 전체 좋아요 수
+    liked = DB.get_like(name, session["id"]) if session.get("id") else False
+    return render_template("item_detail.html", name=name, data=data, reviews=reviews,
+                           liked=liked, like_count=DB.count_likes(name))
+
+
+@app.route("/like/<name>", methods=["POST"])
+def toggle_like(name):
+    """상품 상세의 좋아요 버튼(AJAX). 처음 누르면 좋아요, 다시 누르면 취소하고 JSON으로 결과만 돌려준다"""
+    if not session.get("id"):
+        # 화면에서 안내 후 로그인으로 보내고, 로그인하면 이 상품으로 돌아오게 함
+        return jsonify(login_url=url_for("login", next=url_for("view_item_detail", name=name))), 401
+    if not DB.item_exists(name):
+        return jsonify(error="존재하지 않는 상품이에요."), 404
+    liked = not DB.get_like(name, session["id"])
+    DB.set_like(name, session["id"], liked)
+    return jsonify(liked=liked, count=DB.count_likes(name))
 
 
 @app.route("/reg_reviews")
