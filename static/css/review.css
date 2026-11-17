@@ -664,6 +664,24 @@ img.avatar {
   color: var(--red);
 }
 
+/* 상품 없이 들어왔을 때: 카드 자리는 유지하고 안내만 */
+.side-product--empty {
+  align-items: center;
+}
+
+.side-product__placeholder {
+  flex: 0 0 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background-color: var(--primary-light);
+  border-radius: 8px;
+}
+
 .side-product__seller {
   font-size: 14px;
   color: var(--text-secondary);
