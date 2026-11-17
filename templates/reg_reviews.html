@@ -9,7 +9,7 @@
 
  <div class="write-layout">
   {# 서버 저장 로직은 다음 단계: 지금은 등록 시 리뷰 목록으로 이동만 함 #}
-  <form class="form" action="/review" method="get">
+  <form class="form" action="/submit_review_post" method="post" enctype="multipart/form-data">
    <div class="form__field">
     <label for="writer">작성자 ID *</label>
     <input type="text" name="writer" id="writer" value="5sondoson" readonly class="input--readonly">
