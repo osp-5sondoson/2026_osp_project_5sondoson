@@ -159,6 +159,56 @@
   margin: 0;
 }
 
+/* 좋아요 + 구매하기 한 줄 */
+.detail__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.detail__buy {
+  flex: 1;
+}
+
+.like-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 88px;
+  height: 48px;
+  padding: 0 16px;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background-color .15s;
+}
+
+.like-button:hover {
+  border-color: var(--red);
+}
+
+.like-button.is-liked {
+  color: var(--red);
+  background-color: var(--red-light);
+  border-color: var(--red);
+}
+
+.like-button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.like-button__icon {
+  font-size: 20px;
+  line-height: 1;
+  color: var(--red);
+}
+
 .detail__notice {
   justify-content: center;
   text-align: center;
