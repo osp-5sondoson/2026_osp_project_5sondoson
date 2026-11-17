@@ -122,3 +122,43 @@ document.querySelectorAll("[data-soon]").forEach((element) => {
     alert(message);
   });
 });
+
+
+/* =========================================================
+   좋아요 (상품 상세)
+   data-like-url 버튼을 누르면 AJAX(fetch)로 서버에 알리고,
+   페이지를 새로 고치지 않고 버튼 모양과 숫자만 바꿈
+   처음 누르면 좋아요, 다시 누르면 취소 (로그인한 사용자별로 DB에 저장)
+   ========================================================= */
+
+document.querySelectorAll("[data-like-url]").forEach((button) => {
+  const icon = button.querySelector(".like-button__icon");
+  const count = button.querySelector(".like-button__count");
+
+  button.addEventListener("click", async () => {
+    button.disabled = true;
+    try {
+      const response = await fetch(button.dataset.likeUrl, { method: "POST" });
+      const result = await response.json();
+
+      if (response.status === 401) {
+        alert("좋아요를 누르려면 로그인해 주세요.");
+        window.location.href = result.login_url;
+        return;
+      }
+      if (!response.ok) {
+        alert(result.error || "좋아요를 처리하지 못했어요. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+
+      button.classList.toggle("is-liked", result.liked);
+      button.setAttribute("aria-pressed", String(result.liked));
+      icon.textContent = result.liked ? "♥" : "♡";
+      count.textContent = result.count;
+    } catch (error) {
+      alert("좋아요를 처리하지 못했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      button.disabled = false;
+    }
+  });
+});

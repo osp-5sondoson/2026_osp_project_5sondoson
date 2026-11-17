@@ -58,6 +58,22 @@ class DBhandler:
         review = self.db.child("review").child(review_id).get().val()
         return review if isinstance(review, dict) else None
     
+    def get_like(self, item_name, user_id):
+        """user_id가 이 상품에 좋아요를 눌렀는지 (like/<상품명>/<user_id> 에 True 가 있으면 누른 것)"""
+        return bool(self.db.child("like").child(item_name).child(user_id).get().val())
+
+    def set_like(self, item_name, user_id, liked):
+        """좋아요를 누르면 like/<상품명>/<user_id> = True, 취소하면 그 값을 지운다"""
+        if liked:
+            self.db.child("like").child(item_name).child(user_id).set(True)
+        else:
+            self.db.child("like").child(item_name).child(user_id).remove()
+
+    def count_likes(self, item_name):
+        """이 상품에 좋아요를 누른 사용자 수"""
+        likes = self.db.child("like").child(item_name).get().val()
+        return len(likes) if isinstance(likes, dict) else 0
+
     def insert_review(self, data, img_path):
         """리뷰 하나를 review 노드에 push()로 저장하고, 자동 생성된 리뷰 ID(키)를 돌려준다"""
         review_info = {
