@@ -101,7 +101,7 @@
    <div class="gift__actions">
     {# 사용 완료 처리는 DB 연동 때 동작을 붙인다 #}
     <button class="button button--secondary" type="button"{% if gift.used %} disabled{% endif %}>{% if gift.used %}사용 완료됨{% else %}사용 완료 처리{% endif %}</button>
-    <a class="button" href="{{ url_for('reg_review') }}">리뷰 쓰기</a>
+    <a class="button" href="{{ url_for('reg_review', item=gift.item) }}">리뷰 쓰기</a>
    </div>
   </div>
 
@@ -141,7 +141,7 @@
     <td>{{ gift.seller }}</td>
     <td>{{ "{:,}".format(gift.paid) }}원</td>
     <td>{% if gift.used %}<span class="badge wallet-badge--used">사용 완료</span>{% else %}<span class="badge">사용 가능</span>{% endif %}</td>
-    <td>{% if gift.used %}<a class="wallet-table__link" href="{{ url_for('view_review') }}">리뷰 보기 ›</a>{% else %}<a class="wallet-table__link" href="{{ url_for('reg_review') }}">리뷰 쓰기 ›</a>{% endif %}</td>
+    <td>{% if gift.used %}<a class="wallet-table__link" href="{{ url_for('view_review') }}">리뷰 보기 ›</a>{% else %}<a class="wallet-table__link" href="{{ url_for('reg_review', item=gift.item) }}">리뷰 쓰기 ›</a>{% endif %}</td>
    </tr>
    {% endfor %}
   </tbody>
