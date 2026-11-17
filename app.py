@@ -265,7 +265,12 @@ def view_item_detail(name):
 def reg_review():
     if not session.get("id"):
         return login_redirect("리뷰를 쓰려면 로그인해 주세요.")
-    return render_template("reg_reviews.html")
+    item_name = request.args.get("item", "").strip()
+    raw = DB.get_item_byname(item_name) if item_name else None
+    product = normalize_item(item_name, raw) if isinstance(raw, dict) else None
+    if product:
+        product = {**raw, **product}
+    return render_template("reg_reviews.html", item_name=item_name, product=product)
 
 
 # 내 기프티콘함(특별페이지) 샘플 데이터: 로그인한 구매자가 산 기프티콘
