@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from database import DBhandler
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import hashlib
 import os
 import random
@@ -209,8 +209,36 @@ def view_special_result():
 
 @app.route("/review")
 def view_review():
-    return render_template("review.html")
+    reviews = DB.get_reviews()
 
+    for review in reviews:
+        item = DB.get_item_byname(review.get("item", "")) or {}
+
+        # 리뷰가 작성된 상품의 판매자 정보
+        review["seller"] = item.get("seller", "")
+
+        # 리뷰 사진을 직접 올렸는지 여부
+        # 사진을 안 올렸을 경우 상품 이미지가 대신 저장됨
+        review["has_photo"] = (
+            bool(review.get("img_path"))
+            and review.get("img_path") != item.get("img_path")
+        )
+
+    # 이번 주 월요일부터 작성된 리뷰 수
+    today = date.today()
+    week_start = today - timedelta(days=today.weekday())
+    week_start_str = week_start.strftime("%Y.%m.%d")
+
+    week_count = sum(
+        1 for review in reviews
+        if review.get("date", "") >= week_start_str
+    )
+
+    return render_template(
+        "review.html",
+        reviews=reviews,
+        week_count=week_count
+    )
 
 @app.route("/seller_reviews/<seller>")
 def view_seller_reviews(seller):

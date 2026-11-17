@@ -119,6 +119,10 @@
 
 /* 리뷰 행 */
 .review-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+
   margin: 0 0 24px;
   padding: 0;
   list-style: none;
@@ -126,10 +130,10 @@
 
 .review-item {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 8px;
-  padding: 12px 20px 12px 12px;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+
   background-color: var(--white);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -141,19 +145,29 @@
 
 .review-item__link {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 16px;
+  grid-template-columns: 120px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
 
-  flex: 1;
   min-width: 0;
 }
 
+.review-item__link > a:first-child {
+  grid-row: 1 / span 2;
+  align-self: stretch;
+}
+
 .review-item__thumb {
-  width: 88px;
-  height: 64px;
+  width: 120px;
+  height: 120px;
+
   object-fit: cover;
   border-radius: 8px;
+}
+
+.review-item__thumb--card {
+  object-fit: contain;
+  background-color: var(--background);
 }
 
 .review-item__thumb--empty {
@@ -191,6 +205,8 @@
 }
 
 .review-item__info {
+  grid-column: 2;
+
   display: flex;
   flex-direction: column;
 
@@ -199,16 +215,15 @@
   color: var(--text-secondary);
 }
 
-.review-item__item {
-  color: var(--text);
+.review-item__info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
-/* 오른쪽 링크는 빈 칸 없이 행 오른쪽 끝에 붙임 (검토 메모 반영) */
-.review-item__right {
-  flex: 0 1 auto;
-  width: auto;
-  margin-left: 0;
-  text-align: right;
+.review-item__item {
+  color: var(--text);
 }
 
 .seller-link {
@@ -221,6 +236,8 @@
 }
 
 .review-empty {
+  grid-column: 1 / -1;
+
   padding: 40px;
   text-align: center;
   color: var(--text-secondary);
@@ -756,27 +773,21 @@ img.avatar {
 }
 
 @media screen and (min-width: 1200px) {
-  .review-item__link {
-    grid-template-columns: 88px minmax(0, 1fr) 440px;
-  }
-
-  .review-item__right {
-    flex: 0 0 190px;
-    width: 190px;
-  }
-
   .review-stat-band {
     grid-template-columns: repeat(4, minmax(0, 1fr)) 400px;
   }
 }
 
 @media screen and (max-width: 768px) {
+  .review-list {
+  grid-template-columns: 1fr;
+  }
+
   .review-stat-band {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .review-item,
-  .review-item__link,
   .review-detail__body,
   .seller-card {
     flex-direction: column;
@@ -785,6 +796,10 @@ img.avatar {
 
   .review-item__info {
     width: auto;
+  }
+
+  .review-item__info-row {
+  flex-wrap: wrap;
   }
 
   .review-detail__photo {
