@@ -58,12 +58,13 @@ def days_until(expire):
         return None
 
 
-def normalize_item(name, data):
+def normalize_item(name, data, stats=None):
     """DB의 상품 한 건 {seller, price, ...}를 화면(목록·상세·특별페이지)이 쓰는 dict로 바꾼다.
 
     DB에는 seller · price · addr · status · email · img_path(실습 기본)에
     original_price · category · expire · desc · created_at(등록 폼 추가분)이 있고,
-    값이 없는 상품은 기본값을 채운다. brand · rating은 아직 DB에 없다.
+    값이 없는 상품은 기본값을 채운다. brand는 아직 DB에 없다.
+    판매자 평점(rating)과 받은 리뷰 수(deals)는 seller_stats()로 리뷰에서 계산한 값을 넣는다.
     """
     price = to_int(data.get("price"))
     original_price = to_int(data.get("original_price"), price)
@@ -73,11 +74,7 @@ def normalize_item(name, data):
     if status not in ITEM_STATUSES:
         status = "selling"
     dday = days_until(data.get("expire"))
-    rating = data.get("rating")
-    try:
-        rating = float(rating) if rating not in (None, "") else None
-    except (TypeError, ValueError):
-        rating = None
+    seller_stat = (stats or {}).get(data.get("seller", ""), {})
     return {
         "name": name,
         "brand": data.get("brand", ""),
@@ -88,7 +85,8 @@ def normalize_item(name, data):
         "seller": data.get("seller", ""),
         "email": data.get("email", ""),
         "addr": data.get("addr", ""),
-        "rating": rating,
+        "rating": seller_stat.get("rating"),     # 판매자가 받은 리뷰 평균 (리뷰가 없으면 None)
+        "deals": seller_stat.get("count", 0),     # 판매자가 받은 리뷰 수
         "dday": dday,            # 유효기간 정보가 없으면 None → D-day 표시 안 함, 음수면 만료
         "expire": data.get("expire", ""),
         "desc": data.get("desc", ""),
@@ -98,9 +96,42 @@ def normalize_item(name, data):
     }
 
 
+def load_reviews(items=None):
+    """DB의 리뷰 전체에 화면에서 쓰는 값을 붙인다.
+
+    리뷰에는 상품명(item)만 저장되므로 상품 DB에서 판매자(seller)를 찾아 붙이고,
+    별점은 숫자로, 사진을 직접 올렸는지(has_photo)도 함께 계산한다.
+    사진을 안 올린 리뷰는 상품 사진이 대신 저장되므로 상품 사진과 같으면 has_photo=False.
+    """
+    if items is None:
+        items = DB.get_items()
+    reviews = DB.get_reviews()
+    for review in reviews:
+        item = items.get(review.get("item", ""))
+        item = item if isinstance(item, dict) else {}
+        review["seller"] = item.get("seller", "")
+        review["rating"] = to_int(review.get("rating"))
+        review["has_photo"] = bool(review.get("img_path")) and review.get("img_path") != item.get("img_path")
+    return reviews
+
+
+def seller_stats(reviews):
+    """리뷰 목록으로 판매자별 평점 평균과 받은 리뷰 수를 계산한다 → {판매자: {"rating": 4.8, "count": 6}}"""
+    totals = {}
+    for review in reviews:
+        if review.get("seller") and 1 <= review.get("rating", 0) <= 5:
+            total = totals.setdefault(review["seller"], [0, 0])
+            total[0] += review["rating"]
+            total[1] += 1
+    return {seller: {"rating": round(score / count, 1), "count": count}
+            for seller, (score, count) in totals.items()}
+
+
 def load_items():
     """DB.get_items()의 {상품명: {...}}를 목록 화면이 쓰는 dict 리스트로 바꾼다 (최신 등록순)"""
-    items = [normalize_item(name, data) for name, data in DB.get_items().items() if isinstance(data, dict)]
+    raw_items = DB.get_items()
+    stats = seller_stats(load_reviews(raw_items))
+    items = [normalize_item(name, data, stats) for name, data in raw_items.items() if isinstance(data, dict)]
     # 기본 정렬: 최신 등록순. 등록 시각이 없는 예전 상품은 뒤로 가고, 그 안에서는 이름순
     items.sort(key=lambda i: i["name"])
     items.sort(key=lambda i: i["created_at"], reverse=True)
@@ -209,20 +240,12 @@ def view_special_result():
 
 @app.route("/review")
 def view_review():
-    reviews = DB.get_reviews()
+    reviews = load_reviews()
+    stats = seller_stats(reviews)
 
     for review in reviews:
-        item = DB.get_item_byname(review.get("item", "")) or {}
-
-        # 리뷰가 작성된 상품의 판매자 정보
-        review["seller"] = item.get("seller", "")
-
-        # 리뷰 사진을 직접 올렸는지 여부
-        # 사진을 안 올렸을 경우 상품 이미지가 대신 저장됨
-        review["has_photo"] = (
-            bool(review.get("img_path"))
-            and review.get("img_path") != item.get("img_path")
-        )
+        # 리뷰 행의 "판매자 ○○ · ★4.8"에 쓸 판매자 평점
+        review["seller_rating"] = stats.get(review["seller"], {}).get("rating")
 
     # 이번 주 월요일부터 작성된 리뷰 수
     today = date.today()
@@ -291,17 +314,14 @@ def view_item_detail(name):
         flash("존재하지 않는 상품이에요.")
         return redirect(url_for("view_list"))
     # 목록과 같은 규칙으로 정리한 값(숫자 가격·원가·할인율·D-day·기본 사진)을 DB 원본 위에 덮어 쓴다
-    item = normalize_item(name, raw)
-    data = {**raw, **item, "img_path": item["img"], "seller_rating": item["rating"]}
-    # 판매자 리뷰는 이번 과제 범위가 아니라 샘플 그대로 둠 (리뷰 백엔드 때 교체)
-    reviews = [
-        {"rating": 4.0, "title": "바코드도 잘 찍히고 바로 사용했어요!",
-         "body": "바코드가 바로 인식돼서 매장에서 문제없이 결제했어요. 유효기간도 설명대로 넉넉했어요.",
-         "author": "ewha_park", "item": "메가커피 아이스 아메리카노", "date": "2026.09.28"},
-        {"rating": 5.0, "title": "구매하자마자 바로 쓸 수 있었어요",
-         "body": "구매하기 누르자마자 기프티콘함에 원본이 떠서 바로 사용했어요. 설명이랑 똑같았어요.",
-         "author": "ewha_lee", "item": "스타벅스 카페라떼 T", "date": "2026.10.03"},
-    ]
+    items = DB.get_items()
+    all_reviews = load_reviews(items)
+    item = normalize_item(name, raw, seller_stats(all_reviews))
+    data = {**raw, **item, "img_path": item["img"],
+            "seller_rating": item["rating"], "seller_deals": item["deals"]}
+    # 판매자가 받은 리뷰 중 최근 2개 (리뷰는 상품이 아니라 판매자에게 쌓임)
+    reviews = sorted((r for r in all_reviews if r["seller"] == item["seller"]),
+                     key=lambda r: r.get("created_at", ""), reverse=True)[:2]
     return render_template("item_detail.html", name=name, data=data, reviews=reviews)
 
 
@@ -311,7 +331,7 @@ def reg_review():
         return login_redirect("리뷰를 쓰려면 로그인해 주세요.")
     item_name = request.args.get("item", "").strip()
     raw = DB.get_item_byname(item_name) if item_name else None
-    product = normalize_item(item_name, raw) if isinstance(raw, dict) else None
+    product = normalize_item(item_name, raw, seller_stats(load_reviews())) if isinstance(raw, dict) else None
     if product:
         product = {**raw, **product}
     return render_template("reg_reviews.html", item_name=item_name, product=product)
