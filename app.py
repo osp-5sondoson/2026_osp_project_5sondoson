@@ -245,10 +245,21 @@ def view_seller_reviews(seller):
     return render_template("seller_reviews.html", seller=seller)
 
 
-@app.route("/review_detail/<int:review_id>")
+@app.route("/review_detail/<review_id>")
 def view_review_detail(review_id):
-    return render_template("review_detail.html", review_id=review_id)
+    review = DB.get_review_by_id(review_id)
 
+    if review is None:
+        return render_template("404.html"), 404
+
+    item_name = review.get("item", "")
+    item = DB.get_item_byname(item_name) if item_name else None
+
+    return render_template(
+        "review_detail.html",
+        review=review,
+        item=item if isinstance(item, dict) else {}
+    )
 
 def login_redirect(message="로그인이 필요한 페이지예요."):
     """로그인이 필요한 페이지에서 세션이 없을 때: 안내 후 로그인으로 보내고, 로그인하면 원래 주소로 돌아온다"""

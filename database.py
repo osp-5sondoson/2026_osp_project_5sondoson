@@ -52,6 +52,12 @@ class DBhandler:
     def get_item_byname(self, name):
         return self.db.child("item").child(name).get().val()   # 없으면 None
 
+
+    def get_review_by_id(self, review_id):
+        """Firebase에서 리뷰 ID로 리뷰 한 건 조회"""
+        review = self.db.child("review").child(review_id).get().val()
+        return review if isinstance(review, dict) else None
+    
     def insert_review(self, data, img_path):
         """리뷰 하나를 review 노드에 push()로 저장하고, 자동 생성된 리뷰 ID(키)를 돌려준다"""
         review_info = {
