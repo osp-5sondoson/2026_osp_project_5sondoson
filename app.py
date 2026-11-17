@@ -502,7 +502,8 @@ def page_not_found(_error):
 @app.errorhandler(413)
 def upload_too_large(_error):
     flash("사진은 한 장당 5MB까지 올릴 수 있어요.")
-    return redirect(url_for("reg_item"))
+    # 상품 등록·리뷰 작성 어느 쪽에서 올렸든 그 작성 화면으로 돌아감
+    return redirect(request.referrer or url_for("reg_item"))
 
 
 @app.route("/submit_item_post", methods=["POST"])
