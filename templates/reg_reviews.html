@@ -8,16 +8,16 @@
  <p class="desc">구매한 기프티콘의 실제 사용 경험을 공유해 주세요.</p>
 
  <div class="write-layout">
-  {# 서버 저장 로직은 다음 단계: 지금은 등록 시 리뷰 목록으로 이동만 함 #}
+  {# POST 저장 라우트와 DB 처리는 리뷰 저장 담당자가 연결한다. #}
   <form class="form" action="/submit_review_post" method="post" enctype="multipart/form-data">
    <div class="form__field">
     <label for="writer">작성자 ID *</label>
-    <input type="text" name="writer" id="writer" value="5sondoson" readonly class="input--readonly">
+    <input type="text" name="writer" id="writer" value="{{ session.get('id', '') }}" readonly class="input--readonly" placeholder="로그인 후 작성 가능">
    </div>
    <div class="form__field">
     <label for="item">상품명 *</label>
-    <input type="text" name="item" id="item" value="스타벅스 아이스 카페 아메리카노 T" required>
-    <p class="form__help">판매자 ewha_kim과 거래한 상품이에요.</p>
+    <input type="text" name="item" id="item" value="{{ item_name }}" {% if item_name %}readonly class="input--readonly"{% endif %} required>
+    {% if product %}<p class="form__help">판매자 {{ product.seller }}님의 상품이에요.</p>{% endif %}
    </div>
    <div class="form__field">
     <label>정상 사용 여부 *</label>
@@ -45,13 +45,13 @@
     <input type="text" name="title" id="title" placeholder="바코드도 잘 찍히고 바로 사용했어요!" maxlength="40" required>
    </div>
    <div class="form__field">
-    <label for="file_input">리뷰 사진 (선택)</label>
+    <label for="file_input">리뷰 사진 *</label>
     <div class="pictures">
-     <img id="preview" class="preview" src="{{ url_for('static', filename='images/review_americano.jpg') }}" alt="" style="display:block">
+     <img id="preview" class="preview" alt="선택한 리뷰 사진 미리보기" style="display:none">
      <div class="picture-add">
       <span class="picture-add__plus">+</span>
       <span>사진 추가</span>
-      <input type="file" name="photo" id="file_input" accept="image/*">
+      <input type="file" name="photo" id="file_input" accept="image/png,image/jpeg,image/gif,image/webp" required>
      </div>
     </div>
     <p class="form__help">사진에 바코드나 개인정보가 보이지 않도록 확인해 주세요.</p>
@@ -68,18 +68,18 @@
   </form>
 
   <aside class="write-side">
-   <div class="side-card">
+   {% if product %}<div class="side-card">
     <h2 class="side-card__title">거래한 상품</h2>
     <div class="side-product">
-     <img src="{{ url_for('static', filename='images/product_starbucks_americano.jpg') }}" alt="">
+     <img src="{{ url_for('static', filename='images/' ~ product.img) }}" alt="">
      <div>
-      <span class="tag tag--ok">카페·베이커리</span>
-      <strong class="side-product__name">스타벅스 아이스 카페 아메리카노 T</strong>
-      <span class="side-product__price"><em>26%</em> 3,500원</span>
-      <span class="side-product__seller">판매자 ewha_kim · ★4.8</span>
+      <span class="tag tag--ok">{{ product.category }}</span>
+      <strong class="side-product__name">{{ product.name }}</strong>
+      <span class="side-product__price">{{ "{:,}".format(product.price) }}원</span>
+      <span class="side-product__seller">판매자 {{ product.seller }}{% if product.rating is not none %} · ★{{ product.rating }}{% endif %}</span>
      </div>
     </div>
-   </div>
+   </div>{% endif %}
    <div class="side-card side-card--tint">
     <h2 class="side-card__title side-card__title--primary">리뷰 작성 가이드</h2>
     <ul class="guide">
