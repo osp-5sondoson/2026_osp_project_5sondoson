@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, abort
 from database import DBhandler
 from datetime import date, datetime, timedelta
 import hashlib
@@ -265,7 +265,18 @@ def view_review():
 
 @app.route("/seller_reviews/<seller>")
 def view_seller_reviews(seller):
-    return render_template("seller_reviews.html", seller=seller)
+    items = DB.get_items()
+    reviews = [review for review in load_reviews(items) if review["seller"] == seller]
+    # 리뷰가 아직 없어도 상품을 올린 판매자면 빈 목록으로 보여 줌
+    is_seller = bool(reviews) or any(
+        isinstance(data, dict) and data.get("seller") == seller for data in items.values()
+    )
+    if not is_seller:
+        abort(404)
+    for review in reviews:
+        review["item_exists"] = review.get("item") in items     # "상품 보기" 링크를 걸 수 있는지
+    stat = seller_stats(reviews).get(seller, {"rating": None, "count": 0})
+    return render_template("seller_reviews.html", seller=seller, reviews=reviews, stat=stat)
 
 
 @app.route("/review_detail/<review_id>")

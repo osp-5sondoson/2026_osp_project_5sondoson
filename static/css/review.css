@@ -845,3 +845,54 @@ img.avatar {
   object-fit: cover;
   object-position: 50% center;
 }
+
+/* 판매자별 리뷰(피그마 06)는 한 줄에 리뷰 하나: 사진 · 내용 · 작성 정보 · 오른쪽 끝 "상품 보기" */
+.review-list--rows {
+  display: block;
+}
+
+.review-list--rows .review-item {
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding: 12px 20px 12px 12px;
+}
+
+.review-list--rows .review-item__link {
+  grid-template-columns: 88px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  color: inherit;
+  text-decoration: none;
+}
+
+.review-list--rows .review-item__thumb {
+  width: 88px;
+  height: 64px;
+}
+
+.review-list--rows .review-item__info {
+  grid-column: auto;
+}
+
+.review-list--rows .review-item__right {
+  flex: 0 1 auto;
+  text-align: right;
+}
+
+@media screen and (min-width: 1200px) {
+  .review-list--rows .review-item__link {
+    grid-template-columns: 88px minmax(0, 1fr) 440px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .review-list--rows .review-item,
+  .review-list--rows .review-item__link {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
