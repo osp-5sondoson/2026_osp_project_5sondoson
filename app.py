@@ -509,9 +509,7 @@ def reg_review_submit_post():
         error = "제목은 {}자까지 쓸 수 있어요.".format(REVIEW_TITLE_MAX)
     elif len(data["content"]) > REVIEW_CONTENT_MAX:
         error = "내용은 {}자까지 쓸 수 있어요.".format(REVIEW_CONTENT_MAX)
-    elif not image_file or not image_file.filename:
-        error = "리뷰 사진을 올려 주세요."
-    elif ext not in ALLOWED_IMAGE_EXTS:
+    elif image_file and image_file.filename and ext not in ALLOWED_IMAGE_EXTS:
         error = "사진은 png, jpg, jpeg, gif, webp 파일만 올릴 수 있어요."
     if error:
         # 작성 화면으로 돌아가 알림으로 안내 (작성 화면 주소는 1번 담당이라 바로 전 페이지로 보냄)
@@ -519,10 +517,15 @@ def reg_review_submit_post():
         return redirect(request.referrer or url_for("reg_review"))
 
     data["rating"] = int(data["rating"])
-    # 상품 등록과 같은 방식: 겹치지 않는 이름으로 서버에 저장하고 DB에는 파일명만
-    filename = uuid.uuid4().hex + ext
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
-    image_file.save(os.path.join(UPLOAD_DIR, filename))
+    if image_file and image_file.filename:
+        # 상품 등록과 같은 방식: 겹치지 않는 이름으로 서버에 저장하고 DB에는 파일명만
+        filename = uuid.uuid4().hex + ext
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        image_file.save(os.path.join(UPLOAD_DIR, filename))
+    else:
+        # 사진은 선택(피그마 04). 목록에서 사진을 눌러 상세로 가야 하니 거래한 상품 사진으로 대신 저장
+        item = DB.get_item_byname(data["item"]) or {}
+        filename = item.get("img_path") or DEFAULT_ITEM_IMAGE
 
     DB.insert_review(data, filename)
 
