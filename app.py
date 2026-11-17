@@ -288,11 +288,15 @@ def view_review_detail(review_id):
 
     item_name = review.get("item", "")
     item = DB.get_item_byname(item_name) if item_name else None
+    item = item if isinstance(item, dict) else {}
+    # 거래 정보의 "★4.8 · 거래 리뷰 12개" (판매자가 받은 리뷰로 계산)
+    seller_stat = seller_stats(load_reviews()).get(item.get("seller", ""))
 
     return render_template(
         "review_detail.html",
         review=review,
-        item=item if isinstance(item, dict) else {}
+        item=item,
+        seller_stat=seller_stat
     )
 
 def login_redirect(message="로그인이 필요한 페이지예요."):
