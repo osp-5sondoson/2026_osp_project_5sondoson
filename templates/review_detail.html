@@ -108,7 +108,9 @@
             <strong>{{ seller }}</strong>
           </div>
 
-          {# 판매자 평균 평점과 리뷰 개수는 별도 연동 전까지 표시하지 않음 #}
+          {% if seller_stat %}
+          <span class="trade-box__rating">★{{ "%.1f"|format(seller_stat.rating) }} · 거래 리뷰 {{ seller_stat.count }}개</span>
+          {% endif %}
 
           <a
             class="button button--outline button--small"

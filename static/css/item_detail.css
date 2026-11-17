@@ -201,6 +201,31 @@
   padding: 20px;
 }
 
+a.detail-review {
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .15s;
+}
+
+a.detail-review:hover {
+  border-color: var(--primary);
+}
+
+.detail-review--empty {
+  margin: 0;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* 긴 리뷰는 두 줄까지만 */
+.detail-review__text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .detail-review__thumb {
   width: 100px;
   height: 100px;

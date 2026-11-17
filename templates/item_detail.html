@@ -42,7 +42,7 @@
 
   <dl class="panel detail__meta">
    <dt>판매자</dt>
-   <dd>{{ data.seller }}{% if data.get('seller_rating') %} <span class="detail__rating">★ {{ data.get('seller_rating') }}</span>{% endif %}{% if data.get('seller_deals') %} (거래 {{ data.get('seller_deals') }}회){% endif %}</dd>
+   <dd>{{ data.seller }}{% if data.get('seller_rating') %} <span class="detail__rating">★ {{ "%.1f"|format(data.get('seller_rating')) }}</span>{% endif %}{% if data.get('seller_deals') %} (거래 {{ data.get('seller_deals') }}회){% endif %}</dd>
    <dt>이메일</dt>
    <dd>{{ data.email }}</dd>
    {% if data.get('expire') %}
@@ -71,28 +71,32 @@
   <div>
    <h2 class="seller-reviews__title">
     판매자 {{ data.seller }}님이 받은 거래 리뷰{% if data.get('seller_deals') %} {{ data.get('seller_deals') }}{% endif %}
-    {% if data.get('seller_rating') %}<span class="stars">★★★★★</span> <span class="seller-reviews__score">{{ data.get('seller_rating') }}</span>{% endif %}
+    {% if data.get('seller_rating') %}{% set seller_stars = data.get('seller_rating')|round|int %}<span class="stars">{% for i in range(5) %}{% if i < seller_stars %}★{% else %}☆{% endif %}{% endfor %}</span> <span class="seller-reviews__score">{{ "%.1f"|format(data.get('seller_rating')) }}</span>{% endif %}
    </h2>
    <p class="section-head__sub">기프티콘은 한 번 팔리면 끝이라, 리뷰는 상품이 아닌 판매자에게 쌓여요. 이 판매자의 지난 거래 후기를 확인해 보세요.</p>
   </div>
-  <a class="button button--outline" href="/review">리뷰 전체 보기 ›</a>
+  <a class="button button--outline" href="{{ url_for('view_seller_reviews', seller=data.seller) if reviews else url_for('view_review') }}">리뷰 전체 보기 ›</a>
  </div>
 
+ {% if reviews %}
  <div class="grid grid--2">
   {% for r in reviews %}
-  <article class="card detail-review">
-   <img class="detail-review__thumb" src="{{ url_for('static', filename='images/' ~ data.img_path) }}" alt="" aria-hidden="true">
+  <a class="card detail-review" href="{{ url_for('view_review_detail', review_id=r.id) }}">
+   <img class="detail-review__thumb" src="{{ url_for('static', filename='images/' ~ r.img_path) }}" alt="" aria-hidden="true">
    <div class="detail-review__body">
     <p class="detail-review__rating">
-     <span class="stars">{% for i in range(5) %}{% if i < r.rating|int %}★{% else %}☆{% endif %}{% endfor %}</span>
+     <span class="stars">{% for i in range(5) %}{% if i < r.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
      <span class="text-secondary">{{ "%.1f"|format(r.rating) }}</span>
     </p>
     <h3 class="detail-review__title">{{ r.title }}</h3>
-    <p class="detail-review__text">{{ r.body }}</p>
-    <p class="detail-review__meta">{{ r.author }} · {{ r.item }} · {{ r.date }}</p>
+    <p class="detail-review__text">{{ r.content }}</p>
+    <p class="detail-review__meta">{{ r.writer }} · {{ r.item }} · {{ r.date }}</p>
    </div>
-  </article>
+  </a>
   {% endfor %}
  </div>
+ {% else %}
+ <p class="card detail-review detail-review--empty">아직 받은 거래 리뷰가 없어요.</p>
+ {% endif %}
 </section>
 {% endblock section %}

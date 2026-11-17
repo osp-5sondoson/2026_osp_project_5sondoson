@@ -92,7 +92,7 @@
   {% for r in shown[(page - 1) * per_page:page * per_page] %}
   <li class="review-item">
     <div class="review-item__link">
-      <a href="/review_detail/{{ r.id }}">
+      <a href="{{ url_for('view_review_detail', review_id=r.id) }}">
         <img
           class="review-item__thumb {% if not r.has_photo %}review-item__thumb--card{% endif %}"
           src="{{ url_for('static', filename='images/' ~ r.img_path) }}"
@@ -119,7 +119,7 @@
 
         {% if r.seller %}
         <a class="seller-link" href="/seller_reviews/{{ r.seller }}">
-          판매자 {{ r.seller }}
+          판매자 {{ r.seller }}{% if r.seller_rating %} <span class="seller-link__star">★</span>{{ "%.1f"|format(r.seller_rating) }}{% endif %}
         </a>
         {% endif %}
       </div>
