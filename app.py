@@ -206,7 +206,6 @@ def view_special_result():
 def view_review():
     return render_template("review.html")
 
-
 @app.route("/seller_reviews/<seller>")
 def view_seller_reviews(seller):
     return render_template("seller_reviews.html", seller=seller)
@@ -214,13 +213,11 @@ def view_seller_reviews(seller):
 
 @app.route("/review_detail/<review_id>")
 def view_review_detail(review_id):
-    # Firebase에서 해당 리뷰 조회
     review = DB.get_review_by_id(review_id)
 
     if review is None:
         return render_template("404.html"), 404
 
-    # 리뷰에 연결된 상품 정보 조회
     item_name = review.get("item", "")
     item = DB.get_item_byname(item_name) if item_name else None
 
