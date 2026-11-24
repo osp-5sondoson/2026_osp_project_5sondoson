@@ -22,6 +22,7 @@
 - [데이터 구조](#데이터-구조)
 - [프로젝트 구조](#프로젝트-구조)
 - [팀원](#팀원)
+- [라이선스](#라이선스)
 
 ## 주요 기능
 
@@ -251,3 +252,7 @@ user/
     <td align="center" width="160"><a href="https://github.com/aseo0544-crypto">@aseo0544-crypto</a></td>
   </tr>
 </table>
+
+## 라이선스
+
+[MIT License](LICENSE) © 2026 오손도손
