@@ -1,0 +1,24 @@
+title: 기쁘띠콘 기술 블로그
+description: 2026 오픈SW플랫폼 팀 오손도손이 기프티콘 중고 거래 마켓 '기쁘띠콘'을 만들며 배운 것
+lang: ko
+url: https://osp-5sondoson.github.io
+baseurl: /2026_osp_project_5sondoson
+github_username: osp-5sondoson
+
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# 글 주소: /posts/<파일 이름의 영어 부분>/
+permalink: /posts/:title/
+timezone: Asia/Seoul
+
+# 상단 메뉴에 보일 페이지
+header_pages:
+  - about.md
+
+# 블로그에 올리지 않는 파일 (팀 내부 문서·작성 안내)
+exclude:
+  - review-integration.md
+  - WRITING_GUIDE.md

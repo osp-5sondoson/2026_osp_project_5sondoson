@@ -1,0 +1,180 @@
+---
+# 기쁘띠콘 앱(static/style.css)의 디자인 토큰을 minima 테마에 덮어쓴다.
+---
+
+// ---------- 1. minima 변수 (앱 토큰과 같은 값) ----------
+$base-font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+$base-font-size: 16px;
+$base-line-height: 1.75;
+$text-color: #162239;        // Text Primary
+$background-color: #f6faff;  // Page Background
+$brand-color: #1878f8;       // Primary
+$grey-color: #647089;        // Text Secondary
+$grey-color-light: #dce6f3;  // Border
+$content-width: 860px;
+
+@import "minima";
+
+// ---------- 2. 앱 토큰 ----------
+:root {
+  --primary: #1878f8;
+  --primary-dark: #0756d8;
+  --primary-light: #e9f3ff;
+  --surface: #ffffff;
+  --border: #dce6f3;
+  --text: #162239;
+  --text-secondary: #647089;
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-card-lg: 16px;
+}
+
+// ---------- 3. 상단바 · 하단 ----------
+.site-header {
+  border-top: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.site-title,
+.site-title:visited {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.site-title__icon { flex: none; }
+
+.site-nav .page-link {
+  color: var(--text);
+  font-weight: 500;
+
+  &:hover { color: var(--primary); text-decoration: none; }
+}
+
+.site-footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+// ---------- 4. 본문 ----------
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; }
+
+.page-heading,
+.post-title { color: var(--text); }
+
+.post-content h2 {
+  margin-top: 40px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+a { color: var(--primary); }
+a:visited { color: var(--primary-dark); }
+
+// 한 줄 요약 (인용)
+blockquote {
+  margin-left: 0;
+  padding: 14px 20px;
+  border-left: 4px solid var(--primary);
+  border-radius: 0 var(--radius-control) var(--radius-control) 0;
+  background: var(--primary-light);
+  color: var(--text);
+  font-size: 1rem;
+  font-style: normal;
+  letter-spacing: 0;
+
+  > :last-child { margin-bottom: 0; }
+}
+
+// 코드
+code {
+  border: 0;
+  border-radius: 6px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  padding: 2px 6px;
+  font-size: 0.875em;
+}
+
+pre,
+.highlight {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface) !important;
+
+  code { background: none; color: inherit; padding: 0; }
+}
+
+// 그림: 앱 카드처럼
+.post-content img {
+  display: block;
+  margin: 8px auto 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 16px rgba(22, 34, 57, 0.06);
+}
+
+// 표
+table {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  th { background: var(--primary-light); border: 0; border-bottom: 1px solid var(--border); }
+  td { border: 0; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: 0; }
+  tr:nth-child(even) { background: transparent; }
+}
+
+// ---------- 5. 메인 페이지 글 목록 ----------
+.post-type {
+  margin: 32px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+}
+
+.chip {
+  display: inline-block;
+  padding: 2px 12px;
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  color: var(--primary);
+  background: var(--surface);
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.8;
+}
+
+.post-cards {
+  list-style: none;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.post-card {
+  padding: 18px 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card-lg);
+  background: var(--surface);
+
+  &__title { font-size: 1.1rem; font-weight: 700; }
+  &__meta { color: var(--text-secondary); font-size: 0.85rem; }
+  &__summary { margin: 6px 0 0; color: var(--text-secondary); font-size: 0.92rem; }
+
+  &--empty { color: var(--text-secondary); border-style: dashed; background: transparent; }
+}
+
+.post-content h2.post-type {
+  margin-top: 32px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
